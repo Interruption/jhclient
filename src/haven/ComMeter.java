@@ -36,7 +36,8 @@ public class ComMeter extends Widget {
 	mdc = new Coord(54, 71),
 	ooc = new Coord(80, 61),
 	odc = new Coord(80, 71);
-    static Coord intc = new Coord(66, 33);
+    static Coord intc = new Coord(66, 25);
+	static Coord balc = new Coord(66, 40);
     static Color offcol = new Color(255, 0, 0), defcol = new Color(0, 0, 255);
     static Tex scales[];
     Fightview fv;
@@ -68,6 +69,7 @@ public class ComMeter extends Widget {
 	g.chcolor();
 	if(rel != null) {
 	    g.aimage(intf.render(String.format("%d", rel.intns)).tex(), intc, 0.5, 0.5);
+		g.aimage(intf.render(String.format("%d", rel.bal)).tex(), balc, 0.5, 0.5);
 	    if(rel.off >= 200) {
 		g.chcolor(offcol);
 		g.frect(ooc, new Coord(rel.off / 200, 5));
