@@ -27,8 +27,8 @@
 package haven;
 
 import static haven.Resource.imgc;
-import javax.media.opengl.GL;
 import java.util.*;
+import javax.media.opengl.GL;
 
 public class AvaRender extends TexRT {
     List<Indir<Resource>> layers;
