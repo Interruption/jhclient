@@ -336,36 +336,38 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 
 	public static void main(final String[] args) {
 		/* Set up the error handler as early as humanly possible. */
-		ThreadGroup g;
-		if (Utils.getprop("haven.errorhandler", "off").equals("on")) {
-			final haven.error.ErrorHandler hg = new haven.error.ErrorHandler();
+		ThreadGroup g = new ThreadGroup("Haven client");
+	String ed;
+	if(!(ed = Utils.getprop("haven.errorurl", "")).equals("")) {
+	    try {
+			final haven.error.ErrorHandler hg = new haven.error.ErrorHandler(new java.net.URL(ed));
 			hg.sethandler(new haven.error.ErrorGui(null) {
 				public void errorsent() {
 					hg.interrupt();
 				}
 			});
 			g = hg;
-		} else {
-			g = new ThreadGroup("Haven client");
-		}
-		Thread main = new HackThread(g, new Runnable() {
-			public void run() {
-				try {
-					javabughack();
-				} catch (InterruptedException e) {
-					return;
-				}
-				main2(args);
+	    } catch(java.net.MalformedURLException e) {
+	    }
+	}
+	Thread main = new HackThread(g, new Runnable() {
+		public void run() {
+			try {
+				javabughack();
+			} catch (InterruptedException e) {
+				return;
 			}
-		}, "Haven main thread");
-		main.start();
-		try {
-			main.join();
-		} catch (InterruptedException e) {
-			g.interrupt();
-			return;
+			main2(args);
 		}
-		System.exit(0);
+	}, "Haven main thread");
+	main.start();
+	try {
+		main.join();
+	} catch (InterruptedException e) {
+		g.interrupt();
+		return;
+	}
+	System.exit(0);
 	}
 
 	private static void dumplist(Collection<Resource> list, String fn) {
