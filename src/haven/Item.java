@@ -26,15 +26,21 @@
 
 package haven;
 
-import java.awt.image.BufferedImage;
 import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.util.Map;
 import java.awt.event.KeyEvent;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import ender.CurioInfo;
 
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
+	static final Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
     static Resource missing = Resource.load("gfx/invobjs/missing");
     boolean dm = false;
-    int q;
+    int q, q2;
     boolean hq;
     Coord doff;
     public String tooltip;
@@ -44,6 +50,7 @@ public class Item extends Widget implements DTarget {
     Color olcol = null;
     Tex mask = null;
     int meter = 0;
+	String curioStr = null;
 	
     static {
 	Widget.addtype("item", new WidgetFactory() {
@@ -63,11 +70,29 @@ public class Item extends Widget implements DTarget {
 		    if(args.length > ca)
 			num = (Integer)args[ca++];
 		    Item item = new Item(c, res, q, parent, drag, num);
-		    item.tooltip = tooltip;
+		    item.settip(tooltip);
 		    return(item);
 		}
 	    });
 	missing.loadwait();
+    }
+
+public void settip(String t){
+	tooltip = t;
+	q2 = -1;
+	if(tooltip != null){
+	    try{
+		Matcher m =patt.matcher(tooltip); 
+		while(m.find()){
+		    q2 = Integer.parseInt(m.group(1));
+		}
+	    } catch(IllegalStateException e){
+		System.out.println(e.getMessage());
+	    }
+	}
+	calcFEP();
+	calcCurio();
+	shorttip = longtip = null;
     }
 	
     private void fixsize() {
@@ -139,6 +164,8 @@ public class Item extends Widget implements DTarget {
 		g.chcolor();
 	    }
 	}
+	if(FEP == null){calcFEP();}
+	if(curioStr == null){calcCurio();}
     }
 
     static Tex makesh(Resource res) {
@@ -153,6 +180,18 @@ public class Item extends Widget implements DTarget {
 	    }
 	}
 	return(new TexI(sh));
+    }
+	
+	public String name() {
+	Resource res = this.res.get();
+	if(res != null){
+	    if(res.layer(Resource.tooltip) != null) {
+		return res.layer(Resource.tooltip).t;
+	    } else {
+		return(this.tooltip);
+	    }
+	}
+	return null;
     }
 	
     public String shorttip() {
@@ -175,28 +214,49 @@ public class Item extends Widget implements DTarget {
 
     long hoverstart;
     Text shorttip = null, longtip = null;
+	public double qmult;
+	private String FEP = null;
     public Object tooltip(Coord c, boolean again) {
 	long now = System.currentTimeMillis();
 	if(!again)
 	    hoverstart = now;
-	if((now - hoverstart) < 1000) {
+	Resource res = this.res.get();
+	Resource.Pagina pg = (res!=null)?res.layer(Resource.pagina):null;
+	if(((now - hoverstart) < 500)||(pg == null)) {
 	    if(shorttip == null) {
 		String tt = shorttip();
-		if(tt != null) 
-		    shorttip = Text.render(tt);
+		if(tt != null) {
+		    tt = RichText.Parser.quote(tt);
+		    if(meter > 0) {
+			tt = tt + " (" + meter + "%)";
+		    }
+			if(FEP != null){
+			tt += FEP;
+		    }
+		    if(curioStr != null){
+			tt += curioStr;
+		    }
+		    shorttip = RichText.render(tt, 200);
+		}
 	    }
 	    return(shorttip);
 	} else {
-	    Resource res = this.res.get();
 	    if((longtip == null) && (res != null)) {
-		Resource.Pagina pg = res.layer(Resource.pagina);
 		String tip = shorttip();
 		if(tip == null)
 		    return(null);
 		String tt = RichText.Parser.quote(tip);
+		if(meter > 0) {
+		    tt = tt + " (" + meter + "%)";
+		}
+		if(FEP != null){
+		    tt += FEP;
+		}
+		if(curioStr != null){
+		    tt += curioStr;
+		}
 		if(pg != null)
 		    tt += "\n\n" + pg.text;
-		tt+="\n" +GetResName();
 		longtip = RichText.render(tt, 200);
 	    }
 	    return(longtip);
@@ -237,8 +297,66 @@ public class Item extends Widget implements DTarget {
 	    else
 	    	this.c = new Coord(0,0).add(doff.inv());
 	}
+	qmult = Math.sqrt((float)q/10);
+	calcFEP();
+	calcCurio();
     }
 
+	private void calcFEP() {
+	Map<String, Float> fep;
+	String name = name();
+	if(name == null){return;}
+	if(name.equals("Ring of Brodgar")){
+	    if(res.get().name.equals("gfx/invobjs/bread-brodgar")){name = "Ring of Brodgar (Baking)";}
+	    if(res.get().name.equals("gfx/invobjs/feast-rob")){name = "Ring of Brodgar (Seafood)";}
+	}
+	name = name.toLowerCase();
+	boolean isItem = false;
+	if((fep = Config.FEPMap.get(name)) != null){
+	    if(fep.containsKey("isItem")){
+		isItem = true;
+	    }
+	    FEP = "\n";
+	    for(String key:fep.keySet()){
+		float val = (float) (fep.get(key)*qmult);
+		if(key.equals("isItem")){continue;}
+		if(isItem){
+		    val = (float) Math.floor(val);
+		    FEP += String.format("%s:%.0f ", key, val);
+		} else {
+		    FEP += String.format("%s:%.1f ", key, val);
+		}
+	    }
+	    shorttip = longtip = null;
+	}
+    }
+	
+	public int getLP() {
+	String name = name();
+	if(name == null){return 0;}
+	name = name.toLowerCase();
+	CurioInfo curio;
+	if((curio = Config.curios.get(name)) != null){
+	    return (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
+	}
+	return 0;
+    }
+    
+    private void calcCurio(){
+	String name = name();
+	if(name == null){return;}
+	name = name.toLowerCase();
+	CurioInfo curio;
+	if((curio = Config.curios.get(name)) != null){
+	    int LP = (int) (curio.LP*qmult*ui.sess.glob.cattr.get("expmod").comp/100);
+	    int time = curio.time*(100 - meter)/100;
+	    int h = time/60;
+	    int m = time%60;
+	    curioStr = String.format("\nLP: %d, Weight: %d\nStudy time: %dh %2dm", LP,curio.weight,h,m);
+	    shorttip = longtip = null;
+	}
+    }
+	
     public Item(Coord c, int res, int q, Widget parent, Coord drag, int num) {
 	this(c, parent.ui.sess.getres(res), q, parent, drag, num);
     }
@@ -301,14 +419,18 @@ public class Item extends Widget implements DTarget {
 	    olcol = (Color)args[0];
 	} else if(name == "tt") {
 	    if((args.length > 0) && (((String)args[0]).length() > 0))
-		tooltip = (String)args[0];
+		settip((String)args[0]);
 	    else
-		tooltip = null;
+		settip(null);
         resettt();
 	} else if(name == "meter") {
 	    meter = (Integer)args[0];
+		shorttip = null;
+	    longtip = null;
+		calcCurio();
 	}
     }
+	
     public boolean mousedown(Coord c, int button) {
 	if(!dm) {
 	    if(button == 1) {
@@ -319,8 +441,7 @@ public class Item extends Widget implements DTarget {
             else
                 wdgmsg("take", c);
             return(true);
-	    } else
-        if(button == 3) {
+	    } else if(button == 3) {
             wdgmsg("iact", c);
             return(true);
 	    }

@@ -26,13 +26,17 @@
 
 package haven;
 
-import static haven.ark_bot.*;
 import java.io.*;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
+import static haven.ark_bot.*;
 import static haven.Utils.getprop;
+
+import ender.CurioInfo;
 
 public class Config {
     public static byte[] authck;
@@ -83,6 +87,8 @@ public class Config {
     public static String currentCharName;
     public static Properties options;
     public static boolean gilbertus_map_dump = true;
+	public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
+	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
     public static boolean ark_map_dump = false;
 
 
@@ -115,6 +121,8 @@ public class Config {
         options = new Properties();
         hideObjectList = new HashSet<String>();
         loadOptions();
+		loadFEP();
+	    loadCurios();
     } catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -173,7 +181,57 @@ public class Config {
             }
         }
     }
+	
+	private static void loadCurios() {
+		try {
+			FileInputStream fstream;
+			fstream = new FileInputStream("curio.conf");
+			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+			String strLine;
+			while ((strLine = br.readLine()) != null)   {
+				CurioInfo curio = new CurioInfo();
+				String [] tmp = strLine.split(":");
+				String name = tmp[0].toLowerCase();
+				curio.LP = Integer.parseInt(tmp[1]);
+				curio.time = (int) (60*Float.parseFloat(tmp[2]));
+				curio.weight = Integer.parseInt(tmp[3]);
+				curios.put(name, curio);
+			}
+			br.close();
+			fstream.close();
+		} catch (Exception e) {}
+    }
 
+	private static void loadFEP() {
+	try {
+	    FileInputStream fstream;
+	    fstream = new FileInputStream("fep.conf");
+	    BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+	    String strLine;
+	    while ((strLine = br.readLine()) != null)   {
+		Map<String, Float> fep = new HashMap<String, Float>();
+		String [] tmp = strLine.split("=");
+		String name;
+		name = tmp[0].toLowerCase();
+		if(name.charAt(0)=='@'){
+		    name = name.substring(1);
+		    fep.put("isItem",(float) 1.0);
+		}
+		tmp = tmp[1].split(" ");
+		for(String itm : tmp){
+		    String tmp2[] = itm.split(":");
+		    fep.put(tmp2[0], Float.valueOf(tmp2[1]).floatValue());
+		}
+		FEPMap.put(name, fep);
+	    }
+	    br.close();
+	    fstream.close();
+	} catch (FileNotFoundException e) {
+	} catch (IOException e) {
+	}
+	
+    }
+	
     private static void usage(PrintStream out) {
 	out.println("usage: haven.jar [-hdf] [-u USER] [-C HEXCOOKIE] [-r RESDIR] [-U RESURL] [-A AUTHSERV] [-i INACTIVE EXIT] [-m MAPDIR] [-q QUICK LOGIN ON] [-b SCRIPT NAME] [-k KEEP CONNECT] [SERVER]");
     }

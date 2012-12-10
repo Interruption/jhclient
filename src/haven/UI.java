@@ -39,6 +39,7 @@ public class UI {
     Receiver rcvr;
     public Coord mc, lcc = Coord.z;
     public Session sess;
+	public Speedget spd;
     
     // прямые статические ссылки на нужные объекты ;)
     // без траха с поиском по дереву объектов
