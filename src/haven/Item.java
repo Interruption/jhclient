@@ -28,6 +28,7 @@ package haven;
 
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
 import java.util.Map;
 import java.awt.event.KeyEvent;
 import java.util.regex.Matcher;
@@ -38,7 +39,9 @@ import ender.CurioInfo;
 public class Item extends Widget implements DTarget {
     static Coord shoff = new Coord(1, 3);
 	static final Pattern patt = Pattern.compile("quality (\\d+) ", Pattern.CASE_INSENSITIVE);
+	static Map<Integer, Tex> qmap;
     static Resource missing = Resource.load("gfx/invobjs/missing");
+	static Color outcol = new Color(0,0,0,255);
     boolean dm = false;
     int q, q2;
     boolean hq;
@@ -75,6 +78,7 @@ public class Item extends Widget implements DTarget {
 		}
 	    });
 	missing.loadwait();
+	qmap = new HashMap<Integer, Tex>();
     }
 
 public void settip(String t){
@@ -135,39 +139,62 @@ public void settip(String t){
 	    Tex tex = res.get().layer(Resource.imgc).tex();
 	    fixsize();
 	    if(dm) {
-		g.chcolor(255, 255, 255, 128);
-		g.image(tex, Coord.z);
-		g.chcolor();
+			g.chcolor(255, 255, 255, 128);
+			g.image(tex, Coord.z);
+			g.chcolor();
 	    } else {
-		g.image(tex, Coord.z);
+			g.image(tex, Coord.z);
         }
 	    if(num >= 0) {
-		g.chcolor(Color.WHITE);
-		g.atext(Integer.toString(num), tex.sz(), 1, 1);
+			//g.chcolor(Color.WHITE);
+			//g.atext(Integer.toString(num), tex.sz(), 1, 1);
+			g.aimage(getqtex(num), Coord.z, 0, 0);
 	    }
 	    if(meter > 0) {
-		double a = ((double)meter) / 100.0;
-		g.chcolor(255, 255, 255, 64);
-		g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
-		g.chcolor();
+			double a = ((double)meter) / 100.0;
+			int r = (int) ((1-a)*255);
+			int gr = (int) (a*255);
+			int b = 0;
+			g.chcolor(255, 255, 255, 64);
+			//g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
+			g.frect(new Coord(sz.x-5,(int) ((1-a)*sz.y)), new Coord(5,(int) (a*sz.y)));
+			g.chcolor();
 	    }
-	    ttres = res.get();
+		int tq = (q2>0)?q2:q;
+	    if(Config.showq && (tq > 0)){
+			tex = getqtex(tq);
+			g.aimage(tex, sz.sub(1,1), 1, 1);
+		}
+		ttres = res.get();
 	}
 	if(olcol != null) {
 	    Tex bg = ttres.layer(Resource.imgc).tex();
 	    if((mask == null) && (bg instanceof TexI)) {
-		mask = ((TexI)bg).mkmask();
+			mask = ((TexI)bg).mkmask();
 	    }
 	    if(mask != null) {
-		g.chcolor(olcol);
-		g.image(mask, Coord.z);
-		g.chcolor();
+			g.chcolor(olcol);
+			g.image(mask, Coord.z);
+			g.chcolor();
 	    }
 	}
 	if(FEP == null){calcFEP();}
 	if(curioStr == null){calcCurio();}
     }
 
+	static Tex getqtex(int q){
+	synchronized (qmap) {
+	    if(qmap.containsKey(q)){
+		return qmap.get(q);
+	    } else {
+		BufferedImage img = Text.render(Integer.toString(q)).img;
+		img = Utils.outline2(img, outcol, true);
+		Tex tex = new TexI(img);
+		qmap.put(q, tex);
+		return tex;
+	    }
+	}
+    }
     static Tex makesh(Resource res) {
 	BufferedImage img = res.layer(Resource.imgc).img;
 	Coord sz = Utils.imgsz(img);

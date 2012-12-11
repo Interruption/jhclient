@@ -91,6 +91,7 @@ public class Config {
 	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
     public static boolean ark_map_dump = false;
 
+	public static boolean showq;
 
     static {
 	try {
@@ -328,6 +329,7 @@ public class Config {
         bot_name2 = getopt_str("bot_name1", "test");
         ark_map_dump = getopt_bool("ark_map", false);
         gilbertus_map_dump = getopt_bool("gilbertus_map", false);
+		showq = options.getProperty("showq", "true").equals("true");
     }
 
     public static void saveOptions() {
@@ -353,7 +355,7 @@ public class Config {
         setopt_str("bot_name2", bot_name2);
         setopt_bool("ark_map", ark_map_dump);
         setopt_bool("gilbertus_map", gilbertus_map_dump);
-
+		setopt_bool("showq", showq);
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {
