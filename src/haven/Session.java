@@ -404,7 +404,7 @@ public class Session {
 	    try {
 		alive = true;
 		try {
-		    sk.setSoTimeout(2000);
+		    sk.setSoTimeout(1000);
 		} catch(SocketException e) {
 		    throw(new RuntimeException(e));
 		}
@@ -556,7 +556,7 @@ public class Session {
 				    else if(msg.retx < 10)
 					txtime = 620;
 				    else
-					txtime = 20000;
+					txtime = 2000;
 				    if(now - msg.last > txtime) { /* XXX */
 					msg.last = now;
 					msg.retx++;
@@ -621,10 +621,10 @@ public class Session {
 				break;
 			    state = "close";
 			    long now = System.currentTimeMillis();
-			    if(now - f > 5000)
+			    if(now - f > 500)
 				break;
 			    try {
-				Session.this.wait(5000 - (now - f));
+				Session.this.wait(500 - (now - f));
 			    } catch(InterruptedException e2) {}
 			}
             }
