@@ -28,12 +28,14 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
+import haven.MCache.Grid;
 import java.security.*;
 import java.util.*;
 import java.net.*;
 import java.io.*;
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
+
 
 public class MiniMap extends Widget {
     static Map<String, Tex> grids = new WeakHashMap<String, Tex>();
@@ -46,57 +48,6 @@ public class MiniMap extends Widget {
     public static final Tex nomap = Resource.loadtex("gfx/hud/mmap/nomap");
     public static final Resource plx = Resource.load("gfx/hud/mmap/x");
     MapView mv;
-
-//----------------------------------------------------------------------------
-    public static final class MapFragmentCoordsWriter {
-       private static MapFragmentCoordsWriter _instance = new MapFragmentCoordsWriter();
-       Hashtable coordsHash = new Hashtable();
-       File coordsFile = new File(Config.mapdir + "/fragdata" + System.currentTimeMillis() + ".txt");
-
-       public static MapFragmentCoordsWriter getInstance() {
-           return _instance;
-       }
-
-       public synchronized void writeMapFragmentCoords(String fragmentID, Coord coords) {
-           if (!coordsHash.containsKey(fragmentID)) {
-               coordsHash.put(fragmentID, coords);
-               try {
-                   FileWriter out = new FileWriter(coordsFile, true);
-                   out.write(fragmentID + ";" + coords.x + ";" + coords.y + "\n");
-                   out.flush();
-               }
-               catch (IOException e) {}
-           }
-       }
-
-       public synchronized void beginNewSession() {
-           coordsFile = new File(Config.mapdir + "/fragdata" + System.currentTimeMillis() + ".txt");
-       }
-    }
-
-    private static final class MapFragmentInputStream extends InputStream {
-       private InputStream input;
-       private FileOutputStream output;
-
-       public MapFragmentInputStream(InputStream mapInputStream, String fileName) {
-          super();
-           try {
-               output = new FileOutputStream(fileName);
-           }
-           catch (FileNotFoundException e) {}
-           input = mapInputStream;
-       }
-
-       public int read() throws IOException {
-           int b = input.read();
-           if (b!=-1) {
-               output.write(b);
-               output.flush();
-           }
-           return(b);
-       }
-    }
-//-----------------------------------------------------------------
 
     static class Loader implements Runnable {
 	Thread me = null;
@@ -146,11 +97,7 @@ public class MiniMap extends Widget {
 			try {
 			    in = getcached(grid);
 			} catch(FileNotFoundException e) {
-			    if (Config.ark_map_dump) {
-                    in = new MapFragmentInputStream(getreal(grid), Config.mapdir + "/" + grid + ".png");
-                } else {
-                    in = getreal(grid);
-                }
+			    in = getreal(grid);
 			}
 			BufferedImage img;
 			try {
@@ -264,7 +211,7 @@ public class MiniMap extends Widget {
 		if (mappingStartPoint == null) {
             mappingStartPoint = new Coord(cg);
         }
-        MCache.Grid grid;
+        Grid grid;
 		synchronized(ui.sess.glob.map.req) {
 		    synchronized(ui.sess.glob.map.grids) {
 			grid = ui.sess.glob.map.grids.get(cg);
@@ -295,8 +242,7 @@ public class MiniMap extends Widget {
               }
             }
         }
-        if (Config.ark_map_dump)
-            MapFragmentCoordsWriter.getInstance().writeMapFragmentCoords(grid.mnm, cg);
+
 		Tex tex = getgrid(grid.mnm);
 		if(tex == null)
 		    continue;

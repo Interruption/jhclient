@@ -28,7 +28,6 @@ package haven;
 
 import static haven.MCache.cmaps;
 import static haven.MCache.tilesz;
-import static haven.MiniMap.MapFragmentCoordsWriter;
 import static haven.ark_log.*;
 
 import haven.Resource.Tile;
@@ -49,6 +48,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public boolean player_moving = false; // arksu : движемся ли мы
 	public boolean mode_select_object = false; // нужно выбрать объект.
 	public Coord last_my_coord; // последние координаты моего чара. нужно для слежения
+	public Gob last_object = null; //последний найденный с помощью "find_map_object" объект 
 	
 	long time_to_start;
 	boolean started = false;
@@ -1188,42 +1188,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		}
 	}
 
-	public void targetarrow(GOut g) {
-		Gob oid = ark_bot.seo;
-		if(oid != null) {
-			if(oid.getc() != null) {
-				Coord oc = viewoffset(sz, mc);
-				Coord hsz = sz.div(2);	
-				double ca = -Coord.z.angle(hsz);
-				Gob pid = glob.oc.getgob(ark_bot.PlayerID);
-				//Gob oid = ark_bot.seo;
-				// Coord mco = pid.getc();
-				// Coord oco = oid.getc();
-				Coord pco = m2s(pid.getc()).add(oc);
-				Coord oco = m2s(oid.getc()).add(oc);
-				// double a = -hsz.angle(pco);
-				// double b = -hsz.angle(oco);
-				// Coord ac;
-				// if((a > ca) && (a < -ca)) {
-				// ac = new Coord(sz.x, hsz.y - (int)(Math.tan(a) * hsz.x));
-				// } else if((a > -ca) && (a < Math.PI + ca)) {
-				// ac = new Coord(hsz.x - (int)(Math.tan(a - Math.PI / 2) * hsz.y), 0);
-				// } else if((a > -Math.PI - ca) && (a < ca)) {
-				// ac = new Coord(hsz.x + (int)(Math.tan(a + Math.PI / 2) * hsz.y), sz.y);
-				// } else {
-				// ac = new Coord(0, hsz.y + (int)(Math.tan(a) * hsz.x));
-				// }
-				g.chcolor(Color.WHITE);
-				//Coord bc = ac.add(Coord.sc(a, -10));
-				// g.line(bc, bc.add(Coord.sc(a, -40)), 2);
-				// g.line(bc, bc.add(Coord.sc(a + Math.PI / 4, -10)), 2);
-				// g.line(bc, bc.add(Coord.sc(a - Math.PI / 4, -10)), 2);
-
-				g.line(oco, pco, 1);
-			}
-		}
-	}	
-	
 	public void drawarrows(GOut g) {
 		Coord oc = viewoffset(sz, mc);
 		Coord hsz = sz.div(2);
@@ -1343,13 +1307,35 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		checkmappos();   
 	}
 	
+	public void targetarrow(GOut g) {
+		Gob oid = last_object;
+		synchronized (glob.oc) {
+			for (Gob gob : glob.oc) {
+				if (gob == last_object) {
+					if((oid != null)&&(oid.getc() != null)) {
+						Gob pid = glob.oc.getgob(ark_bot.PlayerID);
+						Coord oc = viewoffset(sz, mc);
+						Coord pco = m2s(pid.getc()).add(oc);
+						Coord oco = m2s(oid.getc()).add(oc);
+						g.chcolor(255,255,255,150);
+						g.line(oco, pco, 1);
+					}
+				}
+			}
+		}
+	}
+
+		
 	public void draw(GOut g) {
 		try {
 			if((mask.amb = glob.amblight) == null || CustomConfig.hasNightVision)
 			mask.amb = new Color(0, 0, 0, 0);
 			drawmap(g);
 			drawarrows(g);
-			targetarrow(g);
+			if((ark_bot.seo != null)&&(ark_bot.seo.getc() != null)) {
+				last_object = ark_bot.seo;
+				targetarrow(g);
+			}
 			g.chcolor(Color.WHITE);
 			
 			if(Config.debug_flag) {
@@ -1385,7 +1371,6 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			// arksu: тут надо вызвать отрисовку лога
 			ark_log.Draw(g);
 		} catch(Loading l) {
-			MapFragmentCoordsWriter.getInstance().beginNewSession();
 			String text = "Loading...";
 			g.chcolor(Color.BLACK);
 			g.frect(Coord.z, sz);

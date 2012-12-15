@@ -15,6 +15,7 @@ import java.util.Random;
 
 import static haven.MCache.tilesz;
 import static haven.ark_log.LogPrint;
+//import static haven.MapView.*;
 
 public class ark_bot {
     // указатель на глобальную структуру
@@ -542,6 +543,7 @@ public class ark_bot {
     
     // поиск объекта по имени ресурса
     public static int find_object_by_name(String name, int radius) {
+		//LogPrint("Object name: " + name);
     	return find_map_object(name, radius*11, 0,0);
     }
     
@@ -573,6 +575,7 @@ public class ark_bot {
     
     // найти объект по оффсету от себя в заданном радиусе и с заданным именем. ВНИМАНИЕ!!! радиус в точках карты. отступ в тайлах
     public static int find_map_object(String name, int radius, int x, int y) {
+	//LogPrint("Object name2: " + name);
     	Coord my = MyCoord();
     	my = MapView.tilify(my);
     	Coord offset = new Coord(x,y).mul(tilesz);

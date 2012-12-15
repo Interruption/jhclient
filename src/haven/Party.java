@@ -26,8 +26,10 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.Color;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Party {
     Map<Integer, Member> memb = new TreeMap<Integer, Member>();
@@ -50,7 +52,7 @@ public class Party {
 	    return(glob.oc.getgob(gobid));
 	}
 
-    public Coord getc() {
+	public Coord getc() {
 	    Gob gob;
 	    if((gob = getgob()) != null)
 		return(gob.getc());
@@ -65,7 +67,7 @@ public class Party {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		while(true) {
 		    int id = msg.int32();
-		    if(id < 0)
+		    if((id == 0)||(id == -1))
 			break;
 		    ids.add(id);
 		}
