@@ -115,7 +115,7 @@ public void settip(String t){
         else
             return  "";
     }
-    // arksu: ��������� �� ���� 
+    // arksu: СЃСЉРµРґРѕР±РЅР°СЏ Р»Рё РІРµС‰СЊ 
     public boolean isEatable() {
         String s = GetResName();
         if (s.indexOf("gfx/invobjs/bread") >= 0) return true;
@@ -124,7 +124,7 @@ public void settip(String t){
         return false;
     }
     
-    // arksu �������� ���������� ����
+    // arksu РїРѕР»СѓС‡РёС‚СЊ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІРµС‰Рё
     public int coord_x() { return c.div(31).x; }
     public int coord_y() { return c.div(31).y; }
 

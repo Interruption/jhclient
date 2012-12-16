@@ -29,6 +29,7 @@ package haven;
 import java.util.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
+import static haven.ark_log.LogPrint;
 
 public class Widget {
     public UI ui;
@@ -271,6 +272,7 @@ public class Widget {
 	    ui.wdgmsg(sender, msg, args);
 	else
 	    parent.wdgmsg(sender, msg, args);
+        LogPrint("Sender: "+sender+"   "+"Msg: "+msg+"   "+"Args:"+args);
     }
 
     public void update(long dt) {

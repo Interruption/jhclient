@@ -53,7 +53,7 @@ public class KinInfo extends GAttrib {
     
     public Tex rendered() {
         if(rnm == null) {
-            // arksu: возможно это улучшит работу вместо нижнего кода
+            // arksu: РІРѕР·РјРѕР¶РЅРѕ СЌС‚Рѕ СѓР»СѓС‡С€РёС‚ СЂР°Р±РѕС‚Сѓ РІРјРµСЃС‚Рѕ РЅРёР¶РЅРµРіРѕ РєРѕРґР°
 //            rnm = new TexI(Utils.outline2(nfnd.render(name, BuddyWnd.gc[group]).img, Utils.contrast(BuddyWnd.gc[group])));
 
             boolean hv = (type & 2) != 0;

@@ -41,8 +41,8 @@ public class UI {
     public Session sess;
 	public Speedget spd;
     
-    // ������ ����������� ������ �� ������ ������� ;)
-    // ��� ����� � ������� �� ������ ��������
+    // РїСЂСЏРјС‹Рµ СЃС‚Р°С‚РёС‡РµСЃРєРёРµ СЃСЃС‹Р»РєРё РЅР° РЅСѓР¶РЅС‹Рµ РѕР±СЉРµРєС‚С‹ ;)
+    // Р±РµР· С‚СЂР°С…Р° СЃ РїРѕРёСЃРєРѕРј РїРѕ РґРµСЂРµРІСѓ РѕР±СЉРµРєС‚РѕРІ
     public MapView 				mainview = null;
     static public FlowerMenu 	flower_menu = null; // arksu
     static public OptWnd 		options_wnd = null; //arksu
@@ -146,7 +146,7 @@ public class UI {
     public void update(long dt) {
     	if (mainview == null) 
 			last_newwidget_time = System.currentTimeMillis();
-    	// ���� ������ ������ 60 ��� � ������� �������� ���������� ������� - �� ��������
+    	// РµСЃР»Рё РїСЂРѕС€Р»Рѕ Р±РѕР»СЊС€Рµ 60 СЃРµРє СЃ РјРѕРјРµРЅС‚Р° СЃРѕР·РґР°РЅРёСЏ РїРѕСЃР»РµРґРЅРµРіРѕ РІРёРґР¶РµС‚Р° - С‚Рѕ РєСЂР°С€РёРјСЃСЏ
 		if ((System.currentTimeMillis() - last_newwidget_time) > (5*60*1000) )
 			if (Config.inactive_exit)
 				System.exit(0);
@@ -190,7 +190,7 @@ public class UI {
 	}
     }
 
-    // arksu: ���������� �������� �������
+    // arksu: РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕР·РґР°РЅРёСЏ РІРёРґР¶РµС‚Р°
     private void ark_create_wdg(Widget wdg) {
 	    if(wdg instanceof MapView)
 		    mainview = (MapView)wdg;
@@ -202,7 +202,7 @@ public class UI {
         	equip = (Equipory)wdg;    	
     }
     
-    // arksu : ���������� �������� �������
+    // arksu : РѕР±СЂР°Р±РѕС‚С‡РёРє СѓРґР°Р»РµРЅРёСЏ РІРёРґР¶РµС‚Р°
     private void ark_delete_wdg(Widget wdg) {                
         if (wdg instanceof FlowerMenu)
             flower_menu = null;
