@@ -30,7 +30,7 @@ import java.util.*;
 import java.awt.Font;
 
 public class Makewindow extends HWindow {
-	public boolean is_ready = false; // arksu: РіРѕС‚РѕРІРѕ Р»Рё РѕРєРЅРѕ 
+	public boolean is_ready = false; // arksu: ������ �� ���� 
 	public String craft_name = "";
     Widget obtn, cbtn;
     List<Widget> inputs;

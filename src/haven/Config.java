@@ -56,11 +56,11 @@ public class Config {
 
     public static int ark_window_width = 800;
     public static int ark_window_height = 600;
-    public static boolean tracking = true; // РІРєР»СЋС‡РёС‚СЊ С‚СЂРµРєРёРЅРі РєСЂРёРјРёРЅР°Р» Р°РєС‚СЃ. С‡С‚РѕР±С‹ РїРѕРєР°Р·С‹РІР°Р»Рѕ СЃР»РµРґС‹. РІСЂСѓР±Р°РµС‚СЃСЏ РїСЂРё Р»РѕРіРёРЅРµ РµСЃР»Рё СЃС‚РѕРёС‚
-    public static boolean always_show_nicks = true; // РІСЃРµРіРґР° РїРѕРєР°Р·С‹РІР°С‚СЊ РЅРёРєРё РЅР°Рґ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
-    public static boolean show_map_grid = true; // РїРѕРєР°Р·С‹РІР°С‚СЊ СЃРµС‚РєСѓ РЅР° РєР°СЂС‚Рµ
-    public static boolean highlight_object_by_mouse = true; // РїРѕРґСЃРІРµС‡РёРІР°С‚СЊ РѕР±СЉРµРєС‚ РїРѕРґ РјС‹С€СЊСЋ
-    public static boolean highlight_hided_objects = true; // РїРѕРґСЃРІРµС‡РёРІР°С‚СЊ Р»Рё СЃРєСЂС‹С‚С‹Рµ РѕР±СЉРµРєС‚С‹
+    public static boolean tracking = true; // включить трекинг криминал актс. чтобы показывало следы. врубается при логине если стоит
+    public static boolean always_show_nicks = true; // всегда показывать ники над персонажами
+    public static boolean show_map_grid = true; // показывать сетку на карте
+    public static boolean highlight_object_by_mouse = true; // подсвечивать объект под мышью
+    public static boolean highlight_hided_objects = true; // подсвечивать ли скрытые объекты
     public static boolean assign_to_tile = false;
     public static String bot_name1;
     public static String bot_name2;
@@ -70,15 +70,15 @@ public class Config {
     public static boolean render_enable = true;
     
     // quick login
-    public static boolean quick_login = false; // Р±С‹СЃС‚СЂС‹Р№ Р»РѕРіРёРЅ РґРµС„РѕР»С‚ С‡Р°СЂРѕРј
-    public static boolean ark_state_activate_char = false; // СЃС‚Р°РґРёСЏ Р°С‚РєРёРІР°С†РёРё С‡Р°СЂР°
-    public static int ark_button_activate_char = 0; // РёРґ РєРЅРѕРїРєРё РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ РЅР°Р¶Р°С‚СЊ
-    public static String auto_start_script = ""; // РёРјСЏ СЃРєСЂРёРїС‚Р° Р·Р°РїСѓСЃРєР°РµРјРѕРіРѕ РїРѕСЃР»Рµ Р»РѕРіРёРЅР°
-    public static boolean keep_connect = false; // РїРѕРґРµСЂР¶РёРІР°С‚СЊ Р»Рё РїРѕРґРєР»СЋС‡РµРЅРёРµ. (СЂРµРєРѕРЅРЅРµРєС‚С‹)
+    public static boolean quick_login = false; // быстрый логин дефолт чаром
+    public static boolean ark_state_activate_char = false; // стадия аткивации чара
+    public static int ark_button_activate_char = 0; // ид кнопки которую надо нажать
+    public static String auto_start_script = ""; // имя скрипта запускаемого после логина
+    public static boolean keep_connect = false; // подерживать ли подключение. (реконнекты)
     
 //    public static String auth_server = "";
-    public static boolean FirstLogin = true; // РїРµСЂРІС‹Р№ Р»Рё Р·Р°РїСѓСЃРє РєР»РёРµРЅС‚Р°
-    public static boolean inactive_exit = false; // Р·Р°РєСЂС‹РІР°С‚СЊ РєР»РёРµРЅС‚ РїСЂРё РЅРµР°РєС‚РёРІРЅРѕСЃС‚Рё (РЅРµС‚ РЅРѕРІС‹С… РІРёРґР¶РµС‚РѕРІ) 
+    public static boolean FirstLogin = true; // первый ли запуск клиента
+    public static boolean inactive_exit = false; // закрывать клиент при неактивности (нет новых виджетов) 
 
     // arksu: from gilbertus
     public static boolean xray;
@@ -175,7 +175,7 @@ public class Config {
                 if (wdg instanceof Button) {
                     Button btn = (Button)wdg;
                     btn.click();
-                    // С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅРµ РЅР°РґРѕ РїРѕРґРґРµСЂР¶РёРІР°С‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёРµ
+                    // только если не надо поддерживать подключение
                     if (!keep_connect)
                     	Config.quick_login = false;
                 }

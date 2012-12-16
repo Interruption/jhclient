@@ -171,7 +171,7 @@ public class OptWnd extends Window {
 	    String dragcam = "\n\n$col[225,200,100,255]{You can drag and recenter with the middle mouse button.}";
 	    String fscam = "\n\n$col[225,200,100,255]{Should be used in full-screen mode.}";
 	    addinfo("orig",       "The Original",  "The camera centers where you left-click.", null);
-	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - Р“В  la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
+	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - à la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
 	    addinfo("border",     "Freestyle",     "You can move around freely within the larger area of the window; the camera only moves along to ensure the character does not reach the edge of the window. Boom chakalak!" + dragcam, null);
 	    addinfo("fixed",      "The Fixator",   "The camera is fixed, relative to your character." + dragcam, null);
 	    addinfo("kingsquest", "King's Quest",  "The camera is static until your character comes close enough to the edge of the screen, at which point the camera snaps around the edge.", null);

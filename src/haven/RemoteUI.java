@@ -87,7 +87,7 @@ public class RemoteUI implements UI.Receiver {
 		    	c = MainFrame.getCenterPoint().add(0,-100);
 		    }
             ui.newwidget(id, type, c, parent, args);
-            // arksu: РїСЂРёРјРµРЅСЏРµРј РіСЂСЏР·РЅС‹Р№ С…Р°Рє
+            // arksu: ��������� ������� ���
             Config.ParseNewWdg(id, type, args, c, parent);
 		    ark_log.LogPrint("create new widget, type="+type+" id="+id);
 		} else if(msg.type == Message.RMSG_WDGMSG) {

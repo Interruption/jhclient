@@ -25,7 +25,6 @@
  */
 
 package haven;
-import static haven.ark_log.LogPrint;
 
 public class Astronomy {
     double dt, mp, yt;
@@ -51,6 +50,5 @@ public class Astronomy {
 	this.mp = mp;
 	this.yt = yt;
 	this.night = night;
-	LogPrint("Astronomy change: DT="+dt+" MP="+mp+" YT="+yt+" Night="+night);
     }
 }

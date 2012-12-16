@@ -1,7 +1,7 @@
 /*
 *  This file is part of the Haven & Hearth game client.
 *  Copyright (C) 2009 Fredrik Tolf <fredrik@dolda2000.com>, and
-*                     BjС†rn Johannessen <johannessen.bjorn@gmail.com>
+*                     Bjцrn Johannessen <johannessen.bjorn@gmail.com>
 *
 *  Redistribution and/or modification of this file is subject to the
 *  terms of the GNU Lesser General Public License, version 3, as
@@ -43,12 +43,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	static Map<String, Class<? extends Camera>> camtypes = new HashMap<String, Class<? extends Camera>>();
 	public Coord mc, mousepos, pmousepos, mouse_tile;
 	// arksu ------------------------------------------------------------------
-	public boolean show_selected_tile = false; // РїРѕРєР°Р·С‹РІР°С‚СЊ С‚Р°Р№Р» РїРѕРґ РјС‹С€СЊСЋ
-	public Gob gob_at_mouse = null; // arksu: РѕР±СЉРµРєС‚ РїРѕРґ РјС‹С€СЊСЋ
-	public boolean player_moving = false; // arksu : РґРІРёР¶РµРјСЃСЏ Р»Рё РјС‹
-	public boolean mode_select_object = false; // РЅСѓР¶РЅРѕ РІС‹Р±СЂР°С‚СЊ РѕР±СЉРµРєС‚.
-	public Coord last_my_coord; // РїРѕСЃР»РµРґРЅРёРµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РјРѕРµРіРѕ С‡Р°СЂР°. РЅСѓР¶РЅРѕ РґР»СЏ СЃР»РµР¶РµРЅРёСЏ
-	public Gob last_object = null; //РїРѕСЃР»РµРґРЅРёР№ РЅР°Р№РґРµРЅРЅС‹Р№ СЃ РїРѕРјРѕС‰СЊСЋ "find_map_object" РѕР±СЉРµРєС‚ 
+	public boolean show_selected_tile = false; // показывать тайл под мышью
+	public Gob gob_at_mouse = null; // arksu: объект под мышью
+	public boolean player_moving = false; // arksu : движемся ли мы
+	public boolean mode_select_object = false; // нужно выбрать объект.
+	public Coord last_my_coord; // последние координаты моего чара. нужно для слежения
+	public Gob last_object = null; //последний найденный с помощью "find_map_object" объект 
 	
 	long time_to_start;
 	boolean started = false;
@@ -547,7 +547,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public boolean mousedown(Coord c, int button) {
 		setfocus(this);
 		Gob hit = gobatpos(c);
-		// arksu: РµСЃР»Рё РјС‹ РІ СЂРµР¶РёРјРµ РІС‹Р±РѕСЂР° РѕР±СЉРµРєС‚Р° - РІРѕР·РІСЂР°С‰Р°РµРј РµРіРѕ Рё РІС‹С…РѕРґРёРј
+		// arksu: если мы в режиме выбора объекта - возвращаем его и выходим
 		if (mode_select_object) {
 			gob_at_mouse = hit;
 			mode_select_object = false;
@@ -613,7 +613,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			boolean plontile = this.plontile ^ ui.modshift;
 			gob.move(plontile?tilify(mc):mc);
 		}
-		//arksu: РІС‹С‡РёСЃР»СЏРµРј РѕР±СЉРµРєС‚ РїРѕРґ РјС‹С€СЊСЋ
+		//arksu: вычисляем объект под мышью
 		if(pmousepos != null)
 		gob_at_mouse = gobatpos(pmousepos);
 		else
@@ -868,12 +868,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		return(obsc);
 	}
 	
-	// arksu: С‚СѓС‚ РґРѕР±Р°РІР»СЏРµРј СЃРІРѕРё С„РёС€РєРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Р±РѕС‚РѕРј
-	// РґР»СЏ РЅР°С‡Р°Р»Р° РґРІРёРіР°С‚СЊСЃСЏ Рє СѓРєР°Р·Р°РЅРЅРѕРјСѓ РѕР±СЉРµРєС‚Сѓ СЃ РѕС„С„СЃРµС‚РѕРј
+	// arksu: тут добавляем свои фишки для работы с ботом
+	// для начала двигаться к указанному объекту с оффсетом
 	public void map_move(int obj_id, Coord offset) {
 		Coord oc, sc;
-		int btn = 1; // Р»РµРІРѕР№ РєРЅРѕРїРєРѕР№ С‰РµР»РєР°РµРј
-		int modflags = 0; // РЅРёРєР°РєРёС… РєР»Р°РІРёС€ РЅРµ РґРµСЂР¶РёРј
+		int btn = 1; // левой кнопкой щелкаем
+		int modflags = 0; // никаких клавиш не держим
 		Gob gob;
 		synchronized(glob.oc) {
 			gob = glob.oc.getgob(obj_id);
@@ -890,8 +890,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	public void map_move_step(int x, int y) {
 		Gob pgob;
-		int btn = 1; // Р»РµРІРѕР№ РєРЅРѕРїРєРѕР№ С‰РµР»РєР°РµРј
-		int modflags = 0; // РЅРёРєР°РєРёС… РєР»Р°РІРёС€ РЅРµ РґРµСЂР¶РёРј
+		int btn = 1; // левой кнопкой щелкаем
+		int modflags = 0; // никаких клавиш не держим
 		synchronized(glob.oc) {
 			pgob = glob.oc.getgob(playergob);
 		}
@@ -917,7 +917,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		}
 	}
 	
-	// РєР»РёРє РїРѕ РєР°СЂС‚Рµ СЃ РѕР±СЉРµРєС‚РѕРј. РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ. 
+	// клик по карте с объектом. координаты относительные. 
 	public void map_click(int x, int y, int btn, int mod) {
 		Gob pgob;
 		synchronized(glob.oc) {
@@ -930,13 +930,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		LogPrint("send map interact click: "+mc.toString()+" modflags="+mod);
 		wdgmsg("click",ark_bot.GetCenterScreenCoord(), mc, btn, mod);    	
 	}
-	// РєР»РёРє СЃ Р°Р±СЃРѕР»СЋС‚РЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
+	// клик с абсолютными координатами
 	public void map_abs_click(int x, int y, int btn, int mod) {
 		Coord mc = new Coord(x,y);
 		LogPrint("send map interact click: "+mc.toString()+" modflags="+mod);
 		wdgmsg("click",ark_bot.GetCenterScreenCoord(), mc, btn, mod);    	    	
 	}
-	// РєР»РёРє РІР·Р°РёРјРѕРґРµР№СЃС‚РІРёСЏ РїРѕ РєР°СЂС‚Рµ СЃ РѕР±СЉРµРєС‚РѕРј. РєРѕРѕСЂРґРёРЅР°С‚С‹ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Рµ. 
+	// клик взаимодействия по карте с объектом. координаты относительные. 
 	public void map_interact_click(int x, int y, int mod) {
 		Gob pgob;
 		synchronized(glob.oc) {
@@ -970,7 +970,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		LogPrint("send map interact click: "+mc.toString()+" modflags="+mod);
 		wdgmsg("itemact",ark_bot.GetCenterScreenCoord(), mc, mod, id, mc);    	
 	}    
-	// РґСЂРѕРїРЅСѓС‚СЊ РІРµС‰СЊ РєРѕС‚РѕСЂСѓСЋ РґРµСЂР¶РёРј РІ СЂСѓРєР°С…
+	// дропнуть вещь которую держим в руках
 	public void drop_thing(int mod) {
 		wdgmsg("drop", mod);
 	}
@@ -1006,11 +1006,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				for(i = 0; i < 2; i++) {
 					ctc = tc.add(new Coord(x + y, -x + y + i));
 					sc = m2s(ctc.mul(tilesz)).add(oc);
-					// arksu: С‚СѓС‚ РІС‹РІРѕРґРёРј СЃРµС‚РєСѓ РЅР° РєР°СЂС‚Рµ РµСЃР»Рё РЅР°РґРѕ
+					// arksu: тут выводим сетку на карте если надо
 					if (Config.show_map_grid)
 					draw_tile_grid(g, ctc, sc);
 					drawol(g, ctc, sc);
-					// arksu : РІС‹РІРѕРґРёРј С‚Р°Р№Р» РїРѕРґ РјС‹С€СЊСЋ
+					// arksu : выводим тайл под мышью
 					if (mousepos != null && (show_selected_tile || Config.assign_to_tile))
 					if (mp.y == ctc.y && mp.x == ctc.x)
 					draw_tile_select(g, ctc, sc);
@@ -1220,7 +1220,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				g.line(bc, bc.add(Coord.sc(a + Math.PI / 4, -10)), 2);
 				g.line(bc, bc.add(Coord.sc(a - Math.PI / 4, -10)), 2);
 				//            g.chcolor(Color.WHITE);
-				//            g.text( "my: "+ my_coord.toString()+" member: "+mc.toString()+" delta: "Р№.toString(), new Coord(10, ay) );
+				//            g.text( "my: "+ my_coord.toString()+" member: "+mc.toString()+" delta: "й.toString(), new Coord(10, ay) );
 				//            ay = ay + 15;
 
 			}
@@ -1368,7 +1368,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				}
 				
 			}
-			// arksu: С‚СѓС‚ РЅР°РґРѕ РІС‹Р·РІР°С‚СЊ РѕС‚СЂРёСЃРѕРІРєСѓ Р»РѕРіР°
+			// arksu: тут надо вызвать отрисовку лога
 			ark_log.Draw(g);
 		} catch(Loading l) {
 			String text = "Loading...";

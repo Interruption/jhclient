@@ -76,7 +76,7 @@ public class Gob implements Sprite.Owner {
 	public void ch(T n);
     }
 
-    // arksu: РїРѕР»СѓС‡РёС‚СЊ РёРјСЏ СЂРµСЃСѓСЂСЃР°
+    // arksu: �������� ��� �������
     public String GetResName() {
         String s = "step 1";
         Drawable d = getattr(Drawable.class);
@@ -103,7 +103,7 @@ public class Gob implements Sprite.Owner {
         return s;
     }
     
-    // РїРѕР»СѓС‡РёС‚СЊ Р±Р°Р№С‚ РёР· РјРµСЃСЃР°РіРё
+    // �������� ���� �� �������
     public byte GetBlob(int index) {
         Drawable d = getattr(Drawable.class);
         ResDrawable dw = getattr(ResDrawable.class);

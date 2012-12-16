@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Haven & Hearth game client.
  *  Copyright (C) 2009 Fredrik Tolf <fredrik@dolda2000.com>, and
- *                     BjР вЂњР’В¶rn Johannessen <johannessen.bjorn@gmail.com>
+ *                     BjГ¶rn Johannessen <johannessen.bjorn@gmail.com>
  *
  *  Redistribution and/or modification of this file is subject to the
  *  terms of the GNU Lesser General Public License, version 3, as
@@ -314,7 +314,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
     
     public void draw(GOut g) {
-    // arksu: РІ РїРµСЂРІС‹Р№ Р·Р°РїСѓСЃРє Р»РёРЅРєСѓРµРј С…РѕС‚Р±Р°СЂ
+    // arksu: � ������ ������ ������� ������
     if (need_link && belt != null) {
         LinkCurrentHotbar();
         need_link = false;
