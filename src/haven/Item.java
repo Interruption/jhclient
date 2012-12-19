@@ -110,12 +110,13 @@ public void settip(String t){
 
     // arksu:
     public String GetResName() {
-        if (res.get() != null)
-            return res.get().name;
-        else
+        if (res.get() != null) {
+			return res.get().name;
+		} else {
             return  "";
+		}
     }
-    // arksu: ñúåäîáíàÿ ëè âåùü 
+    // arksu: ÑÑŠÐµÐ´Ð¾Ð±Ð½Ð°Ñ Ð»Ð¸ Ð²ÐµÑ‰ÑŒ 
     public boolean isEatable() {
         String s = GetResName();
         if (s.indexOf("gfx/invobjs/bread") >= 0) return true;
@@ -124,7 +125,7 @@ public void settip(String t){
         return false;
     }
     
-    // arksu ïîëó÷èòü êîîðäèíàòû âåùè
+    // arksu Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð¾Ñ€Ð´Ð¸Ð½Ð°Ñ‚Ñ‹ Ð²ÐµÑ‰Ð¸
     public int coord_x() { return c.div(31).x; }
     public int coord_y() { return c.div(31).y; }
 
@@ -151,14 +152,24 @@ public void settip(String t){
 			g.aimage(getqtex(num), Coord.z, 0, 0);
 	    }
 	    if(meter > 0) {
-			double a = ((double)meter) / 100.0;
-			int r = (int) ((1-a)*255);
-			int gr = (int) (a*255);
-			int b = 0;
-			g.chcolor(255, 255, 255, 64);
-			//g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
-			g.frect(new Coord(sz.x-5,(int) ((1-a)*sz.y)), new Coord(5,(int) (a*sz.y)));
-			g.chcolor();
+			//double a = ((double)meter) / 100.0;
+			int cell = (int) (sz.y / 30);
+			if (cell > 0) {
+				int y1 = ((cell-1)+(cell*30));
+				double a = ((double) y1 / 100);	
+				int y2 = (int) ((a*(double)meter)*(-1));
+				int r = (int) ((1-a)*255);
+				int gr = (int) (a*255);
+				int b = 0;
+				g.chcolor(0, 255, 0, 250);
+				//g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
+				ark_log.LogPrint("X=" + sz.x + "  Y=" + sz.y);
+				ark_log.LogPrint("A=" + a + "  METER" + meter);
+				ark_log.LogPrint("Y1=" + y1 + "  Y2=" + y2);
+				//g.frect(new Coord(sz.x-4, yr1), new Coord(3, yr2));
+				g.frect(new Coord(sz.x-4, y1), new Coord(3, y2));
+				g.chcolor();
+			}
 	    }
 		int tq = (q2>0)?q2:q;
 	    if(Config.showq && (tq > 0)){
@@ -243,48 +254,55 @@ public void settip(String t){
     Text shorttip = null, longtip = null;
 	public double qmult;
 	private String FEP = null;
+	
     public Object tooltip(Coord c, boolean again) {
 	long now = System.currentTimeMillis();
 	if(!again)
 	    hoverstart = now;
-	Resource res = this.res.get();
-	Resource.Pagina pg = (res!=null)?res.layer(Resource.pagina):null;
-	if(((now - hoverstart) < 500)||(pg == null)) {
+	//Resource res = this.res.get();
+	//Resource.Pagina pg = (res!=null)?res.layer(Resource.pagina):null;
+	
+	if((now - hoverstart) < 500) {
 	    if(shorttip == null) {
-		String tt = shorttip();
-		if(tt != null) {
-		    tt = RichText.Parser.quote(tt);
-		    if(meter > 0) {
-			tt = tt + " (" + meter + "%)";
-		    }
-			if(FEP != null){
-			tt += FEP;
-		    }
-		    if(curioStr != null){
-			tt += curioStr;
-		    }
-		    shorttip = RichText.render(tt, 200);
-		}
+			String tt = shorttip();
+			if(tt != null) {
+				tt = RichText.Parser.quote(tt);
+				if(meter > 0) {
+					tt = tt + " (" + meter + "%)";
+				}
+				if(FEP != null){
+					tt += FEP;
+				}
+				if(curioStr != null){
+					tt += curioStr;
+				}
+				shorttip = RichText.render(tt, 200);
+			}
 	    }
 	    return(shorttip);
 	} else {
-	    if((longtip == null) && (res != null)) {
-		String tip = shorttip();
-		if(tip == null)
-		    return(null);
-		String tt = RichText.Parser.quote(tip);
-		if(meter > 0) {
-		    tt = tt + " (" + meter + "%)";
-		}
-		if(FEP != null){
-		    tt += FEP;
-		}
-		if(curioStr != null){
-		    tt += curioStr;
-		}
-		if(pg != null)
-		    tt += "\n\n" + pg.text;
-		longtip = RichText.render(tt, 200);
+		Resource res1 = this.res.get();
+	    if((longtip == null) && (res1 != null)) {
+			Resource.Pagina pg = res1.layer(Resource.pagina);
+			ark_log.LogPrint("res = " + res1.layer(Resource.imgc).toString() + " PG = " + pg);
+			String tip = shorttip();
+			if(tip == null)
+				return(null);
+			String tt = RichText.Parser.quote(tip);
+			if(meter > 0) {
+				tt = tt + " (" + meter + "%)";
+			}
+			if(FEP != null){
+				tt += FEP;
+			}
+			if(curioStr != null){
+				tt += curioStr;
+			}
+			if(pg != null) {
+				tt += "\n\n" + pg.text;
+				ark_log.LogPrint(" Longtip, " + pg.text);
+			}
+			longtip = RichText.render(tt, 200);
 	    }
 	    return(longtip);
 	}
