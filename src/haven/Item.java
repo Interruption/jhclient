@@ -152,7 +152,6 @@ public void settip(String t){
 			g.aimage(getqtex(num), Coord.z, 0, 0);
 	    }
 	    if(meter > 0) {
-			//double a = ((double)meter) / 100.0;
 			int cell = (int) (sz.y / 30);
 			if (cell > 0) {
 				int y1 = ((cell-1)+(cell*30));
@@ -163,10 +162,6 @@ public void settip(String t){
 				int b = 0;
 				g.chcolor(0, 255, 0, 250);
 				//g.fellipse(sz.div(2), new Coord(15, 15), 90, (int)(90 + (360 * a)));
-				ark_log.LogPrint("X=" + sz.x + "  Y=" + sz.y);
-				ark_log.LogPrint("A=" + a + "  METER" + meter);
-				ark_log.LogPrint("Y1=" + y1 + "  Y2=" + y2);
-				//g.frect(new Coord(sz.x-4, yr1), new Coord(3, yr2));
 				g.frect(new Coord(sz.x-4, y1), new Coord(3, y2));
 				g.chcolor();
 			}
