@@ -47,6 +47,18 @@ public class OptWnd extends Window {
             {"Wood houses F8",     "gfx/arch/cabin"},
             {"Plants F9",          "gfx/terobjs/plants"}
     };
+	String[][] cbL_kritter = {
+            {"Troll",				"gfx/kritter/troll"},
+            {"Bear",				"gfx/kritter/bear"},
+            {"Boar",				"gfx/kritter/boar"},
+            {"Deer",				"gfx/kritter/deer"},
+            {"Aurochs",				"gfx/kritter/aurochs"},
+            {"Mufflon",				"gfx/kritter/mufflon"},
+            {"Hen",					"gfx/kritter/hen"},
+            {"Silkmoth",			"gfx/kritter/moth"},
+            {"Hare",				"gfx/kritter/hare"},
+			{"Frog",				"gfx/kritter/frog"},
+    };
     private List<CheckBox> hide_checkboxes = new ArrayList<CheckBox>();
     private Comparator<String> camcomp = new Comparator<String>() {
 
@@ -105,8 +117,8 @@ public class OptWnd extends Window {
 		    public void changed(int btn, String lbl) {
 			Utils.setpref("editmode", lbl.toLowerCase());
 		    }};
-	    editmode.add("Emacs", new Coord(10, 25));
-	    editmode.add("PC",    new Coord(10, 50));
+	    editmode.add("Emacs", new Coord(10, 30));
+	    editmode.add("PC",    new Coord(10, 60));
 	    if(Utils.getpref("editmode", "pc").equals("emacs")) editmode.check("Emacs");
 	    else                                                editmode.check("PC");
 
@@ -145,14 +157,14 @@ public class OptWnd extends Window {
 		}};	
         chk.a = Config.highlight_hided_objects;
         
-        chk = new CheckBox(new Coord(10, 280), tab, "arksu map dumper (need restart)") {
-    		public void changed(boolean val) {
-    		    Config.ark_map_dump = val;
-                Config.saveOptions();
-    		}};
-        chk.a = Config.ark_map_dump;
+//        chk = new CheckBox(new Coord(10, 310), tab, "arksu map dumper (need restart)") {
+//    		public void changed(boolean val) {
+//    		    Config.ark_map_dump = val;
+//                Config.saveOptions();
+//    		}};
+//        chk.a = Config.ark_map_dump;
         
-        chk = new CheckBox(new Coord(10, 310), tab, "Gilbertus map dumper (need restart)") {
+        chk = new CheckBox(new Coord(10, 280), tab, "Gilbertus map dumper (need restart)") {
     		public void changed(boolean val) {
     		    Config.gilbertus_map_dump = val;
                 Config.saveOptions();
@@ -163,7 +175,7 @@ public class OptWnd extends Window {
 
 	{ /* CAMERA TAB */
 	    curcam = Utils.getpref("defcam", "border");
-	    tab = body.new Tab(new Coord(70, 0), 60, "Camera");
+	    tab = body.new Tab(new Coord(65, 0), 60, "Camera");
 
 	    new Label(new Coord(10, 40), tab, "Camera type:");
 	    final RichTextBox caminfo = new RichTextBox(new Coord(180, 70), new Coord(210, 180), tab, "", foundry);
@@ -246,14 +258,14 @@ public class OptWnd extends Window {
 	    for(String camtype : MapView.camtypes.keySet())
 		clist.add(caminfomap.containsKey(camtype) ? caminfomap.get(camtype).name : camtype);
 	    Collections.sort(clist, camcomp);
-	    int y = 25;
+	    int y = 35;
 	    for(String camname : clist)
 		cameras.add(camname, new Coord(10, y += 25));
 	    cameras.check(caminfomap.containsKey(curcam) ? caminfomap.get(curcam).name : curcam);
 	}
 
 	{ /* AUDIO TAB */
-	    tab = body.new Tab(new Coord(140, 0), 60, "Audio");
+	    tab = body.new Tab(new Coord(130, 0), 60, "Audio");
 
 	    new Label(new Coord(10, 40), tab, "Sound volume:");
 	    new Frame(new Coord(10, 65), new Coord(20, 206), tab);
@@ -275,9 +287,28 @@ public class OptWnd extends Window {
 		}};
     }
 
+//	{ /* Target line object */
+//	    tab = body.new Tab(new Coord(280, 0), 30, "LTO");
+//        int y = 0;
+//        for (final String[] checkbox : cbL_kritter) {
+//            CheckBox chkbox = new CheckBox(new Coord(10, y += 29), tab, checkbox[0]) {
+//
+//                public void changed(boolean val) {
+//                    if (val) {
+//						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
+//                    } else {
+//                        ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
+//                    }
+//                }
+//            };
+//            hide_checkboxes.add(chkbox);
+//        }
+//        UpdateHideCheckBoxes();
+//
+//    }
     //------------------------------------------------------------------------------------------------------------------
 	{ /* HIDE OBJECTS TAB */
-	    tab = body.new Tab(new Coord(210, 0), 80, "Hide Objects");
+	    tab = body.new Tab(new Coord(195, 0), 80, "Hide Objects");
 
         int y = 0;
         for (final String[] checkbox : checkboxesList) {
