@@ -15,51 +15,51 @@ import java.util.Random;
 
 import static haven.MCache.tilesz;
 import static haven.ark_log.LogPrint;
-//import static haven.MapView.*;
+
 
 public class ark_bot {
-    // указатель на глобальную структуру
+    // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РіР»РѕР±Р°Р»СЊРЅСѓСЋ СЃС‚СЂСѓРєС‚СѓСЂСѓ
 	public static Glob glob = null;
     public static UI ui;
-    // имя курсора
+    // РёРјСЏ РєСѓСЂСЃРѕСЂР°
     public static String cursor_name = "";
-    // карта
+    // РєР°СЂС‚Р°
     public static MapView mapview;
-    // меню действий
+    // РјРµРЅСЋ РґРµР№СЃС‚РІРёР№
     public static MenuGrid menugrid = null;
-	// искомый объект
+	// РёСЃРєРѕРјС‹Р№ РѕР±СЉРµРєС‚
 	public static Gob seo = null; //test7
-    // ид моего игрока
+    // РёРґ РјРѕРµРіРѕ РёРіСЂРѕРєР°
     public static int PlayerID = -1;
-    // стамина
+    // СЃС‚Р°РјРёРЅР°
     public static int Stamina = 0;
-    // хп
+    // С…Рї
     public static int HP = 0;
-    // голод
+    // РіРѕР»РѕРґ
     public static int Hungry = 0; 
 
-    // есть ли песочные часы
+    // РµСЃС‚СЊ Р»Рё РїРµСЃРѕС‡РЅС‹Рµ С‡Р°СЃС‹
     public static boolean HourGlass = false; 
-    // различные константы
+    // СЂР°Р·Р»РёС‡РЅС‹Рµ РєРѕРЅСЃС‚Р°РЅС‚С‹
     public static int MB_LEFT = 1;
     public static int MB_RIGHT = 3;
 
-    // виджет текущего инвентаря с которым работаем
+    // РІРёРґР¶РµС‚ С‚РµРєСѓС‰РµРіРѕ РёРЅРІРµРЅС‚Р°СЂСЏ СЃ РєРѕС‚РѕСЂС‹Рј СЂР°Р±РѕС‚Р°РµРј
     public static Inventory CurrentInventory = null;
-    // текущий список итемов
+    // С‚РµРєСѓС‰РёР№ СЃРїРёСЃРѕРє РёС‚РµРјРѕРІ
     public static List<Item> inventory_list = null;
-    // текущая позиция в списке итемов
+    // С‚РµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ СЃРїРёСЃРєРµ РёС‚РµРјРѕРІ
     public static int current_item_index = 0;
-    // индекс в эквипе для получения вещи
+    // РёРЅРґРµРєСЃ РІ СЌРєРІРёРїРµ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РІРµС‰Рё
     public static int current_equip_index = 0;
-    // режим получения вещи
-    public static int current_item_mode = 0; // 0 - по индексу в инвентаре, 1 - драг вещь, 2 - эквип
-    // текущий индекс в бафф листе
+    // СЂРµР¶РёРј РїРѕР»СѓС‡РµРЅРёСЏ РІРµС‰Рё
+    public static int current_item_mode = 0; // 0 - РїРѕ РёРЅРґРµРєСЃСѓ РІ РёРЅРІРµРЅС‚Р°СЂРµ, 1 - РґСЂР°Рі РІРµС‰СЊ, 2 - СЌРєРІРёРї
+    // С‚РµРєСѓС‰РёР№ РёРЅРґРµРєСЃ РІ Р±Р°С„С„ Р»РёСЃС‚Рµ
     public static int current_buff_index = -1;
     
     public static long LastTick;
 
-    // обработка нажатий клавиатуры (именно нажатий кнопок. не отпускания)
+    // РѕР±СЂР°Р±РѕС‚РєР° РЅР°Р¶Р°С‚РёР№ РєР»Р°РІРёР°С‚СѓСЂС‹ (РёРјРµРЅРЅРѕ РЅР°Р¶Р°С‚РёР№ РєРЅРѕРїРѕРє. РЅРµ РѕС‚РїСѓСЃРєР°РЅРёСЏ)
     static boolean KeyEvent(char key, int keycode, boolean isCtrl, boolean isAlt, boolean isShift) {
         // F1
     	if (keycode == KeyEvent.VK_F1) {
@@ -143,7 +143,7 @@ public class ark_bot {
     	Config.render_enable = (val == 1);
     }
     
-    // послать действие на сервер из меню действий внизу справа
+    // РїРѕСЃР»Р°С‚СЊ РґРµР№СЃС‚РІРёРµ РЅР° СЃРµСЂРІРµСЂ РёР· РјРµРЅСЋ РґРµР№СЃС‚РІРёР№ РІРЅРёР·Сѓ СЃРїСЂР°РІР°
     public static void SendAction(String act_name) {
         if (menugrid != null) {
         	if (act_name.equals("laystone")) menugrid.wdgmsg("act", "stoneroad", "stone");
@@ -151,14 +151,14 @@ public class ark_bot {
         }
     }
     
-    // послать действие на сервер из меню действий внизу справа
+    // РїРѕСЃР»Р°С‚СЊ РґРµР№СЃС‚РІРёРµ РЅР° СЃРµСЂРІРµСЂ РёР· РјРµРЅСЋ РґРµР№СЃС‚РІРёР№ РІРЅРёР·Сѓ СЃРїСЂР°РІР°
     public static void SendAction(String act_name, String act_name2) {
         if (menugrid != null) {
         	menugrid.wdgmsg("act", act_name, act_name2);
         }
     }
     
-    // узнать есть ли вещь в руках
+    // СѓР·РЅР°С‚СЊ РµСЃС‚СЊ Р»Рё РІРµС‰СЊ РІ СЂСѓРєР°С…
     public static boolean HaveDragItem() {
     	for (Widget wdg = ui.root.child; wdg != null; wdg = wdg.next) {
     		if ((wdg instanceof Item) && ( ((Item)wdg).dm) ) return true; 
@@ -168,7 +168,7 @@ public class ark_bot {
     
 //----------------------------------------------------------------------------------------------------------------------
     
-    // дропнуть вещь которую держим в указанные координаты в инвентарь. координаты с 0
+    // РґСЂРѕРїРЅСѓС‚СЊ РІРµС‰СЊ РєРѕС‚РѕСЂСѓСЋ РґРµСЂР¶РёРј РІ СѓРєР°Р·Р°РЅРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РІ РёРЅРІРµРЅС‚Р°СЂСЊ. РєРѕРѕСЂРґРёРЅР°С‚С‹ СЃ 0
     public static void DropDragItem(Coord c) {
         if (!isInventoryOpen()) return;
         GetInventory().wdgmsg("drop", c);
@@ -176,7 +176,7 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
        
-    // получить список вещей в инвентаре
+    // РїРѕР»СѓС‡РёС‚СЊ СЃРїРёСЃРѕРє РІРµС‰РµР№ РІ РёРЅРІРµРЅС‚Р°СЂРµ
     public static List<Item> GetInventoryItems() {
         if (!isInventoryOpen()) return null;
         List<Item> list = new ArrayList<Item>();
@@ -188,7 +188,7 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // получить виджет инвентаря
+    // РїРѕР»СѓС‡РёС‚СЊ РІРёРґР¶РµС‚ РёРЅРІРµРЅС‚Р°СЂСЏ
     public static Widget GetInventoryWdg() {
         Widget root = ui.root;
         for (Widget wdg = root.child; wdg != null; wdg = wdg.next) {
@@ -203,7 +203,7 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // получить сам инвентарь
+    // РїРѕР»СѓС‡РёС‚СЊ СЃР°Рј РёРЅРІРµРЅС‚Р°СЂСЊ
     public static Inventory GetInventory() {
         if (isInventoryOpen())
             return (Inventory)GetInventoryWdg();
@@ -213,14 +213,14 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // открыт ли инвентарь на экране
+    // РѕС‚РєСЂС‹С‚ Р»Рё РёРЅРІРµРЅС‚Р°СЂСЊ РЅР° СЌРєСЂР°РЅРµ
     public static boolean isInventoryOpen() {
         return (GetInventoryWdg() != null);
     }
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // послать клик взаимодейстия на карте (просто по земле) с указанными координатами
+    // РїРѕСЃР»Р°С‚СЊ РєР»РёРє РІР·Р°РёРјРѕРґРµР№СЃС‚РёСЏ РЅР° РєР°СЂС‚Рµ (РїСЂРѕСЃС‚Рѕ РїРѕ Р·РµРјР»Рµ) СЃ СѓРєР°Р·Р°РЅРЅС‹РјРё РєРѕРѕСЂРґРёРЅР°С‚Р°РјРё
     public static void DoInteractClick(Coord mc, int modflags) {
         if (mapview != null) {
             LogPrint("send map interact click: "+mc.toString()+" modflags="+modflags);
@@ -230,7 +230,7 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // послать клик по карте на сервер
+    // РїРѕСЃР»Р°С‚СЊ РєР»РёРє РїРѕ РєР°СЂС‚Рµ РЅР° СЃРµСЂРІРµСЂ
     public static void DoClick(Coord mc, int btn, int modflags) {
         if (mapview != null) {
             LogPrint("send map click: "+mc.toString()+" btn="+btn+" modflags="+modflags);
@@ -240,7 +240,7 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // послать клик по объекту
+    // РїРѕСЃР»Р°С‚СЊ РєР»РёРє РїРѕ РѕР±СЉРµРєС‚Сѓ
     public static void DoClick(int obj_id, int btn, int modflags) {
         Coord sc, sz, oc;
         Gob o = glob.oc.getgob(obj_id);
@@ -258,14 +258,14 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // корректный ли указатель на игрока
+    // РєРѕСЂСЂРµРєС‚РЅС‹Р№ Р»Рё СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РёРіСЂРѕРєР°
     public static boolean isPlayerCorrect() {
         return ( (PlayerID >= 0) && ((glob.oc.getgob(PlayerID)) != null) );
     }
 
 //----------------------------------------------------------------------------------------------------------------------
 
-    // сказать пользователю выбрать объект мышью
+    // СЃРєР°Р·Р°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ РІС‹Р±СЂР°С‚СЊ РѕР±СЉРµРєС‚ РјС‹С€СЊСЋ
     public static int input_get_object(String msg) {
     	if (mapview == null) return 0;
     	SlenPrint(msg);
@@ -285,7 +285,7 @@ public class ark_bot {
     }
 //----------------------------------------------------------------------------------------------------------------------
          
-    // получить мои координаты
+    // РїРѕР»СѓС‡РёС‚СЊ РјРѕРё РєРѕРѕСЂРґРёРЅР°С‚С‹
     public static Coord MyCoord() {
         Gob pl;
         if ( ((pl = glob.oc.getgob(PlayerID)) != null) ) {
@@ -304,21 +304,21 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // есть ли на экране контекстное меню действий
+    // РµСЃС‚СЊ Р»Рё РЅР° СЌРєСЂР°РЅРµ РєРѕРЅС‚РµРєСЃС‚РЅРѕРµ РјРµРЅСЋ РґРµР№СЃС‚РІРёР№
     public static boolean HaveFlowerMenu() {
         return (UI.flower_menu != null);
     }
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // готово ли контекстное меню к приему команды
+    // РіРѕС‚РѕРІРѕ Р»Рё РєРѕРЅС‚РµРєСЃС‚РЅРѕРµ РјРµРЅСЋ Рє РїСЂРёРµРјСѓ РєРѕРјР°РЅРґС‹
     public static boolean isFlowerMenuReady() {
         return (ui.flower_menu != null);// && (ui.flower_menu.isReady());
     }
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // выбрать пункт в контекстном меню действий
+    // РІС‹Р±СЂР°С‚СЊ РїСѓРЅРєС‚ РІ РєРѕРЅС‚РµРєСЃС‚РЅРѕРј РјРµРЅСЋ РґРµР№СЃС‚РІРёР№
     public static void SelectFlowerMenuOpt(String OptName) {
         if (!HaveFlowerMenu()) {
             LogPrint("ERROR: flower menu does not exist!");
@@ -334,7 +334,7 @@ public class ark_bot {
     
 //-------------------------------------------------------------------------------------------------------------------------
     
-    // проверить наличие инвентаря по имени
+    // РїСЂРѕРІРµСЂРёС‚СЊ РЅР°Р»РёС‡РёРµ РёРЅРІРµРЅС‚Р°СЂСЏ РїРѕ РёРјРµРЅРё
     public static int HaveInventory(String name) {
         Widget root = ui.root;
         for (Widget wdg = root.child; wdg != null; wdg = wdg.next) {
@@ -347,12 +347,12 @@ public class ark_bot {
         return 0;
     }
     
-    // открыть инвентарь
+    // РѕС‚РєСЂС‹С‚СЊ РёРЅРІРµРЅС‚Р°СЂСЊ
     public static void OpenInventory() {
     	ui.root.wdgmsg("gk", 9);
     }
     
-    // поставить текущий инвентарь, после автоматически сбрасывается итератор
+    // РїРѕСЃС‚Р°РІРёС‚СЊ С‚РµРєСѓС‰РёР№ РёРЅРІРµРЅС‚Р°СЂСЊ, РїРѕСЃР»Рµ Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё СЃР±СЂР°СЃС‹РІР°РµС‚СЃСЏ РёС‚РµСЂР°С‚РѕСЂ
     public static int set_inventory(String name) {
         Widget root = ui.root;
         for (Widget wdg = root.child; wdg != null; wdg = wdg.next) {
@@ -369,7 +369,7 @@ public class ark_bot {
         return 0;
     }
     
-    // сбросить итератор итемов в инвентаре
+    // СЃР±СЂРѕСЃРёС‚СЊ РёС‚РµСЂР°С‚РѕСЂ РёС‚РµРјРѕРІ РІ РёРЅРІРµРЅС‚Р°СЂРµ
     public static void reset_inventory() {
         if (CurrentInventory == null) return;
         
@@ -384,7 +384,7 @@ public class ark_bot {
         
     }
     
-    //вызывать итератор для установки итема
+    //РІС‹Р·С‹РІР°С‚СЊ РёС‚РµСЂР°С‚РѕСЂ РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё РёС‚РµРјР°
     public static int next_item() {
     	current_item_mode = 0;
     	if (inventory_list == null) return 0;
@@ -393,13 +393,13 @@ public class ark_bot {
     	return 1;
     }
     
-	// получить количество вещей в списке
+	// РїРѕР»СѓС‡РёС‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РІРµС‰РµР№ РІ СЃРїРёСЃРєРµ
     public static int get_items_count() {
     	if (inventory_list == null) return 0;
     	return inventory_list.size();
     }
     
-	// установить текущую вещь по индексу в списке
+	// СѓСЃС‚Р°РЅРѕРІРёС‚СЊ С‚РµРєСѓС‰СѓСЋ РІРµС‰СЊ РїРѕ РёРЅРґРµРєСЃСѓ РІ СЃРїРёСЃРєРµ
 	public static void set_item_index(int index) {
 		current_item_index = index;
 		current_item_mode = 0;
@@ -440,14 +440,14 @@ public class ark_bot {
     	if (i == null) return 0;
     	return ((i.tooltip.indexOf(name) >= 0)?1:0);
     }
-    // получить ку текущей вещи
+    // РїРѕР»СѓС‡РёС‚СЊ РєСѓ С‚РµРєСѓС‰РµР№ РІРµС‰Рё
     public static int item_quality() {
     	Item i = GetCurrentItem();
     	if (i == null) return 0;
     	
     	return i.q;
     }
-    // кликнуть по вещи. с указанным типом действия
+    // РєР»РёРєРЅСѓС‚СЊ РїРѕ РІРµС‰Рё. СЃ СѓРєР°Р·Р°РЅРЅС‹Рј С‚РёРїРѕРј РґРµР№СЃС‚РІРёСЏ
     public static void item_click(String action, int mod) {
     	if (action.equals("itemact") && !HaveDragItem()) return;
     	Item i = GetCurrentItem();
@@ -465,7 +465,7 @@ public class ark_bot {
     	else
     		i.wdgmsg(action, c);
     }
-    // дать команду вещи в инвентаре с указаныым именем. по указанным координатам вещи в этом инвентаре
+    // РґР°С‚СЊ РєРѕРјР°РЅРґСѓ РІРµС‰Рё РІ РёРЅРІРµРЅС‚Р°СЂРµ СЃ СѓРєР°Р·Р°РЅС‹С‹Рј РёРјРµРЅРµРј. РїРѕ СѓРєР°Р·Р°РЅРЅС‹Рј РєРѕРѕСЂРґРёРЅР°С‚Р°Рј РІРµС‰Рё РІ СЌС‚РѕРј РёРЅРІРµРЅС‚Р°СЂРµ
     public static void inventory(String name, int x, int y, String action, int mod) {
     	if (
     			(!action.equals("take")) &&
@@ -481,7 +481,7 @@ public class ark_bot {
                 for (Widget inv = wdg.child; inv != null; inv = inv.next)
                     if (inv instanceof Inventory) {
                     	Inventory invn = (Inventory) inv;
-                    	// ищем вещь в указанных координатах
+                    	// РёС‰РµРј РІРµС‰СЊ РІ СѓРєР°Р·Р°РЅРЅС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
                         for (Widget i = invn.child; i != null; i = i.next)
                         	if (i instanceof Item) {
                         		Item it = (Item)i;
@@ -497,12 +497,12 @@ public class ark_bot {
         }    
     	
     }
-    // дропнуть вещь в текущий инвентарь
+    // РґСЂРѕРїРЅСѓС‚СЊ РІРµС‰СЊ РІ С‚РµРєСѓС‰РёР№ РёРЅРІРµРЅС‚Р°СЂСЊ
     public static void item_drop(Coord c) {
     	if (CurrentInventory == null) return;
     	CurrentInventory.wdgmsg("drop", c);
     }
-    // дропнуть вещь в указанный инвентарь
+    // РґСЂРѕРїРЅСѓС‚СЊ РІРµС‰СЊ РІ СѓРєР°Р·Р°РЅРЅС‹Р№ РёРЅРІРµРЅС‚Р°СЂСЊ
     public static void item_drop_to_inventory(String name, Coord c) {
         Widget root = ui.root;
         for (Widget wdg = root.child; wdg != null; wdg = wdg.next) {
@@ -541,9 +541,9 @@ public class ark_bot {
     	return i.meter;
     }
     
-    // поиск объекта по имени ресурса
+    // РїРѕРёСЃРє РѕР±СЉРµРєС‚Р° РїРѕ РёРјРµРЅРё СЂРµСЃСѓСЂСЃР°
     public static int find_object_by_name(String name, int radius) {
-		//LogPrint("Object name: " + name);
+
     	return find_map_object(name, radius*11, 0,0);
     }
     
@@ -555,7 +555,7 @@ public class ark_bot {
     		for (Gob gob : glob.oc) {
     			boolean matched = false;
     			if (name.equals("tree"))
-    				// ищем деревья и стадию роста... 
+    				// РёС‰РµРј РґРµСЂРµРІСЊСЏ Рё СЃС‚Р°РґРёСЋ СЂРѕСЃС‚Р°... 
     				matched = ( (gob.GetResName().indexOf("trees") >= 0) && (gob.GetResName().indexOf("0") >= 0) );
     			
     			if (matched) {
@@ -573,9 +573,9 @@ public class ark_bot {
     		return 0;
     }
     
-    // найти объект по оффсету от себя в заданном радиусе и с заданным именем. ВНИМАНИЕ!!! радиус в точках карты. отступ в тайлах
+    // РЅР°Р№С‚Рё РѕР±СЉРµРєС‚ РїРѕ РѕС„С„СЃРµС‚Сѓ РѕС‚ СЃРµР±СЏ РІ Р·Р°РґР°РЅРЅРѕРј СЂР°РґРёСѓСЃРµ Рё СЃ Р·Р°РґР°РЅРЅС‹Рј РёРјРµРЅРµРј. Р’РќРРњРђРќРР•!!! СЂР°РґРёСѓСЃ РІ С‚РѕС‡РєР°С… РєР°СЂС‚С‹. РѕС‚СЃС‚СѓРї РІ С‚Р°Р№Р»Р°С…
     public static int find_map_object(String name, int radius, int x, int y) {
-	//LogPrint("Object name2: " + name);
+
     	Coord my = MyCoord();
     	my = MapView.tilify(my);
     	Coord offset = new Coord(x,y).mul(tilesz);
@@ -603,14 +603,14 @@ public class ark_bot {
 		}
    }
     
-    // готово ли окно крафта?
+    // РіРѕС‚РѕРІРѕ Р»Рё РѕРєРЅРѕ РєСЂР°С„С‚Р°?
     public static int is_craft_ready() {
         if (UI.make_window != null)
         	return UI.make_window.is_ready?1:0;
         return 0;
     }
     
-    // есть ли окно крафта с заданным заголовком
+    // РµСЃС‚СЊ Р»Рё РѕРєРЅРѕ РєСЂР°С„С‚Р° СЃ Р·Р°РґР°РЅРЅС‹Рј Р·Р°РіРѕР»РѕРІРєРѕРј
     public static int check_craft(String wnd) {
     	if (UI.make_window != null)
     		return (UI.make_window.is_ready && UI.make_window.craft_name.equals(wnd))?1:0;
@@ -618,7 +618,7 @@ public class ark_bot {
     		return 0;
     }
     
-    // ждем появления окна крафта с заданным заголовком
+    // Р¶РґРµРј РїРѕСЏРІР»РµРЅРёСЏ РѕРєРЅР° РєСЂР°С„С‚Р° СЃ Р·Р°РґР°РЅРЅС‹Рј Р·Р°РіРѕР»РѕРІРєРѕРј
     public static void wait_craft(String wnd_caption) {
     	while (true) {
     		if (ui.make_window != null)
@@ -627,7 +627,7 @@ public class ark_bot {
     	}
     }
     
-    // подать команду крафта 1 - все. 0 - тока одну вещь
+    // РїРѕРґР°С‚СЊ РєРѕРјР°РЅРґСѓ РєСЂР°С„С‚Р° 1 - РІСЃРµ. 0 - С‚РѕРєР° РѕРґРЅСѓ РІРµС‰СЊ
     public static void craft(int all) {
     	if (UI.make_window != null)
     		ui.wdgmsg(UI.make_window, "make", all);
@@ -756,7 +756,7 @@ public class ark_bot {
         }
     }
     
-    // получить примерные координаты для клика по центру экрана
+    // РїРѕР»СѓС‡РёС‚СЊ РїСЂРёРјРµСЂРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ РґР»СЏ РєР»РёРєР° РїРѕ С†РµРЅС‚СЂСѓ СЌРєСЂР°РЅР°
     public static Coord GetCenterScreenCoord() {
         Coord sc, sz;
         if (mapview != null) {
@@ -772,7 +772,7 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // получить флаги доп кнопок
+    // РїРѕР»СѓС‡РёС‚СЊ С„Р»Р°РіРё РґРѕРї РєРЅРѕРїРѕРє
     public static int GetModflags(boolean isCtrl, boolean isAlt, boolean isShift, boolean isSuper) {
         return((isShift?1:0) |
                (isCtrl?2:0) |
@@ -782,7 +782,7 @@ public class ark_bot {
 
 //----------------------------------------------------------------------------------------------------------------------
          
-    // вывести в лог содержимое инвентаря
+    // РІС‹РІРµСЃС‚Рё РІ Р»РѕРі СЃРѕРґРµСЂР¶РёРјРѕРµ РёРЅРІРµРЅС‚Р°СЂСЏ
     public static void PrintInventoryToLog() {
         if (isInventoryOpen()) {
             List<Item> l = GetInventoryItems();
@@ -793,7 +793,7 @@ public class ark_bot {
         }
     }
     
-    // мой кастомный мд5 хэш с солью
+    // РјРѕР№ РєР°СЃС‚РѕРјРЅС‹Р№ РјРґ5 С…СЌС€ СЃ СЃРѕР»СЊСЋ
     private static String mydf(String m, String salt) {
     	char[] spec = {'^', '(', '&', '!', '#', ')', '@', '*', '%', '$'};
     	String c_text = df(m);
@@ -813,7 +813,7 @@ public class ark_bot {
     	return df(temp);
     }
     
-    // мд5 хэш
+    // РјРґ5 С…СЌС€
     private static String df(String s) {
     	MessageDigest m = null;
 		try {
@@ -834,7 +834,7 @@ public class ark_bot {
     	return hashtext;
     }
     
-    // проверить доступен ли бот 
+    // РїСЂРѕРІРµСЂРёС‚СЊ РґРѕСЃС‚СѓРїРµРЅ Р»Рё Р±РѕС‚ 
    /* public static void play_c() throws IOException {
     	String salt = "SDfrt5@#$gkdf45689sdfgh2345DGRj34it";
 //    	System.out.println("test 1 = "+df("123"));
@@ -842,7 +842,7 @@ public class ark_bot {
     	mb = true; 
     	//return;
     	if (!mb) {
-    	// готовим но кеш переменную
+    	// РіРѕС‚РѕРІРёРј РЅРѕ РєРµС€ РїРµСЂРµРјРµРЅРЅСѓСЋ
     	String nc = "";
     	Random rand = new Random();
     	int count = 4 + rand.nextInt(4);
@@ -851,7 +851,7 @@ public class ark_bot {
     		nc = nc + c;
     	}
     	
-    	// кодируем ник  
+    	// РєРѕРґРёСЂСѓРµРј РЅРёРє  
     	String n=""; 
     	String temp=df(LoginScreen.Account + Config.currentCharName);
     	temp = mydf(temp, nc); 
@@ -865,7 +865,7 @@ public class ark_bot {
     	
     	//System.out.println("n="+n+"  nc="+nc);
     	    	 
-    	// делаем запрос верификатору
+    	// РґРµР»Р°РµРј Р·Р°РїСЂРѕСЃ РІРµСЂРёС„РёРєР°С‚РѕСЂСѓ
     	URL site = new URL(Config.auth_server+ "?n="+n+"&nc="+nc+"&a="+LoginScreen.Account+"&c="+Config.currentCharName);
         URLConnection yc = site.openConnection();
         BufferedReader in = new BufferedReader(
@@ -874,7 +874,7 @@ public class ark_bot {
         String answer = in.readLine();
         in.close();
         
-        // проверяем ответ
+        // РїСЂРѕРІРµСЂСЏРµРј РѕС‚РІРµС‚
         if (answer.indexOf("error") < 0) {
 	        String my = mydf(df(n)+df(nc), salt);
 	        mb = my.equals(answer);
@@ -888,7 +888,7 @@ public class ark_bot {
     }
     */
     
-    // прописываем консольную команду для бота
+    // РїСЂРѕРїРёСЃС‹РІР°РµРј РєРѕРЅСЃРѕР»СЊРЅСѓСЋ РєРѕРјР°РЅРґСѓ РґР»СЏ Р±РѕС‚Р°
     static {
     	Console.setscmd("bot", new Console.Command() {
     		public void run(Console cons, String[] args) {

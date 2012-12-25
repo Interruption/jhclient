@@ -31,6 +31,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
 
 import static haven.ark_bot.*;
@@ -56,11 +57,11 @@ public class Config {
 
     public static int ark_window_width = 800;
     public static int ark_window_height = 600;
-    public static boolean tracking = true; // включить трекинг криминал актс. чтобы показывало следы. врубается при логине если стоит
-    public static boolean always_show_nicks = true; // всегда показывать ники над персонажами
-    public static boolean show_map_grid = true; // показывать сетку на карте
-    public static boolean highlight_object_by_mouse = true; // подсвечивать объект под мышью
-    public static boolean highlight_hided_objects = true; // подсвечивать ли скрытые объекты
+    public static boolean tracking = true; // РІРєР»СЋС‡РёС‚СЊ С‚СЂРµРєРёРЅРі РєСЂРёРјРёРЅР°Р» Р°РєС‚СЃ. С‡С‚РѕР±С‹ РїРѕРєР°Р·С‹РІР°Р»Рѕ СЃР»РµРґС‹. РІСЂСѓР±Р°РµС‚СЃСЏ РїСЂРё Р»РѕРіРёРЅРµ РµСЃР»Рё СЃС‚РѕРёС‚
+    public static boolean always_show_nicks = true; // РІСЃРµРіРґР° РїРѕРєР°Р·С‹РІР°С‚СЊ РЅРёРєРё РЅР°Рґ РїРµСЂСЃРѕРЅР°Р¶Р°РјРё
+    public static boolean show_map_grid = true; // РїРѕРєР°Р·С‹РІР°С‚СЊ СЃРµС‚РєСѓ РЅР° РєР°СЂС‚Рµ
+    public static boolean highlight_object_by_mouse = true; // РїРѕРґСЃРІРµС‡РёРІР°С‚СЊ РѕР±СЉРµРєС‚ РїРѕРґ РјС‹С€СЊСЋ
+    public static boolean highlight_hided_objects = true; // РїРѕРґСЃРІРµС‡РёРІР°С‚СЊ Р»Рё СЃРєСЂС‹С‚С‹Рµ РѕР±СЉРµРєС‚С‹
     public static boolean assign_to_tile = false;
     public static String bot_name1;
     public static String bot_name2;
@@ -70,26 +71,26 @@ public class Config {
     public static boolean render_enable = true;
     
     // quick login
-    public static boolean quick_login = false; // быстрый логин дефолт чаром
-    public static boolean ark_state_activate_char = false; // стадия аткивации чара
-    public static int ark_button_activate_char = 0; // ид кнопки которую надо нажать
-    public static String auto_start_script = ""; // имя скрипта запускаемого после логина
-    public static boolean keep_connect = false; // подерживать ли подключение. (реконнекты)
+    public static boolean quick_login = false; // Р±С‹СЃС‚СЂС‹Р№ Р»РѕРіРёРЅ РґРµС„РѕР»С‚ С‡Р°СЂРѕРј
+    public static boolean ark_state_activate_char = false; // СЃС‚Р°РґРёСЏ Р°С‚РєРёРІР°С†РёРё С‡Р°СЂР°
+    public static int ark_button_activate_char = 0; // РёРґ РєРЅРѕРїРєРё РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ РЅР°Р¶Р°С‚СЊ
+    public static String auto_start_script = ""; // РёРјСЏ СЃРєСЂРёРїС‚Р° Р·Р°РїСѓСЃРєР°РµРјРѕРіРѕ РїРѕСЃР»Рµ Р»РѕРіРёРЅР°
+    public static boolean keep_connect = false; // РїРѕРґРµСЂР¶РёРІР°С‚СЊ Р»Рё РїРѕРґРєР»СЋС‡РµРЅРёРµ. (СЂРµРєРѕРЅРЅРµРєС‚С‹)
     
 //    public static String auth_server = "";
-    public static boolean FirstLogin = true; // первый ли запуск клиента
-    public static boolean inactive_exit = false; // закрывать клиент при неактивности (нет новых виджетов) 
+    public static boolean FirstLogin = true; // РїРµСЂРІС‹Р№ Р»Рё Р·Р°РїСѓСЃРє РєР»РёРµРЅС‚Р°
+    public static boolean inactive_exit = false; // Р·Р°РєСЂС‹РІР°С‚СЊ РєР»РёРµРЅС‚ РїСЂРё РЅРµР°РєС‚РёРІРЅРѕСЃС‚Рё (РЅРµС‚ РЅРѕРІС‹С… РІРёРґР¶РµС‚РѕРІ) 
 
     // arksu: from gilbertus
     public static boolean xray;
     public static boolean hide;
     public static HashSet<String> hideObjectList;
+	public static HashSet<String> ltObjectList;
     public static String currentCharName;
     public static Properties options;
     public static boolean gilbertus_map_dump = true;
 	public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
 	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
-    public static boolean ark_map_dump = false;
 
 	public static boolean showq;
 
@@ -121,6 +122,7 @@ public class Config {
         currentCharName = "";
         options = new Properties();
         hideObjectList = new HashSet<String>();
+		ltObjectList  = new HashSet<String>();
         loadOptions();
 		loadFEP();
 	    loadCurios();
@@ -175,7 +177,7 @@ public class Config {
                 if (wdg instanceof Button) {
                     Button btn = (Button)wdg;
                     btn.click();
-                    // только если не надо поддерживать подключение
+                    // С‚РѕР»СЊРєРѕ РµСЃР»Рё РЅРµ РЅР°РґРѕ РїРѕРґРґРµСЂР¶РёРІР°С‚СЊ РїРѕРґРєР»СЋС‡РµРЅРёРµ
                     if (!keep_connect)
                     	Config.quick_login = false;
                 }
@@ -230,7 +232,38 @@ public class Config {
 	} catch (FileNotFoundException e) {
 	} catch (IOException e) {
 	}
+    }
 	
+	private static void loadONList() {
+		try {
+			FileInputStream fstream;
+			fstream = new FileInputStream("onlist.conf");
+			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+			String strLine;
+			while ((strLine = br.readLine()) != null)   {
+				String [] tmp = strLine.split(":");
+				MapView.objects_name_list.put(tmp[1], tmp[0]);
+			}
+			br.close();
+			fstream.close();
+		} catch (Exception e) {}
+    }
+	
+	private static void loadLTOList() {
+		try {
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream("ltolist.conf"));
+			ltObjectList = (HashSet<String>) ois.readObject();
+			ois.close();
+		} catch (Exception e) {}
+	}
+	
+	
+	private static void writeLTOList() {
+		try {
+			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("ltolist.conf"));
+			oos.writeObject(ltObjectList);
+			oos.close();
+		} catch (Exception e) {}
     }
 	
     private static void usage(PrintStream out) {
@@ -327,9 +360,10 @@ public class Config {
         inactive_exit = getopt_bool("inactive_exit", false);
         bot_name1 = getopt_str("bot_name1", "test2");
         bot_name2 = getopt_str("bot_name1", "test");
-        ark_map_dump = getopt_bool("ark_map", false);
         gilbertus_map_dump = getopt_bool("gilbertus_map", false);
 		showq = options.getProperty("showq", "true").equals("true");
+		loadLTOList();
+		loadONList();
     }
 
     public static void saveOptions() {
@@ -353,9 +387,9 @@ public class Config {
         setopt_bool("inactive_exit", inactive_exit);
         setopt_str("bot_name1", bot_name1);
         setopt_str("bot_name2", bot_name2);
-        setopt_bool("ark_map", ark_map_dump);
         setopt_bool("gilbertus_map", gilbertus_map_dump);
 		setopt_bool("showq", showq);
+		writeLTOList();
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
         } catch (IOException e) {

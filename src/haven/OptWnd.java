@@ -37,29 +37,75 @@ public class OptWnd extends Window {
     private Map<String, String> camname2type = new HashMap<String, String>();
     private Map<String, String[]> camargs = new HashMap<String, String[]>();
     String[][] checkboxesList = {
-            {"Bushes1 F4",         "gfx/tiles/wald"},
-            {"Bushes2 F4",         "gfx/tiles/dwald"},
-            {"Trees F5",           "gfx/terobjs/trees"},
-            {"Stones F6",          "gfx/terobjs/bumlings"},
-            {"Walls F7",           "gfx/arch/walls"},
-            {"Gates F7",           "gfx/arch/gates"},
-            {"Stone houses F8",    "gfx/arch/inn"},
-            {"Wood houses F8",     "gfx/arch/cabin"},
-            {"Plants F9",          "gfx/terobjs/plants"}
+		{"Bushes1 F4",         "gfx/tiles/wald"},
+		{"Bushes2 F4",         "gfx/tiles/dwald"},
+		{"Trees F5",           "gfx/terobjs/trees"},
+		{"Stones F6",          "gfx/terobjs/bumlings"},
+		{"Walls F7",           "gfx/arch/walls"},
+		{"Gates F7",           "gfx/arch/gates"},
+		{"Stone houses F8",    "gfx/arch/inn"},
+		{"Wood houses F8",     "gfx/arch/cabin"},
+		{"Plants F9",          "gfx/terobjs/plants"}
     };
-	String[][] cbL_kritter = {
-            {"Troll",				"gfx/kritter/troll"},
-            {"Bear",				"gfx/kritter/bear"},
-            {"Boar",				"gfx/kritter/boar"},
-            {"Deer",				"gfx/kritter/deer"},
-            {"Aurochs",				"gfx/kritter/aurochs"},
-            {"Mufflon",				"gfx/kritter/mufflon"},
-            {"Hen",					"gfx/kritter/hen"},
-            {"Silkmoth",			"gfx/kritter/moth"},
-            {"Hare",				"gfx/kritter/hare"},
-			{"Frog",				"gfx/kritter/frog"},
+	static String[][] cblist_kritter = {
+		{"Aurochs",				"gfx/kritter/aurochs/neg"},
+		{"Bear",				"gfx/kritter/bear/neg"},
+		{"Boar",				"gfx/kritter/boar/neg"},
+		{"Deer",				"gfx/kritter/deer/neg"},
+		{"Dragonfly",			"gfx/kritter/dragonfly/neg"},
+		{"Fox",					"gfx/kritter/fox/neg"},
+		{"Frog",				"gfx/kritter/frog/neg"},
+		{"Hare",				"gfx/kritter/hare/neg"},
+		{"Hen",					"gfx/kritter/hen/neg"},
+		{"Lady Bug",			"gfx/kritter/ladybug/neg"},
+		{"Mufflon",				"gfx/kritter/mufflon/neg"},
+		{"Rat",					"gfx/kritter/rat/neg"},
+		{"Silkmoth",			"gfx/kritter/moth/neg"},
+		{"Troll",				"gfx/kritter/troll/neg"},
+    };
+	static String[][] cblist_herbs = {		
+		{"Bloated Bolete",			"gfx/terobjs/herbs/bloatedbolete"},
+		{"Blood Stern",				"gfx/terobjs/herbs/bloodstern"},
+		{"Blueberry",				"gfx/terobjs/herbs/blueberry"},
+		{"Candleberry",				"gfx/terobjs/herbs/candleberry"},
+		{"Cavebulb",				"gfx/terobjs/herbs/cavebulb"},
+		{"Chantrelle",				"gfx/terobjs/herbs/chantrelle"},
+		{"Chiming Bluebell",		"gfx/terobjs/herbs/chimingbluebell"},
+		{"Dandelion",				"gfx/terobjs/herbs/dandelion"},
+		{"Edelweiss",				"gfx/terobjs/herbs/edelweiss"},
+		{"Flotsam",					"gfx/terobjs/herbs/flotsam"},
+		{"Four-Leaf Clover",		"gfx/terobjs/herbs/fourleafclover"},
+		{"Frogscrown",				"gfx/terobjs/herbs/frogscrown"},
+		{"Glimmermoss",				"gfx/terobjs/herbs/glimmermoss"},
+		{"Inkweed",					"gfx/terobjs/herbs/inkweed"},
+		{"Lady's Mantle",			"gfx/terobjs/herbs/ladysmantle"},
+		{"Nettle",					"gfx/terobjs/herbs/nettle"},
+		{"Royal Toadstool",			"gfx/terobjs/herbs/royaltoadstool"},
+		{"Rustroot",				"gfx/terobjs/herbs/rustroot"},
+		{"Spindly Taproot",			"gfx/terobjs/herbs/spindlytaproot"},
+		{"Stalagoom",				"gfx/terobjs/herbs/stalagoom"},
+		{"Stinging Nettle",			"gfx/terobjs/herbs/stingingnettle"},
+		{"Tangled Bramble",			"gfx/terobjs/herbs/tangledbramble"},
+		{"Thorny Thistle",			"gfx/terobjs/herbs/thornythistle"},
+		{"Uncommon Snapdragon",		"gfx/terobjs/herbs/uncommonsnapdragon"},
+		{"Washed-up Bladderwrack",	"gfx/terobjs/herbs/washedupbladderwrack"},
+		{"Windweed",				"gfx/terobjs/herbs/windweed"}		
+    };
+	static String[][] cblist_other = {
+		{"Ant Hill",				"gfx/terobjs/anthill"},
+		{"Cave entrance N",			"gfx/terobjs/ridges/cavein-n"},
+		{"Cave entrance W",			"gfx/terobjs/ridges/cavein-w"},
+		{"GEO-Water",				"gfx/terobjs/geo-water"},
+		{"Out of the Cave N",		"gfx/terobjs/ridges/caveout-n"},
+		{"Out of the Cave W",		"gfx/terobjs/ridges/caveout-w"},
+		{"Skeleton",				"gfx/terobjs/skeleton"},
+		{"Log",						"gfx/terobjs/trees/log"},
+		{"Well",					"gfx/terobjs/well"}
     };
     private List<CheckBox> hide_checkboxes = new ArrayList<CheckBox>();
+	private List<CheckBox> ltok_checkboxes = new ArrayList<CheckBox>();
+	private List<CheckBox> ltoh_checkboxes = new ArrayList<CheckBox>();
+	private List<CheckBox> ltoo_checkboxes = new ArrayList<CheckBox>();
     private Comparator<String> camcomp = new Comparator<String>() {
 
 	public int compare(String a, String b) {
@@ -157,13 +203,6 @@ public class OptWnd extends Window {
 		}};	
         chk.a = Config.highlight_hided_objects;
         
-//        chk = new CheckBox(new Coord(10, 310), tab, "arksu map dumper (need restart)") {
-//    		public void changed(boolean val) {
-//    		    Config.ark_map_dump = val;
-//                Config.saveOptions();
-//    		}};
-//        chk.a = Config.ark_map_dump;
-        
         chk = new CheckBox(new Coord(10, 280), tab, "Gilbertus map dumper (need restart)") {
     		public void changed(boolean val) {
     		    Config.gilbertus_map_dump = val;
@@ -175,7 +214,7 @@ public class OptWnd extends Window {
 
 	{ /* CAMERA TAB */
 	    curcam = Utils.getpref("defcam", "border");
-	    tab = body.new Tab(new Coord(65, 0), 60, "Camera");
+	    tab = body.new Tab(new Coord(60, 0), 60, "Camera");
 
 	    new Label(new Coord(10, 40), tab, "Camera type:");
 	    final RichTextBox caminfo = new RichTextBox(new Coord(180, 70), new Coord(210, 180), tab, "", foundry);
@@ -265,7 +304,7 @@ public class OptWnd extends Window {
 	}
 
 	{ /* AUDIO TAB */
-	    tab = body.new Tab(new Coord(130, 0), 60, "Audio");
+	    tab = body.new Tab(new Coord(120, 0), 60, "Audio");
 
 	    new Label(new Coord(10, 40), tab, "Sound volume:");
 	    new Frame(new Coord(10, 65), new Coord(20, 206), tab);
@@ -286,29 +325,8 @@ public class OptWnd extends Window {
 		    Music.enable(val);
 		}};
     }
-
-//	{ /* Target line object */
-//	    tab = body.new Tab(new Coord(280, 0), 30, "LTO");
-//        int y = 0;
-//        for (final String[] checkbox : cbL_kritter) {
-//            CheckBox chkbox = new CheckBox(new Coord(10, y += 29), tab, checkbox[0]) {
-//
-//                public void changed(boolean val) {
-//                    if (val) {
-//						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
-//                    } else {
-//                        ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
-//                    }
-//                }
-//            };
-//            hide_checkboxes.add(chkbox);
-//        }
-//        UpdateHideCheckBoxes();
-//
-//    }
-    //------------------------------------------------------------------------------------------------------------------
 	{ /* HIDE OBJECTS TAB */
-	    tab = body.new Tab(new Coord(195, 0), 80, "Hide Objects");
+	    tab = body.new Tab(new Coord(180, 0), 80, "Hide Objects");
 
         int y = 0;
         for (final String[] checkbox : checkboxesList) {
@@ -327,6 +345,87 @@ public class OptWnd extends Window {
         }
         UpdateHideCheckBoxes();
 	}
+	{ /* TARGET LINE TO KRITTER OBJECT TAB */
+	    tab = body.new Tab(new Coord(260, 0), 45, "LTO K");
+		new Label(new Coord(10, 27), tab, "Kritter:");
+        int y = 25;
+		int x = 10;
+        for (final String[] checkbox : cblist_kritter) {
+            CheckBox chkbox;
+			if (y > 250) {
+				if (x == 10) {x = 130;} else {x += 125;}
+				y = 25;
+			}
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+				public void changed(boolean val) {
+					if (val) {
+						Config.ltObjectList.add(checkbox[1]);
+						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
+					} else {
+						Config.ltObjectList.remove(checkbox[1]);
+						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
+					}
+				}
+			};
+            ltok_checkboxes.add(chkbox);
+			ark_log.LogPrint("add cbKritter" + chkbox.lbl.text);
+        }
+        UpdateLTOCheckBoxes(cblist_kritter, ltok_checkboxes);
+	}
+	{ /* TARGET LINE TO HERBS OBJECT TAB */
+	    tab = body.new Tab(new Coord(305, 0), 45, "LTO H");
+		new Label(new Coord(10, 27), tab, "Herbs:");
+        int y = 25;
+		int x = 10;
+        for (final String[] checkbox : cblist_herbs) {
+            CheckBox chkbox;
+			if (y > 250) {
+				if (x == 10) {x = 130;} else {x += 125;}
+				y = 25;
+			}
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+				public void changed(boolean val) {
+					if (val) {
+						Config.ltObjectList.add(checkbox[1]);
+						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
+					} else {
+						Config.ltObjectList.remove(checkbox[1]);
+						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
+					}
+				}
+			};
+            ltoh_checkboxes.add(chkbox);
+			ark_log.LogPrint("add cbHerbs" + chkbox.lbl.text);
+        }
+        UpdateLTOCheckBoxes(cblist_herbs, ltoh_checkboxes);
+	}
+	{ /* TARGET LINE TO OTHER OBJECT TAB */
+	    tab = body.new Tab(new Coord(350, 0), 45, "LTO O");
+		new Label(new Coord(10, 27), tab, "Other:");
+        int y = 25;
+		int x = 10;
+        for (final String[] checkbox : cblist_other) {
+            CheckBox chkbox;
+			if (y > 250) {
+				if (x == 10) {x = 130;} else {x += 125;}
+				y = 25;
+			}
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+				public void changed(boolean val) {
+					if (val) {
+						Config.ltObjectList.add(checkbox[1]);
+						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
+					} else {
+						Config.ltObjectList.remove(checkbox[1]);
+						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
+					}
+				}
+			};
+            ltoo_checkboxes.add(chkbox);
+			ark_log.LogPrint("add cbOther" + chkbox.lbl.text);
+        }
+        UpdateLTOCheckBoxes(cblist_other, ltoo_checkboxes);
+	}
     //------------------------------------------------------------------------------------------------------------------
 
     new Frame(new Coord(-10, 20), new Coord(420, 330), this);
@@ -337,6 +436,17 @@ public class OptWnd extends Window {
 	}
     }
 
+	
+	public void UpdateLTOCheckBoxes(String [][] strlist, List<CheckBox> cbl) {
+        int i = 0;    
+        for (final String[] checkbox : strlist) {
+            CheckBox chkbox = cbl.get(i);
+			ark_log.LogPrint("cbString: " + chkbox.lbl.text);
+            chkbox.a = Config.ltObjectList.contains(checkbox[1]);
+            i++;
+        }
+    }
+	
     public void UpdateHideCheckBoxes() {
         int i = 0;    
         for (final String[] checkbox : checkboxesList) {
