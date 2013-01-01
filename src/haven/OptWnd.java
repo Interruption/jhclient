@@ -73,6 +73,7 @@ public class OptWnd extends Window {
 		{"Chiming Bluebell",		"gfx/terobjs/herbs/chimingbluebell"},
 		{"Dandelion",				"gfx/terobjs/herbs/dandelion"},
 		{"Edelweiss",				"gfx/terobjs/herbs/edelweiss"},
+		{"Feldspar",				"gfx/terobjs/herbs/feldspar"},
 		{"Flotsam",					"gfx/terobjs/herbs/flotsam"},
 		{"Four-Leaf Clover",		"gfx/terobjs/herbs/fourleafclover"},
 		{"Frogscrown",				"gfx/terobjs/herbs/frogscrown"},
@@ -93,11 +94,13 @@ public class OptWnd extends Window {
     };
 	static String[][] cblist_other = {
 		{"Ant Hill",				"gfx/terobjs/anthill"},
-		{"Cave entrance N",			"gfx/terobjs/ridges/cavein-n"},
-		{"Cave entrance W",			"gfx/terobjs/ridges/cavein-w"},
+		{"Boat",					"gfx/kritter/boat"},
+		{"Cave entrance",			"gfx/terobjs/ridges/cavein"},
 		{"GEO-Water",				"gfx/terobjs/geo-water"},
-		{"Out of the Cave N",		"gfx/terobjs/ridges/caveout-n"},
-		{"Out of the Cave W",		"gfx/terobjs/ridges/caveout-w"},
+		{"Gray Clay",				"gfx/terobjs/herbs/grayclay"},
+		{"Hearth",					"gfx/terobjs/hearth"},
+		{"Out of the Cave",			"gfx/terobjs/ridges/caveout"},
+		{"Player",					"gfx/borka/neg"},
 		{"Skeleton",				"gfx/terobjs/skeleton"},
 		{"Log",						"gfx/terobjs/trees/log"},
 		{"Well",					"gfx/terobjs/well"}

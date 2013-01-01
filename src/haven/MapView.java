@@ -819,9 +819,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		g.chcolor(Color.WHITE);
 	}
 
-	private void drawradius(GOut g, Coord c, int radius) {
-		g.fellipse(c, new Coord((int)(radius * 4 * Math.sqrt(0.5)), (int)(radius * 2 * Math.sqrt(0.5))));
-    }
+//	private void drawradius(GOut g, Coord c, int radius) {
+//		g.fellipse(c, new Coord((int)(radius * 4 * Math.sqrt(0.5)), (int)(radius * 2 * Math.sqrt(0.5))));
+//    }
 	
 	private void drawplobeffect(GOut g) {
 		if(plob == null)
@@ -841,82 +841,105 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	private void drawlinetoobject(GOut g) {
 		Coord tpoint = new Coord(0,0);
 		int notext = 0;
-	synchronized (glob.oc) {
-	    for (Gob gob : glob.oc) {
-			if(gob.sc == null){continue;}
-			if(Config.ltObjectList.contains(gob.GetResName())){
-				Gob oid = gob;
-			
-				if((oid != null)&&(oid.getc() != null)) {
-					Gob pid = glob.oc.getgob(ark_bot.PlayerID);
-					Coord oc = viewoffset(sz, mc);
-					Coord pco = m2s(pid.getc()).add(oc);
-					Coord oco = m2s(oid.getc()).add(oc);
-					if (oid.GetResName().contains("gfx/kritter/")) {
-						g.chcolor(255,0,0,255);
-					} else {
-						if (oid.GetResName().contains("gfx/terobjs/herbs/")) {
-							g.chcolor(100,255,100,150);
-						} else {
-							g.chcolor(255,255,255,150);
+		boolean drawlto = false;
+		synchronized (glob.oc) {
+			for (Gob gob : glob.oc) {
+				if(gob.sc == null){continue;}
+				if(Config.ltObjectList.contains(gob.GetResName())) {
+					drawlto = true;
+				} else {
+					if((Config.ltObjectList.contains("gfx/kritter/boat")) && (gob.GetResName().contains("gfx/kritter/boat/boat-"))) drawlto = true;
+					if((Config.ltObjectList.contains("gfx/terobjs/ridges/cavein")) && (gob.GetResName().contains("gfx/terobjs/ridges/cavein-"))) drawlto = true;
+					if((Config.ltObjectList.contains("gfx/terobjs/ridges/caveout")) && (gob.GetResName().contains("gfx/terobjs/ridges/caveout"))) drawlto = true;
+				}
+				if(drawlto == true) {
+					Gob oid = gob;
+					drawlto = false;
+					if((oid != null)&&(oid.getc() != null)) {
+						Gob pid = glob.oc.getgob(ark_bot.PlayerID);
+						Coord oc = viewoffset(sz, mc);
+						Coord pco = m2s(pid.getc()).add(oc);
+						if ((pco.x < 0) || (pco.y < 0) || (pco.x > sz.x) || (pco.y > sz.y)) {
+							pco.x = (int) (sz.x / 2);
+							pco.y = (int) (sz.y / 2);
 						}
-					}
-					String objname = "";
-					if (objects_name_list.containsKey(oid.GetResName())) {
-						objname = objects_name_list.get(oid.GetResName());
-					}
-					g.line(oco, pco, 1);
-					g.chcolor();
-					int r = 250; // Расстояние вывода текста
-					int x = 0;
-					int y = 0;
-					if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
-						if (((oco.x - pco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
-						x = (pco.x + r);
-						y = (pco.y - r);
-					} else {
-						if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
-							if (((pco.x - oco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
-							x = (pco.x - r);
+						Coord oco = m2s(oid.getc()).add(oc);
+						if ((oid.GetResName().contains("gfx/kritter/bear"))||
+								(oid.GetResName().contains("gfx/kritter/boar"))||
+								(oid.GetResName().contains("gfx/borka/neg"))) {
+							g.chcolor(255,0,0,255);
+						} else {
+							if (oid.GetResName().contains("gfx/terobjs/herbs/")) {
+								g.chcolor(100,255,100,150);
+							} else {
+								g.chcolor(255,255,255,150);
+							}
+						}
+						String objname = "";
+						if (objects_name_list.containsKey(oid.GetResName())) {
+							objname = objects_name_list.get(oid.GetResName());
+						} else {
+							if (oid.GetResName().contains("gfx/kritter/boat/boat-")) {
+								objname = objects_name_list.get("gfx/kritter/boat");
+							}
+							if (oid.GetResName().contains("gfx/terobjs/ridges/cavein-")) {
+								objname = objects_name_list.get("gfx/terobjs/ridges/cavein");
+							}
+							if (oid.GetResName().contains("gfx/terobjs/ridges/caveout-")) {
+								objname = objects_name_list.get("gfx/terobjs/ridges/caveout");
+							}
+						}
+						g.line(oco, pco, 1);
+						g.chcolor();
+						int r = 250; // Расстояние вывода текста
+						int x = 0;
+						int y = 0;
+						if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
+							if (((oco.x - pco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
+							x = (pco.x + r);
 							y = (pco.y - r);
 						} else {
-							if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
-								if (((pco.x - oco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+							if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+								if (((pco.x - oco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
 								x = (pco.x - r);
-								y = (pco.y + r);
+								y = (pco.y - r);
 							} else {
-								if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
-									if (((oco.x - pco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
-									x = (pco.x + r);
+								if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
+									if (((pco.x - oco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+									x = (pco.x - r);
 									y = (pco.y + r);
+								} else {
+									if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+										if (((oco.x - pco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+										x = (pco.x + r);
+										y = (pco.y + r);
+									}
 								}
 							}
 						}
-					}
-					int tmpy = ((oco.x-pco.x)*(-1));
-					int tmpx = ((pco.y-oco.y)*(-1));
-					if (tmpy != 0) tpoint.y = (int)(((pco.y-oco.y)*x+(pco.x*oco.y-oco.x*pco.y))/tmpy);
-					if (tmpx != 0) tpoint.x = (int)(((oco.x-pco.x)*y+(pco.x*oco.y-oco.x*pco.y))/tmpx);
-					if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
-						if (tpoint.y < y) {
-							tpoint.y = y;
+						int tmpy = ((oco.x-pco.x)*(-1));
+						int tmpx = ((pco.y-oco.y)*(-1));
+						if (tmpy != 0) {
+							tpoint.y = (int)(((pco.y-oco.y)*x+(pco.x*oco.y-oco.x*pco.y))/tmpy);
 						} else {
-							if (tpoint.x > x) {
-								tpoint.x = x;
-							}
+							tpoint.y = y;
 						}
-					} else {
-						if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+						if (tmpx != 0) {
+							tpoint.x = (int)(((oco.x-pco.x)*y+(pco.x*oco.y-oco.x*pco.y))/tmpx);
+						} else {
+							tpoint.x = x;
+						}
+						if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
 							if (tpoint.y < y) {
 								tpoint.y = y;
 							} else {
-								if (tpoint.x < x) {
+								if (tpoint.x > x) {
 									tpoint.x = x;
 								}
 							}
 						} else {
-							if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
-								if (tpoint.y > y) {
+							if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+								if (tpoint.y < y) {
 									tpoint.y = y;
 								} else {
 									if (tpoint.x < x) {
@@ -924,34 +947,44 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 									}
 								}
 							} else {
-								if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+								if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
 									if (tpoint.y > y) {
 										tpoint.y = y;
 									} else {
-										if (tpoint.x > x) {
+										if (tpoint.x < x) {
 											tpoint.x = x;
+										}
+									}
+								} else {
+									if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+										if (tpoint.y > y) {
+											tpoint.y = y;
+										} else {
+											if (tpoint.x > x) {
+												tpoint.x = x;
+											}
 										}
 									}
 								}
 							}
 						}
+	//					ark_log.LogPrint("ResName="+oid.GetResName()+"    Value = (" + objname + ")");
+//						ark_log.LogPrint("T1 X=" + pco.x + "   Y=" + pco.y);
+//						ark_log.LogPrint("T2 X=" + oco.x + "   Y=" + oco.y);
+//						ark_log.LogPrint("T3 X=" + sz.x + "   Y=" + sz.y);
+	//					ark_log.LogPrint("tmp X=" + tmpx + "   Y=" + tmpy);
+	//					ark_log.LogPrint("tpoint.y = "+tpoint.y);
+	//					ark_log.LogPrint("tpoint.x = "+tpoint.x);
+	//					ark_log.LogPrint("objname=" + objname);
+						if ((objname != "") && (notext != 1)) g.text(objname, tpoint);
+						objname = "";
+						notext = 0;
 					}
-//					ark_log.LogPrint("ResName="+oid.GetResName()+"    Value = (" + objname + ")");
-//					ark_log.LogPrint("T1 X=" + pco.x + "   Y=" + pco.y);
-//					ark_log.LogPrint("T2 X=" + oco.x + "   Y=" + oco.y);
-//					ark_log.LogPrint("T3 X=" + x + "   Y=" + y);
-//					ark_log.LogPrint("tmp X=" + tmpx + "   Y=" + tmpy);
-//					ark_log.LogPrint("tpoint.y = "+tpoint.y);
-//					ark_log.LogPrint("tpoint.x = "+tpoint.x);
-//					ark_log.LogPrint("notext=" + notext);
-					if ((objname != "") && (notext != 1)) g.text(objname, tpoint);
-					notext = 0;
-				}
-			g.chcolor(255, 128, 64, 96);
-		    //drawradius(g, gob.sc, 10);
+				g.chcolor(255, 128, 64, 96);
+				//drawradius(g, gob.sc, 10);
+			}
+			}
 		}
-	    }
-	}
 	g.chcolor();
     }
 	

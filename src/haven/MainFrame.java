@@ -44,7 +44,7 @@ public class MainFrame extends Frame implements Runnable, FSMan {
 	Dimension insetsSize;
 	public static Dimension innerSize;
 	public static Point centerPoint;
-	static String ark_title = "Haven and Hearth <ark.su build 7>";
+	static String ark_title = "Haven and Hearth <based on ark.su build 7>";
 
 	static {
 		try {
