@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Haven & Hearth game client.
  *  Copyright (C) 2009 Fredrik Tolf <fredrik@dolda2000.com>, and
- *                     Björn Johannessen <johannessen.bjorn@gmail.com>
+ *                     BjГ¶rn Johannessen <johannessen.bjorn@gmail.com>
  *
  *  Redistribution and/or modification of this file is subject to the
  *  terms of the GNU Lesser General Public License, version 3, as
@@ -63,6 +63,17 @@ public class OptWnd extends Window {
 		{"Silkmoth",			"gfx/kritter/moth/neg"},
 		{"Troll",				"gfx/kritter/troll/neg"},
     };
+	static String[][] cblist_dkritter = {
+		{"Aurochs (dead)",				"gfx/kritter/aurochs/cdv"},
+		{"Bear (dead)",				"gfx/kritter/bear/cdv"},
+		{"Boar (dead)",				"gfx/kritter/boar/cdv"},
+		{"Deer (dead)",				"gfx/kritter/deer/cdv"},
+		{"Fox (dead)",					"gfx/kritter/fox/cdv"},
+		{"Hare (dead)",				"gfx/kritter/hare/cdv"},
+		{"Hen (dead)",					"gfx/kritter/hen/cdv"},
+		{"Mufflon (dead)",				"gfx/kritter/mufflon/cdv"},
+		{"Troll (dead)",				"gfx/kritter/troll/cdv"}
+    };
 	static String[][] cblist_herbs = {		
 		{"Bloated Bolete",			"gfx/terobjs/herbs/bloatedbolete"},
 		{"Blood Stern",				"gfx/terobjs/herbs/bloodstern"},
@@ -107,6 +118,7 @@ public class OptWnd extends Window {
     };
     private List<CheckBox> hide_checkboxes = new ArrayList<CheckBox>();
 	private List<CheckBox> ltok_checkboxes = new ArrayList<CheckBox>();
+	private List<CheckBox> ltodk_checkboxes = new ArrayList<CheckBox>();
 	private List<CheckBox> ltoh_checkboxes = new ArrayList<CheckBox>();
 	private List<CheckBox> ltoo_checkboxes = new ArrayList<CheckBox>();
     private Comparator<String> camcomp = new Comparator<String>() {
@@ -130,9 +142,9 @@ public class OptWnd extends Window {
     }
 
     public OptWnd(Coord c, Widget parent) {
-	super(c, new Coord(400, 340), parent, "Options");
+	super(c, new Coord(540, 420), parent, "Options");
 
-	body = new Tabs(Coord.z, new Coord(400, 300), this) {
+	body = new Tabs(Coord.z, new Coord(540, 400), this) {
 		public void changed(Tab from, Tab to) {
 		    Utils.setpref("optwndtab", to.btn.text.text);
 		    from.btn.c.y = 0;
@@ -160,7 +172,7 @@ public class OptWnd extends Window {
 		    }
 		}};
 
-	    Widget editbox = new Frame(new Coord(310, 30), new Coord(90, 100), tab);
+	    Widget editbox = new Frame(new Coord(450, 30), new Coord(90, 100), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
 		    public void changed(int btn, String lbl) {
@@ -212,6 +224,27 @@ public class OptWnd extends Window {
                 Config.saveOptions();
     		}};
         chk.a = Config.gilbertus_map_dump;
+		
+		chk = new CheckBox(new Coord(10, 310), tab, "Show radius (don't work correct)") {
+    		public void changed(boolean val) {
+    		    Config.showRadius = val;
+                Config.saveOptions();
+    		}};
+        chk.a = Config.showRadius;
+		
+		chk = new CheckBox(new Coord(10, 340), tab, "Enable LTO") {
+    		public void changed(boolean val) {
+    		    Config.enableLTO = val;
+                Config.saveOptions();
+    		}};
+        chk.a = Config.enableLTO;
+		
+		chk = new CheckBox(new Coord(10, 370), tab, "Alternative name LTO") {
+    		public void changed(boolean val) {
+    		    Config.altnLTO = val;
+                Config.saveOptions();
+    		}};
+        chk.a = Config.altnLTO;
             
 	}
 
@@ -220,12 +253,12 @@ public class OptWnd extends Window {
 	    tab = body.new Tab(new Coord(60, 0), 60, "Camera");
 
 	    new Label(new Coord(10, 40), tab, "Camera type:");
-	    final RichTextBox caminfo = new RichTextBox(new Coord(180, 70), new Coord(210, 180), tab, "", foundry);
+	    final RichTextBox caminfo = new RichTextBox(new Coord(330, 70), new Coord(210, 180), tab, "", foundry);
 	    caminfo.bg = new java.awt.Color(0, 0, 0, 64);
 	    String dragcam = "\n\n$col[225,200,100,255]{You can drag and recenter with the middle mouse button.}";
 	    String fscam = "\n\n$col[225,200,100,255]{Should be used in full-screen mode.}";
 	    addinfo("orig",       "The Original",  "The camera centers where you left-click.", null);
-	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - à la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
+	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - Г  la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
 	    addinfo("border",     "Freestyle",     "You can move around freely within the larger area of the window; the camera only moves along to ensure the character does not reach the edge of the window. Boom chakalak!" + dragcam, null);
 	    addinfo("fixed",      "The Fixator",   "The camera is fixed, relative to your character." + dragcam, null);
 	    addinfo("kingsquest", "King's Quest",  "The camera is static until your character comes close enough to the edge of the screen, at which point the camera snaps around the edge.", null);
@@ -355,25 +388,42 @@ public class OptWnd extends Window {
 		int x = 10;
         for (final String[] checkbox : cblist_kritter) {
             CheckBox chkbox;
-			if (y > 250) {
-				if (x == 10) {x = 130;} else {x += 125;}
+			if (y > 360) {
+				x = 130;
 				y = 25;
 			}
 			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
 				public void changed(boolean val) {
 					if (val) {
 						Config.ltObjectList.add(checkbox[1]);
-						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
 					} else {
 						Config.ltObjectList.remove(checkbox[1]);
-						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
 					}
 				}
 			};
             ltok_checkboxes.add(chkbox);
-			ark_log.LogPrint("add cbKritter" + chkbox.lbl.text);
         }
-        UpdateLTOCheckBoxes(cblist_kritter, ltok_checkboxes);
+		UpdateLTOCheckBoxes(cblist_kritter, ltok_checkboxes);
+		x = 255;
+		y = 25;
+		for (final String[] checkbox : cblist_dkritter) {
+            CheckBox chkbox;
+			if (y > 360) {
+				x = 380;
+				y = 25;
+			}
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+				public void changed(boolean val) {
+					if (val) {
+						Config.ltObjectList.add(checkbox[1]);
+					} else {
+						Config.ltObjectList.remove(checkbox[1]);
+					}
+				}
+			};
+            ltodk_checkboxes.add(chkbox);
+        }
+        UpdateLTOCheckBoxes(cblist_dkritter, ltodk_checkboxes);
 	}
 	{ /* TARGET LINE TO HERBS OBJECT TAB */
 	    tab = body.new Tab(new Coord(305, 0), 45, "LTO H");
@@ -382,7 +432,7 @@ public class OptWnd extends Window {
 		int x = 10;
         for (final String[] checkbox : cblist_herbs) {
             CheckBox chkbox;
-			if (y > 250) {
+			if (y > 360) {
 				if (x == 10) {x = 130;} else {x += 125;}
 				y = 25;
 			}
@@ -390,15 +440,12 @@ public class OptWnd extends Window {
 				public void changed(boolean val) {
 					if (val) {
 						Config.ltObjectList.add(checkbox[1]);
-						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
 					} else {
 						Config.ltObjectList.remove(checkbox[1]);
-						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
 					}
 				}
 			};
             ltoh_checkboxes.add(chkbox);
-			ark_log.LogPrint("add cbHerbs" + chkbox.lbl.text);
         }
         UpdateLTOCheckBoxes(cblist_herbs, ltoh_checkboxes);
 	}
@@ -409,7 +456,7 @@ public class OptWnd extends Window {
 		int x = 10;
         for (final String[] checkbox : cblist_other) {
             CheckBox chkbox;
-			if (y > 250) {
+			if (y > 360) {
 				if (x == 10) {x = 130;} else {x += 125;}
 				y = 25;
 			}
@@ -417,21 +464,18 @@ public class OptWnd extends Window {
 				public void changed(boolean val) {
 					if (val) {
 						Config.ltObjectList.add(checkbox[1]);
-						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Checked");
 					} else {
 						Config.ltObjectList.remove(checkbox[1]);
-						ark_log.LogPrint(checkbox[0] + " (" + checkbox[1]+ ")" + ": Unchecked");
 					}
 				}
 			};
             ltoo_checkboxes.add(chkbox);
-			ark_log.LogPrint("add cbOther" + chkbox.lbl.text);
         }
         UpdateLTOCheckBoxes(cblist_other, ltoo_checkboxes);
 	}
     //------------------------------------------------------------------------------------------------------------------
 
-    new Frame(new Coord(-10, 20), new Coord(420, 330), this);
+    new Frame(new Coord(-10, 20), new Coord(560, 410), this);
 	String last = Utils.getpref("optwndtab", "");
 	for(Tabs.Tab t : body.tabs) {
 	    if(t.btn.text.text.equals(last))
@@ -444,7 +488,6 @@ public class OptWnd extends Window {
         int i = 0;    
         for (final String[] checkbox : strlist) {
             CheckBox chkbox = cbl.get(i);
-			ark_log.LogPrint("cbString: " + chkbox.lbl.text);
             chkbox.a = Config.ltObjectList.contains(checkbox[1]);
             i++;
         }

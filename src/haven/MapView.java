@@ -49,7 +49,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public boolean mode_select_object = false; // нужно выбрать объект.
 	public Coord last_my_coord; // последние координаты моего чара. нужно для слежения
 	public Gob last_object = null; //последний найденный с помощью "find_map_object" объект 
-	static Map<String, String> objects_name_list = new HashMap<String, String>();
+	public final static Map<String, String> objects_name_list = new HashMap<String, String>();
 	long time_to_start;
 	boolean started = false;
 	long AUTO_START_TIME = 15000;	
@@ -79,6 +79,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public Text polownert = null;
 	public String polowner = null;
 	long polchtm = 0;
+	Map<String, Integer> radiuses;
 	
 	public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
 		public int compare(Sprite.Part a, Sprite.Part b) {
@@ -503,6 +504,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		mask = new ILM(sz, glob.oc);
 		time_to_start = AUTO_START_TIME;
 		last_tick = System.currentTimeMillis();
+		radiuses = new HashMap<String, Integer>();
 	}
 
 	public static Coord m2s(Coord c) {
@@ -672,8 +674,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			gob.setattr(new ResDrawable(gob, res));
 			plob.add(gob);
 			glob.oc.ladd(plob);
-			if(args.length > 3)
-			plrad = (Integer)args[3];
+			if(args.length > 3) {
+				plrad = (Integer)args[3];
+				radiuses.put(res.name, plrad);
+			}
 			this.plob = plob;
 		} else if(msg == "unplace") {
 			if(plob != null)
@@ -783,6 +787,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		int i;
 		double w = 2;
 
+	try {
 		ol = getol(tc);
 		if(ol == 0)
 		return;
@@ -817,27 +822,52 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			}
 		}
 		g.chcolor(Color.WHITE);
+	} catch (Loading e) {}
 	}
 
-//	private void drawradius(GOut g, Coord c, int radius) {
-//		g.fellipse(c, new Coord((int)(radius * 4 * Math.sqrt(0.5)), (int)(radius * 2 * Math.sqrt(0.5))));
-//    }
+	private void drawradius(GOut g, Coord c, int radius) {
+		g.fellipse(c, new Coord((int)(radius * 4 * Math.sqrt(0.5)), (int)(radius * 2 * Math.sqrt(0.5))));
+    }
 	
 	private void drawplobeffect(GOut g) {
 		if(plob == null)
-		return;
+			return;
 		Gob gob = null;
 		for(Gob tg : plob)
-		gob = tg;
+			gob = tg;
 		if(gob.sc == null)
-		return;
+			return;
 		if(plrad > 0) {
 			g.chcolor(0, 255, 0, 32);
-			g.fellipse(gob.sc, new Coord((int)(plrad * 4 * Math.sqrt(0.5)), (int)(plrad * 2 * Math.sqrt(0.5))));
+			drawradius(g, gob.sc, plrad);
+			//g.fellipse(gob.sc, new Coord((int)(plrad * 4 * Math.sqrt(0.5)), (int)(plrad * 2 * Math.sqrt(0.5))));
 			g.chcolor();
 		}
 	}
-
+	
+	private void drawradiuseffect(GOut g) {
+		boolean rd = false;
+		synchronized (glob.oc) {
+			for (Gob gob : glob.oc) {
+				String rname = "";
+				rname = gob.GetResName();
+				if (rname == "gfx/terobjs/bhived") rname = "gfx/terobjs/bhive";
+				if(Config.showRadius == true) {
+					if ((gob.sc != null) &&
+							(Config.radiusList.contains(rname)) &&
+							(radiuses.containsKey(rname)) &&
+							(radiuses.get(rname) > 0)) {
+						g.chcolor(0, 255, 0, 32);
+						drawradius(g, gob.sc, radiuses.get(rname));
+						rd = true;
+						g.chcolor();
+					}
+				}
+			}
+		}
+		if (!rd) drawplobeffect(g);
+	}
+	
 	private void drawlinetoobject(GOut g) {
 		Coord tpoint = new Coord(0,0);
 		int notext = 0;
@@ -864,9 +894,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 							pco.y = (int) (sz.y / 2);
 						}
 						Coord oco = m2s(oid.getc()).add(oc);
+						//Цвет линий
 						if ((oid.GetResName().contains("gfx/kritter/bear"))||
 								(oid.GetResName().contains("gfx/kritter/boar"))||
-								(oid.GetResName().contains("gfx/borka/neg"))) {
+								(oid.GetResName().contains("gfx/borka/neg"))||
+								(oid.GetResName().contains("gfx/kritter/troll"))) {
 							g.chcolor(255,0,0,255);
 						} else {
 							if (oid.GetResName().contains("gfx/terobjs/herbs/")) {
@@ -875,6 +907,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 								g.chcolor(255,255,255,150);
 							}
 						}
+						//----------
 						String objname = "";
 						if (objects_name_list.containsKey(oid.GetResName())) {
 							objname = objects_name_list.get(oid.GetResName());
@@ -889,11 +922,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 								objname = objects_name_list.get("gfx/terobjs/ridges/caveout");
 							}
 						}
-						g.line(oco, pco, 1);
+						g.line(oco, pco, 1); //Рисуем линию от игрока или центра экрана до объекта.
 						g.chcolor();
-						int r = 250; // Расстояние вывода текста
+						int r = Config.lto_label_distance; // Расстояние вывода текста
 						int x = 0;
 						int y = 0;
+						if ((oco.x == pco.x) && (oco.y == pco.y)) notext = 1;
 						if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
 							if (((oco.x - pco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
 							x = (pco.x + r);
@@ -968,20 +1002,27 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 								}
 							}
 						}
-	//					ark_log.LogPrint("ResName="+oid.GetResName()+"    Value = (" + objname + ")");
-//						ark_log.LogPrint("T1 X=" + pco.x + "   Y=" + pco.y);
-//						ark_log.LogPrint("T2 X=" + oco.x + "   Y=" + oco.y);
-//						ark_log.LogPrint("T3 X=" + sz.x + "   Y=" + sz.y);
-	//					ark_log.LogPrint("tmp X=" + tmpx + "   Y=" + tmpy);
-	//					ark_log.LogPrint("tpoint.y = "+tpoint.y);
-	//					ark_log.LogPrint("tpoint.x = "+tpoint.x);
-	//					ark_log.LogPrint("objname=" + objname);
-						if ((objname != "") && (notext != 1)) g.text(objname, tpoint);
-						objname = "";
+						if ((objname != "") && (notext == 0)) {
+							String [] objtext = new String[2];
+							objtext = objname.split(":");
+							if (Config.altnLTO){
+								if (objtext.length > 1) {
+									g.text(objtext[1], tpoint);
+//									objtext[0] = "";
+//									objtext[1] = "";
+								} else {
+									g.text(objtext[0], tpoint);
+//									objtext[0] = "";
+								}
+							} else {
+								g.text(objtext[0], tpoint);
+//								objtext[0] = "";
+							}
+							objname = "";
+						}
 						notext = 0;
 					}
 				g.chcolor(255, 128, 64, 96);
-				//drawradius(g, gob.sc, 10);
 			}
 			}
 		}
@@ -1175,7 +1216,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		if(curf != null)
 		curf.tick("map");
 		
-		drawplobeffect(g);
+		drawradiuseffect(g);
+		
 		if(curf != null)
 		curf.tick("plobeff");
 
@@ -1486,7 +1528,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			mask.amb = new Color(0, 0, 0, 0);
 			drawmap(g);
 			drawarrows(g);
-			drawlinetoobject(g);
+			if (Config.enableLTO)
+				drawlinetoobject(g);
 			if((ark_bot.seo != null)&&(ark_bot.seo.getc() != null)) {
 				last_object = ark_bot.seo;
 				targetarrow(g);

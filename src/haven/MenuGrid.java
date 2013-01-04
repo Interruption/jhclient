@@ -43,7 +43,6 @@ public class MenuGrid extends Widget {
     private Resource cur, pressed, dragging, layout[][] = new Resource[gsz.x][gsz.y];
     private int curoff = 0;
     private Map<Character, Resource> hotmap = new TreeMap<Character, Resource>();
-
     static {
 	Widget.addtype("scm", new WidgetFactory() {
 		public Widget create(Coord c, Widget parent, Object[] args) {
@@ -51,7 +50,7 @@ public class MenuGrid extends Widget {
 		}
 	    });
     }
-
+	
     public class PaginaException extends RuntimeException {
 	public Resource res;
 
@@ -242,6 +241,7 @@ public class MenuGrid extends Widget {
 		for (int i=0; i<ss.length; i++)
 			s = s+ss[i]+",    ";
 		ark_log.LogPrint("send act click: "+s);
+		ark_log.LogPrint("r: "+r+"    r.name"+r.layer(Resource.action).name);
 	    wdgmsg("act", (Object[])r.layer(Resource.action).ad);
 	}
     }

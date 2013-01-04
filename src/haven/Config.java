@@ -31,7 +31,7 @@ import java.net.URL;
 import java.util.HashSet;
 import java.util.Properties;
 import java.util.Map;
-import java.util.Set;
+//import java.util.Set;
 import java.util.HashMap;
 
 import static haven.ark_bot.*;
@@ -46,7 +46,7 @@ public class Config {
     public static String defserv;
     public static URL resurl, mapurl;
     public static boolean fullscreen;
-    public static boolean debug_flag = true;
+    public static boolean debug_flag = false;
     public static boolean bounddb = true;
     public static boolean profile;
     public static boolean nolocalres;
@@ -77,7 +77,7 @@ public class Config {
     public static String auto_start_script = ""; // имя скрипта запускаемого после логина
     public static boolean keep_connect = false; // подерживать ли подключение. (реконнекты)
     
-//    public static String auth_server = "";
+	// public static String auth_server = "";
     public static boolean FirstLogin = true; // первый ли запуск клиента
     public static boolean inactive_exit = false; // закрывать клиент при неактивности (нет новых виджетов) 
 
@@ -85,15 +85,21 @@ public class Config {
     public static boolean xray;
     public static boolean hide;
     public static HashSet<String> hideObjectList;
-	public static HashSet<String> ltObjectList;
-    public static String currentCharName;
+	public static String currentCharName;
     public static Properties options;
     public static boolean gilbertus_map_dump = true;
+	
+	// interruption:
+	public static HashSet<String> ltObjectList;
+	public static int lto_label_distance = 250;
+	public static boolean showRadius = false;
+	public static HashSet<String> radiusList;
+	public static boolean showq;
 	public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
 	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
-
-	public static boolean showq;
-
+	public static boolean enableLTO = true;
+	public static boolean altnLTO = true;
+			
     static {
 	try {
 	    String p;
@@ -123,6 +129,7 @@ public class Config {
         options = new Properties();
         hideObjectList = new HashSet<String>();
 		ltObjectList  = new HashSet<String>();
+		radiusList  = new HashSet<String>();
         loadOptions();
 		loadFEP();
 	    loadCurios();
@@ -240,10 +247,30 @@ public class Config {
 			fstream = new FileInputStream("onlist.conf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 			String strLine;
+			int con = 0;
 			while ((strLine = br.readLine()) != null)   {
-				String [] tmp = strLine.split(":");
-				MapView.objects_name_list.put(tmp[1], tmp[0]);
+				String [] res = strLine.split(";");
+				MapView.objects_name_list.put(res[2], res[0]+":"+res[1]);
+				con++;
 			}
+			System.out.print("\nloaded \"onlist.conf\" file ... item: "+con+"\n");
+			br.close();
+			fstream.close();
+		} catch (Exception e) {}
+    }
+	
+	private static void loadRList() {
+		try {
+			FileInputStream fstream;
+			fstream = new FileInputStream("rlist.conf");
+			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
+			String strLine;
+			int con = 0;
+			while ((strLine = br.readLine()) != null)   {
+				radiusList.add(strLine);
+				con++;
+			}
+			System.out.print("\nloaded \"rlist.conf\" file ... item: "+con+"\n");
 			br.close();
 			fstream.close();
 		} catch (Exception e) {}
@@ -361,9 +388,14 @@ public class Config {
         bot_name1 = getopt_str("bot_name1", "test2");
         bot_name2 = getopt_str("bot_name1", "test");
         gilbertus_map_dump = getopt_bool("gilbertus_map", false);
-		showq = options.getProperty("showq", "true").equals("true");
+		showq = getopt_bool("showq", true);
+		lto_label_distance = getopt_int("lto_label_distance", 250);
+		showRadius = getopt_bool("showRadius", false);
+		enableLTO = getopt_bool("lto", true);
+		altnLTO = getopt_bool("lto", true);
 		loadLTOList();
 		loadONList();
+		loadRList();
     }
 
     public static void saveOptions() {
@@ -389,6 +421,10 @@ public class Config {
         setopt_str("bot_name2", bot_name2);
         setopt_bool("gilbertus_map", gilbertus_map_dump);
 		setopt_bool("showq", showq);
+		setopt_bool("showRadius", showRadius);
+		setopt_bool("lto", enableLTO);
+		setopt_bool("lto", altnLTO);
+		setopt_int("lto_label_distance", lto_label_distance);
 		writeLTOList();
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");
