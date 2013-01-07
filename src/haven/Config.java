@@ -391,8 +391,8 @@ public class Config {
 		showq = getopt_bool("showq", true);
 		lto_label_distance = getopt_int("lto_label_distance", 250);
 		showRadius = getopt_bool("showRadius", false);
-		enableLTO = getopt_bool("lto", true);
-		altnLTO = getopt_bool("lto", true);
+		enableLTO = getopt_bool("use_lto", true);
+		altnLTO = getopt_bool("altname_lto", false);
 		loadLTOList();
 		loadONList();
 		loadRList();
@@ -422,8 +422,8 @@ public class Config {
         setopt_bool("gilbertus_map", gilbertus_map_dump);
 		setopt_bool("showq", showq);
 		setopt_bool("showRadius", showRadius);
-		setopt_bool("lto", enableLTO);
-		setopt_bool("lto", altnLTO);
+		setopt_bool("use_lto", enableLTO);
+		setopt_bool("altname_lto", altnLTO);
 		setopt_int("lto_label_distance", lto_label_distance);
 		writeLTOList();
         try {
