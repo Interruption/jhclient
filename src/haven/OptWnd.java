@@ -406,6 +406,7 @@ public class OptWnd extends Window {
 					} else {
 						Config.ltObjectList.remove(checkbox[1]);
 					}
+					Config.saveOptions();
 				}
 			};
             ltok_checkboxes.add(chkbox);
@@ -426,6 +427,7 @@ public class OptWnd extends Window {
 					} else {
 						Config.ltObjectList.remove(checkbox[1]);
 					}
+					Config.saveOptions();
 				}
 			};
             ltodk_checkboxes.add(chkbox);
@@ -450,6 +452,7 @@ public class OptWnd extends Window {
 					} else {
 						Config.ltObjectList.remove(checkbox[1]);
 					}
+					Config.saveOptions();
 				}
 			};
             ltoh_checkboxes.add(chkbox);
@@ -474,6 +477,7 @@ public class OptWnd extends Window {
 					} else {
 						Config.ltObjectList.remove(checkbox[1]);
 					}
+					Config.saveOptions();
 				}
 			};
             ltoo_checkboxes.add(chkbox);

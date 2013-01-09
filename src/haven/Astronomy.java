@@ -28,7 +28,17 @@ package haven;
 
 public class Astronomy {
     double dt, mp, yt;
+    int hh,mm,day;
     boolean night;
+    public static final String[] phase ={
+					"New Moon", 
+					"Waxing Crescent", 
+					"First Quarter",
+					"Waxing Gibbous",
+					"Full Moon",
+					"Waning Gibbous",
+					"Last Quarter",
+					"Waning Crescent"};
 	
     public boolean equals(Object o) {
 	if(!(o instanceof Astronomy))
@@ -49,6 +59,9 @@ public class Astronomy {
 	this.dt = dt;
 	this.mp = mp;
 	this.yt = yt;
+	hh = (int)(24*dt);
+	mm = (int)(60*(24*dt - hh));
+	day = (int)(365*yt);
 	this.night = night;
     }
 }
