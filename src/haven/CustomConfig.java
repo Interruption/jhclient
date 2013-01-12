@@ -112,23 +112,23 @@ public class CustomConfig {
 		}
 	}
 	public static Coord invCoord = Coord.z;
-	public static int sfxVol = 100;
-	public static int musicVol = 5;
+//	public static int sfxVol = 100;
+//	public static int musicVol = 5;
 	public static List<CharData> characterList = new ArrayList<CharData>();
 	public static CharData activeCharacter;
 	public static int wdgtID = 1000;
-	public static boolean isMusicOn = true;
-	public static boolean isSoundOn = true;
+//	public static boolean isMusicOn = true;
+//	public static boolean isSoundOn = true;
 	public static boolean hasNightVision = true;
 	public static boolean isSaveable = true;
 	public static boolean noChars = true;
 
 	public static void setDefaults()
 	{
-		sfxVol = 100;
-		musicVol = 30;
-		isMusicOn = false;
-		isSoundOn = false;
+//		sfxVol = 100;
+//		musicVol = 30;
+//		isMusicOn = false;
+//		isSoundOn = false;
 		hasNightVision = true;
 	}
     public static boolean load() {
@@ -140,27 +140,27 @@ public class CustomConfig {
 
 	    	XMLReader xmlReader = saxParser.getXMLReader();
 		    xmlReader.setContentHandler(new DefaultHandler(){
-			    public void startElement(String namespaceURI, String localName,
-			    							String qName, Attributes atts) throws SAXException
-			    {
-			    	String value;
-			    	String key = qName.toUpperCase().trim();
-
-			    	//	Logs the loading sequence on the console
-			    	if(key.equals("SOUND")){
-			    		value = atts.getValue("enabled") == null ? "true" : atts.getValue("enabled");
-			    		isSoundOn = Boolean.parseBoolean(value);
-
-			    		value = atts.getValue("volume") == null ? "100" : atts.getValue("volume");
-			    		sfxVol = Integer.parseInt(value);
-			    	}else if(key.equals("MUSIC")){
-			    		value = atts.getValue("enabled") == null ? "true" : atts.getValue("enabled");
-			    		isMusicOn = Boolean.parseBoolean(value);
-
-			    		value = atts.getValue("volume") == null ? "100" : atts.getValue("volume");
-			    		musicVol = Integer.parseInt(value);
-			    	}
-			    }
+//			    public void startElement(String namespaceURI, String localName,
+//			    							String qName, Attributes atts) throws SAXException
+//			    {
+//			    	String value;
+//			    	String key = qName.toUpperCase().trim();
+//
+//			    	//	Logs the loading sequence on the console
+//			    	if(key.equals("SOUND")){
+//			    		value = atts.getValue("enabled") == null ? "true" : atts.getValue("enabled");
+//			    		isSoundOn = Boolean.parseBoolean(value);
+//
+//			    		value = atts.getValue("volume") == null ? "100" : atts.getValue("volume");
+//			    		sfxVol = Integer.parseInt(value);
+//			    	}else if(key.equals("MUSIC")){
+//			    		value = atts.getValue("enabled") == null ? "true" : atts.getValue("enabled");
+//			    		isMusicOn = Boolean.parseBoolean(value);
+//
+//			    		value = atts.getValue("volume") == null ? "100" : atts.getValue("volume");
+//			    		musicVol = Integer.parseInt(value);
+//			    	}
+//			    }
 			});
 			if(ResCache.global != null){
 				xmlReader.parse(new InputSource(ResCache.global.fetch("config.xml")));
@@ -191,10 +191,10 @@ public class CustomConfig {
     	}
     	return false;
     }
-    public static double getSFXVolume()
-    {
-    	return (double)sfxVol/100;
-    }
+//    public static double getSFXVolume()
+//    {
+//    	return (double)sfxVol/100;
+//    }
     public static synchronized void saveSettings()
     {
     	try{
@@ -206,10 +206,10 @@ public class CustomConfig {
     			}
     			writer.write("<?xml version=\"1.0\" ?>\n");
     			writer.write("<CONFIG>\n");
-    			writer.write("\t<SOUND enabled=\"" + Boolean.toString(isSoundOn)
-    						+ "\" volume=\"" + Integer.toString(sfxVol) + "\"/>\n");
-    			writer.write("\t<MUSIC enabled=\"" + Boolean.toString(isMusicOn)
-    						+ "\" volume=\"" + Integer.toString(musicVol) + "\"/>\n");
+//    			writer.write("\t<SOUND enabled=\"" + Boolean.toString(isSoundOn)
+//    						+ "\" volume=\"" + Integer.toString(sfxVol) + "\"/>\n");
+//    			writer.write("\t<MUSIC enabled=\"" + Boolean.toString(isMusicOn)
+//    						+ "\" volume=\"" + Integer.toString(musicVol) + "\"/>\n");
 
     			writer.write("</CONFIG>");
     			writer.close();

@@ -34,7 +34,7 @@ public class RootWidget extends ConsoleHost {
     public static Resource defcurs = Resource.load("gfx/hud/curs/arw");
     Logout logout = null;
     Profile gprof;
-    GameOptions opts;
+//    GameOptions opts;
     boolean afk = false;
 
     public RootWidget(UI ui, Coord sz) {
@@ -53,16 +53,16 @@ public class RootWidget extends ConsoleHost {
 //		new Profwnd(findchild(SlenHud.class), findchild(MapView.class).mask.prof, "ILM prof");
 	    } else if(key == ':') {
 		    entercmd();
-	    } else if(key+96 == 'o' && ev.isControlDown())
-	    {
-	   	    if(opts == null)
-	   	    {
-	   	    	opts = new GameOptions(this);
-	   	    	ui.bind(opts, CustomConfig.wdgtID++);
-	   	    }
-	    	else{
-	    		opts.raise();
-	    	}
+//	    } else if(key+96 == 'o' && ev.isControlDown())
+//	    {
+//	   	    if(opts == null)
+//	   	    {
+//	   	    	opts = new GameOptions(this);
+//	   	    	ui.bind(opts, CustomConfig.wdgtID++);
+//	   	    }
+//	    	else{
+//	    		opts.raise();
+//	    	}
         } else if ((ev.getKeyCode() == KeyEvent.VK_Y) && ((ev.getModifiers() & ev.CTRL_MASK) != 0)) {
             Config.render_enable = !Config.render_enable;
             Config.saveOptions();

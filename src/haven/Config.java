@@ -99,6 +99,10 @@ public class Config {
 	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
 	public static boolean enableLTO = true;
 	public static boolean altnLTO = true;
+	public static int sfxVol;
+	public static int musicVol;
+	public static boolean isMusicOn = false;
+	public static boolean isSoundOn = false;
 			
     static {
 	try {
@@ -122,7 +126,6 @@ public class Config {
 	    resdir = getprop("haven.resdir", "./res");
         mapdir = getprop("haven.mapdir", "./map");
 	    nopreload = getprop("haven.nopreload", "no").equals("yes");
-
         xray = false;
         hide = false;
         currentCharName = "";
@@ -353,6 +356,16 @@ public class Config {
 	    defserv = opt.rest[0];
     }
 
+	public static double getSFXVolume()
+    {
+    	return isSoundOn?((double)sfxVol/100):0;
+    }
+    
+    public static double getMusicVolume()
+    {
+    	return isMusicOn?((double)musicVol/100):0;
+    }
+	
     private static void loadOptions() {
         File inputFile = new File("haven.conf");
         if (!inputFile.exists()) {
@@ -382,17 +395,20 @@ public class Config {
         show_map_grid = getopt_bool("show_map_grid", true);
         highlight_object_by_mouse = getopt_bool("highlight_object_by_mouse", true);
         highlight_hided_objects = getopt_bool("highlight_hided_objects", true);
-//        auth_server = getopt_str("auth_server", "http://ark.su/hh.php");
         assign_to_tile = getopt_bool("assign_to_tile", false);
         inactive_exit = getopt_bool("inactive_exit", false);
-        bot_name1 = getopt_str("bot_name1", "test2");
-        bot_name2 = getopt_str("bot_name1", "test");
+        bot_name1 = getopt_str("bot_name1", "empty_bot1");
+        bot_name2 = getopt_str("bot_name2", "empty_bot2");
         gilbertus_map_dump = getopt_bool("gilbertus_map", false);
 		showq = getopt_bool("showq", true);
 		lto_label_distance = getopt_int("lto_label_distance", 250);
 		showRadius = getopt_bool("showRadius", false);
 		enableLTO = getopt_bool("use_lto", true);
 		altnLTO = getopt_bool("altname_lto", false);
+		isMusicOn = getopt_bool("music_on", true);
+		isSoundOn = getopt_bool("sound_on", true);
+		sfxVol = getopt_int("sfx_vol", 0);
+		musicVol = getopt_int("music_vol", 0);
 		loadLTOList();
 		loadONList();
 		loadRList();
@@ -425,6 +441,10 @@ public class Config {
 		setopt_bool("use_lto", enableLTO);
 		setopt_bool("altname_lto", altnLTO);
 		setopt_int("lto_label_distance", lto_label_distance);
+		setopt_int("sfx_vol", sfxVol);
+		setopt_int("music_vol", musicVol);
+		setopt_bool("music_on", isMusicOn);
+		setopt_bool("sound_on", isSoundOn);
 		writeLTOList();
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");

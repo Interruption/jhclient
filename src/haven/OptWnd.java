@@ -26,8 +26,16 @@
 
 package haven;
 
-import java.util.*;
 import java.awt.font.TextAttribute;
+import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
@@ -151,7 +159,7 @@ public class OptWnd extends Window {
     public OptWnd(Coord c, Widget parent) {
 	super(c, new Coord(540, 420), parent, "Options");
 
-	body = new Tabs(Coord.z, new Coord(540, 400), this) {
+	body = new Tabs(Coord.z, new Coord(520, 420), this) {
 		public void changed(Tab from, Tab to) {
 		    Utils.setpref("optwndtab", to.btn.text.text);
 		    from.btn.c.y = 0;
@@ -167,7 +175,7 @@ public class OptWnd extends Window {
 		public void click() {
 		    HackThread.tg().interrupt();
 		}};
-	    new Button(new Coord(10, 70), 125, tab, "LogPrint out") {
+	    new Button(new Coord(10, 70), 125, tab, "Logout") {
 		public void click() {
 		    ui.sess.close();
 		}};
@@ -179,7 +187,7 @@ public class OptWnd extends Window {
 		    }
 		}};
 
-	    Widget editbox = new Frame(new Coord(450, 30), new Coord(90, 100), tab);
+	    Widget editbox = new Frame(new Coord(445, 30), new Coord(90, 90), tab);
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
 		    public void changed(int btn, String lbl) {
@@ -190,6 +198,25 @@ public class OptWnd extends Window {
 	    if(Utils.getpref("editmode", "pc").equals("emacs")) editmode.check("Emacs");
 	    else                                                editmode.check("PC");
 
+		Widget botnames = new Frame(new Coord(230, 30), new Coord(200, 90), tab);
+	    new Label(new Coord(10, 10), botnames, "Bot names:");
+		final Label bot1 = new Label(new Coord(10, 30), botnames, "Bot 1:");
+		final Label bot2 = new Label(new Coord(10, 60), botnames, "Bot 2:");
+		final TextEntry bot_1 = new TextEntry(new Coord(50, 30), new Coord(90, 17), botnames, Config.bot_name1);
+		final TextEntry bot_2 = new TextEntry(new Coord(50, 60), new Coord(90, 17), botnames, Config.bot_name2);
+		new Button(new Coord(155, 29), 25, botnames, "Set") {
+			public void click() {
+				Config.bot_name1 = bot_1.text;
+				Config.saveOptions();
+			}
+		};
+		new Button(new Coord(155, 59), 25, botnames, "Set") {
+			public void click() {
+				Config.bot_name2 = bot_2.text;
+				Config.saveOptions();
+			}
+		};
+		
         CheckBox chk = new CheckBox(new Coord(10, 130), tab, "Toggle tracking ON when login") {
 		public void changed(boolean val) {
 		    Config.tracking = val;
@@ -265,7 +292,7 @@ public class OptWnd extends Window {
 	    String dragcam = "\n\n$col[225,200,100,255]{You can drag and recenter with the middle mouse button.}";
 	    String fscam = "\n\n$col[225,200,100,255]{Should be used in full-screen mode.}";
 	    addinfo("orig",       "The Original",  "The camera centers where you left-click.", null);
-	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - Г  la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
+	    addinfo("predict",    "The Predictor", "The camera tries to predict where your character is heading - à la Super Mario World - and moves ahead of your character. Works unlike a charm." + dragcam, null);
 	    addinfo("border",     "Freestyle",     "You can move around freely within the larger area of the window; the camera only moves along to ensure the character does not reach the edge of the window. Boom chakalak!" + dragcam, null);
 	    addinfo("fixed",      "The Fixator",   "The camera is fixed, relative to your character." + dragcam, null);
 	    addinfo("kingsquest", "King's Quest",  "The camera is static until your character comes close enough to the edge of the screen, at which point the camera snaps around the edge.", null);
@@ -351,22 +378,47 @@ public class OptWnd extends Window {
 
 	    new Label(new Coord(10, 40), tab, "Sound volume:");
 	    new Frame(new Coord(10, 65), new Coord(20, 206), tab);
-	    final Label sfxvol = new Label(new Coord(35, 69 + (int)(getsfxvol() * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
-	    new Scrollbar(new Coord(25, 70), 196, tab, 0, 100) {{ val = getsfxvol(); }
-		public void changed() {
-		    Audio.setvolume((100 - val) / 100.0);
-		    sfxvol.c.y = 69 + (int)(val * 1.86);
-		    sfxvol.settext(String.valueOf(100 - val) + " %");
-		}
-		public boolean mousewheel(Coord c, int amount) {
-		    val = Utils.clip(val + amount, min, max);
-		    changed();
-		    return(true);
-		}};
-	    new CheckBox(new Coord(10, 280), tab, "Music enabled") {
+	    new Label(new Coord(210, 40), tab, "Music volume:");
+	    new Frame(new Coord(210, 65), new Coord(20, 206), tab);
+	    final Label sfxvol = new Label(new Coord(35, 69 + (int)(Config.sfxVol * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
+	    final Label musicvol = new Label(new Coord(235, 69 + (int)(Config.musicVol * 1.86)),  tab, String.valueOf(100 - getsfxvol()) + " %");
+	    (new Scrollbar(new Coord(25, 70), 196, tab, 0, 100) {{ val = 100 - Config.sfxVol; }
+			public void changed() {
+				Config.sfxVol = 100 - val;
+				sfxvol.c.y = 69 + (int)(val * 1.86);
+				sfxvol.settext(String.valueOf(100 - val) + " %");
+				Config.saveOptions();
+			}
+			public boolean mousewheel(Coord c, int amount) {
+				val = Utils.clip(val + amount, min, max);
+				changed();
+				return (true);
+			}
+	    }).changed();
+	    (new Scrollbar(new Coord(225, 70), 196, tab, 0, 100) {{ val = 100 - Config.musicVol; }
+			public void changed() {
+				Config.musicVol = 100 - val;
+				Music.setVolume(Config.getMusicVolume());
+				musicvol.c.y = 69 + (int) (val * 1.86);
+				musicvol.settext(String.valueOf(100 - val) + " %");
+				Config.saveOptions();
+			}
+			public boolean mousewheel(Coord c, int amount) {
+				val = Utils.clip(val + amount, min, max);
+				changed();
+				return(true);
+			}
+	    }).changed();
+	    (new CheckBox(new Coord(10, 280), tab, "Sound enabled") {
 		public void changed(boolean val) {
-		    Music.enable(val);
-		}};
+		    Config.isSoundOn = val;
+		}}).a = Config.isSoundOn;
+		
+	    (new CheckBox(new Coord(210, 280), tab, "Music enabled") {
+		public void changed(boolean val) {
+		    Config.isMusicOn = val;
+		    Music.setVolume(Config.getMusicVolume());
+		}}).a = Config.isMusicOn;
     }
 	{ /* HIDE OBJECTS TAB */
 	    tab = body.new Tab(new Coord(180, 0), 80, "Hide Objects");

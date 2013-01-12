@@ -888,101 +888,93 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 					if((oid != null)&&(oid.getc() != null)) {
 						Gob pid = glob.oc.getgob(ark_bot.PlayerID);
 						Coord oc = viewoffset(sz, mc);
-						Coord pco = m2s(pid.getc()).add(oc);
-						if ((pco.x < 0) || (pco.y < 0) || (pco.x > sz.x) || (pco.y > sz.y)) {
-							pco.x = (int) (sz.x / 2);
-							pco.y = (int) (sz.y / 2);
-						}
-						Coord oco = m2s(oid.getc()).add(oc);
-						//Цвет линий
-						if ((oid.GetResName().contains("gfx/kritter/bear"))||
-								(oid.GetResName().contains("gfx/kritter/boar"))||
-								(oid.GetResName().contains("gfx/borka/neg"))||
-								(oid.GetResName().contains("gfx/kritter/troll"))) {
-							g.chcolor(255,0,0,255);
-						} else {
-							if (oid.GetResName().contains("gfx/terobjs/herbs/")) {
-								g.chcolor(100,255,100,150);
+						if ((pid != null)&&(oc != null)) {
+							Coord pco = m2s(pid.getc()).add(oc);
+							if ((pco.x < 0) || (pco.y < 0) || (pco.x > sz.x) || (pco.y > sz.y)) {
+								pco.x = (int) (sz.x / 2);
+								pco.y = (int) (sz.y / 2);
+							}
+							Coord oco = m2s(oid.getc()).add(oc);
+							//Цвет линий
+							if ((oid.GetResName().contains("gfx/kritter/bear"))||
+									(oid.GetResName().contains("gfx/kritter/boar"))||
+									(oid.GetResName().contains("gfx/borka/neg"))||
+									(oid.GetResName().contains("gfx/kritter/troll"))) {
+								g.chcolor(255,0,0,255);
 							} else {
-								g.chcolor(255,255,255,150);
+								if (oid.GetResName().contains("gfx/terobjs/herbs/")) {
+									g.chcolor(100,255,100,150);
+								} else {
+									g.chcolor(255,255,255,150);
+								}
 							}
-						}
-						//----------
-						String objname = "";
-						if (objects_name_list.containsKey(oid.GetResName())) {
-							objname = objects_name_list.get(oid.GetResName());
-						} else {
-							if (oid.GetResName().contains("gfx/kritter/boat/boat-")) {
-								objname = objects_name_list.get("gfx/kritter/boat");
+							//----------
+							String objname = "";
+							if (objects_name_list.containsKey(oid.GetResName())) {
+								objname = objects_name_list.get(oid.GetResName());
+							} else {
+								if (oid.GetResName().contains("gfx/kritter/boat/boat-")) {
+									objname = objects_name_list.get("gfx/kritter/boat");
+								}
+								if (oid.GetResName().contains("gfx/terobjs/ridges/cavein-")) {
+									objname = objects_name_list.get("gfx/terobjs/ridges/cavein");
+								}
+								if (oid.GetResName().contains("gfx/terobjs/ridges/caveout-")) {
+									objname = objects_name_list.get("gfx/terobjs/ridges/caveout");
+								}
 							}
-							if (oid.GetResName().contains("gfx/terobjs/ridges/cavein-")) {
-								objname = objects_name_list.get("gfx/terobjs/ridges/cavein");
-							}
-							if (oid.GetResName().contains("gfx/terobjs/ridges/caveout-")) {
-								objname = objects_name_list.get("gfx/terobjs/ridges/caveout");
-							}
-						}
-						g.line(oco, pco, 1); //Рисуем линию от игрока или центра экрана до объекта.
-						g.chcolor();
-						int r = Config.lto_label_distance; // Расстояние вывода текста
-						int x = 0;
-						int y = 0;
-						if ((oco.x == pco.x) && (oco.y == pco.y)) notext = 1;
-						if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
-							if (((oco.x - pco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
-							x = (pco.x + r);
-							y = (pco.y - r);
-						} else {
-							if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
-								if (((pco.x - oco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
-								x = (pco.x - r);
+							g.line(oco, pco, 1); //Рисуем линию от игрока или центра экрана до объекта.
+							g.chcolor();
+							int r = Config.lto_label_distance; // Расстояние вывода текста
+							int x = 0;
+							int y = 0;
+							if ((oco.x == pco.x) && (oco.y == pco.y)) notext = 1;
+							if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
+								if (((oco.x - pco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
+								x = (pco.x + r);
 								y = (pco.y - r);
 							} else {
-								if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
-									if (((pco.x - oco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+								if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+									if (((pco.x - oco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
 									x = (pco.x - r);
-									y = (pco.y + r);
+									y = (pco.y - r);
 								} else {
-									if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
-										if (((oco.x - pco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
-										x = (pco.x + r);
+									if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
+										if (((pco.x - oco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+										x = (pco.x - r);
 										y = (pco.y + r);
+									} else {
+										if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+											if (((oco.x - pco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+											x = (pco.x + r);
+											y = (pco.y + r);
+										}
 									}
 								}
 							}
-						}
-						int tmpy = ((oco.x-pco.x)*(-1));
-						int tmpx = ((pco.y-oco.y)*(-1));
-						if (tmpy != 0) {
-							tpoint.y = (int)(((pco.y-oco.y)*x+(pco.x*oco.y-oco.x*pco.y))/tmpy);
-						} else {
-							tpoint.y = y;
-						}
-						if (tmpx != 0) {
-							tpoint.x = (int)(((oco.x-pco.x)*y+(pco.x*oco.y-oco.x*pco.y))/tmpx);
-						} else {
-							tpoint.x = x;
-						}
-						if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
-							if (tpoint.y < y) {
-								tpoint.y = y;
+							int tmpy = ((oco.x-pco.x)*(-1));
+							int tmpx = ((pco.y-oco.y)*(-1));
+							if (tmpy != 0) {
+								tpoint.y = (int)(((pco.y-oco.y)*x+(pco.x*oco.y-oco.x*pco.y))/tmpy);
 							} else {
-								if (tpoint.x > x) {
-									tpoint.x = x;
-								}
+								tpoint.y = y;
 							}
-						} else {
-							if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+							if (tmpx != 0) {
+								tpoint.x = (int)(((oco.x-pco.x)*y+(pco.x*oco.y-oco.x*pco.y))/tmpx);
+							} else {
+								tpoint.x = x;
+							}
+							if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
 								if (tpoint.y < y) {
 									tpoint.y = y;
 								} else {
-									if (tpoint.x < x) {
+									if (tpoint.x > x) {
 										tpoint.x = x;
 									}
 								}
 							} else {
-								if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
-									if (tpoint.y > y) {
+								if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+									if (tpoint.y < y) {
 										tpoint.y = y;
 									} else {
 										if (tpoint.x < x) {
@@ -990,35 +982,45 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 										}
 									}
 								} else {
-									if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+									if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
 										if (tpoint.y > y) {
 											tpoint.y = y;
 										} else {
-											if (tpoint.x > x) {
+											if (tpoint.x < x) {
 												tpoint.x = x;
+											}
+										}
+									} else {
+										if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+											if (tpoint.y > y) {
+												tpoint.y = y;
+											} else {
+												if (tpoint.x > x) {
+													tpoint.x = x;
+												}
 											}
 										}
 									}
 								}
 							}
-						}
-						if ((objname != "") && (notext == 0)) {
-							String [] objtext = new String[2];
-							objtext = objname.split(":");
-							if (Config.altnLTO){
-								if (objtext.length > 1) {
-									g.text(objtext[1], tpoint);
-//									objtext[0] = "";
-//									objtext[1] = "";
+							if ((objname != "") && (notext == 0)) {
+								String [] objtext = new String[2];
+								objtext = objname.split(":");
+								if (Config.altnLTO){
+									if (objtext.length > 1) {
+										g.text(objtext[1], tpoint);
+	//									objtext[0] = "";
+	//									objtext[1] = "";
+									} else {
+										g.text(objtext[0], tpoint);
+	//									objtext[0] = "";
+									}
 								} else {
 									g.text(objtext[0], tpoint);
-//									objtext[0] = "";
+	//								objtext[0] = "";
 								}
-							} else {
-								g.text(objtext[0], tpoint);
-//								objtext[0] = "";
+								objname = "";
 							}
-							objname = "";
 						}
 						notext = 0;
 					}

@@ -26,7 +26,14 @@
 
 package haven;
 
-import javax.sound.midi.*;
+import javax.sound.midi.InvalidMidiDataException;
+import javax.sound.midi.MetaEventListener;
+import javax.sound.midi.MetaMessage;
+import javax.sound.midi.MidiChannel;
+import javax.sound.midi.MidiSystem;
+import javax.sound.midi.MidiUnavailableException;
+import javax.sound.midi.Sequencer;
+import javax.sound.midi.Synthesizer;
 
 public class Music {
     private static Player player;
@@ -41,6 +48,11 @@ public class Music {
 	    System.out.println(str);
     }
 
+    public static void setVolume(double vol) {
+	if(player != null)
+	    player.setVolume(vol);
+    }
+    
     private static class Player extends HackThread {
 	private Resource res;
 	private Thread waitfor;
@@ -56,6 +68,18 @@ public class Music {
 	    this.waitfor = waitfor;
 	}
 
+	public void setVolume(double vol) {
+	    // Changes the music volume
+	    MidiChannel[] channels = synth.getChannels();
+	    // gain is a value between 0 and 1 (loudest)
+	    double gain = Math.sqrt(vol);
+//		double gain = 0.4;
+	    for (int i=0; i<channels.length; i++) {
+		channels[i].controlChange(7, (int)(gain * 127));
+		channels[i].setMute(vol == 0);
+	    }
+	}
+	
 	public void run() {
 	    try {
 		if(waitfor != null)
@@ -64,19 +88,11 @@ public class Music {
 		try {
 		    seq = MidiSystem.getSequencer(false);
 		    synth = MidiSystem.getSynthesizer();
-
 		    seq.open();
 		    seq.setSequence(res.layer(Resource.Music.class).seq);
 		    synth.open();
-		    //	Changes the music volume
-	        MidiChannel[] channels = synth.getChannels();
-
-	        // gain is a value between 0 and 1 (loudest)
-	        double gain = Math.sqrt((double)CustomConfig.musicVol/100);
-	        for (int i=0; i<channels.length; i++) {
-	            channels[i].controlChange(7, (int)(gain * 127));
-	        }
 		    seq.getTransmitter().setReceiver(synth.getReceiver());
+		    setVolume(Config.getMusicVolume());
 		} catch(MidiUnavailableException e) {
 		    return;
 		} catch(InvalidMidiDataException e) {

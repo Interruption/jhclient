@@ -34,19 +34,19 @@ public class GameOptions extends Window{
 
     	//	SFX volume
     	sfxVol = new Label(new Coord(0,0), this, "SFX Vol:");
-    	sfxVolBar = new FillBox(Coord.z.add(sfxVol.sz.x + 5, 0), Coord.z.add(120,20), CustomConfig.sfxVol, this);
+    	sfxVolBar = new FillBox(Coord.z.add(sfxVol.sz.x + 5, 0), Coord.z.add(120,20), Config.sfxVol, this);
 
     	//	Music volume bar
     	musicVol = new Label(new Coord(0, 30), this, "Music Vol:");
-    	musicVolBar = new FillBox(Coord.z.add(sfxVol.sz.x + 5, 30), Coord.z.add(120, 20), CustomConfig.musicVol, this);
+    	musicVolBar = new FillBox(Coord.z.add(sfxVol.sz.x + 5, 30), Coord.z.add(120, 20), Config.musicVol, this);
 
 		//	Sound toggle
 		soundToggle = new CheckBox(Coord.z.add(0,140), this, "Sound On/Off");
-		soundToggle.a = CustomConfig.isSoundOn;
+		soundToggle.a = Config.isSoundOn;
 
 		//	Music toggle
     	musicToggle = new CheckBox(Coord.z.add(soundToggle.sz.x,140), this, "Music On/Off");
-    	musicToggle.a = CustomConfig.isMusicOn;
+    	musicToggle.a = Config.isMusicOn;
     	
     	//	Ok button
 	//	okBtn = new Button(new Coord(50, 190), 50, this, "Ok");
@@ -69,19 +69,19 @@ public class GameOptions extends Window{
             return;
 		} else if(sender == sfxVolBar && msg == "change")
 		{
-			CustomConfig.sfxVol = args[0] != null ? ((Integer)args[0]).intValue() : CustomConfig.sfxVol;
+			Config.sfxVol = args[0] != null ? ((Integer)args[0]).intValue() : Config.sfxVol;
 			return;
 		} else if(sender == musicVolBar && msg == "change")
 		{
-			CustomConfig.musicVol = args[0] != null ?  ((Integer)args[0]).intValue() : CustomConfig.musicVol;
+			Config.musicVol = args[0] != null ?  ((Integer)args[0]).intValue() : Config.musicVol;
 			return;
 		} else if(sender == musicToggle && msg == "ch")
 		{
-			CustomConfig.isMusicOn = args[0] != null ? ((Boolean)args[0]).booleanValue() : CustomConfig.isMusicOn;
+			Config.isMusicOn = args[0] != null ? ((Boolean)args[0]).booleanValue() : Config.isMusicOn;
 			return;
 		} else if(sender == soundToggle && msg == "ch")
 		{
-			CustomConfig.isSoundOn = args[0] != null ? ((Boolean)args[0]).booleanValue() : CustomConfig.isSoundOn;
+			Config.isSoundOn = args[0] != null ? ((Boolean)args[0]).booleanValue() : Config.isSoundOn;
 			return;
 		}else if(sender == okBtn && msg == "activate")
 		{

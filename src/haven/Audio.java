@@ -44,9 +44,9 @@ public class Audio {
 	volume = Double.parseDouble(Utils.getpref("sfxvol", "1.0"));
     }
     
-    public static void setvolume(double volume) {
-	Audio.volume = volume;
-	Utils.setpref("sfxvol", Double.toString(volume));
+    public static void setvolume(double vol) {
+	Audio.volume = vol;
+	Utils.setpref("sfxvol", Double.toString(vol));
     }
 
     public interface CS {
@@ -221,7 +221,7 @@ public class Audio {
     }
     
     public static void play(byte[] clip) {
-	play(clip, CustomConfig.getSFXVolume(), 1.0);
+	play(clip, Config.getSFXVolume(), 1.0);
     }
     
     public static void queue(Runnable d) {

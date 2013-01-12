@@ -26,9 +26,18 @@
 
 package haven;
 
-import java.net.*;
-import java.util.*;
-import java.io.*;
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class Session {
     public static final int PVER = 2;
@@ -352,9 +361,10 @@ public class Session {
 	    } else if(msg.type == Message.RMSG_PARTY) {
 		glob.party.msg(msg);
 	    } else if(msg.type == Message.RMSG_SFX) {
-	    	if(!CustomConfig.isSoundOn) return;		//	Sound effects disabled
+	    	if(!Config.isSoundOn)
+	    	    return;//	Sound effects disabled
 		Indir<Resource> res = getres(msg.uint16());
-		double vol = ((double)CustomConfig.sfxVol) / 100.0;
+		double vol = ((double)msg.uint16()) / 256.0;
 		double spd = ((double)msg.uint16()) / 256.0;
 		Audio.play(res);
 	    } else if(msg.type == Message.RMSG_CATTR) {
@@ -367,7 +377,6 @@ public class Session {
 		    if(resnm.equals(""))
 			Music.play(null, false);
 		    else
-			if(!CustomConfig.isMusicOn)	return;		//	Music is disabled
 			Music.play(Resource.load(resnm, resver), loop);
 		}
 	    } else if(msg.type == Message.RMSG_TILES) {
@@ -463,10 +472,12 @@ public class Session {
 			} else if(msg.type == MSG_CLOSE) {
 			    synchronized(Session.this) {
 				state = "fin";
+				Session.this.notifyAll();
 			    }
 			    Session.this.close();
 			} else {
-			    throw(new MessageException("Unknown message type: " + msg.type, msg));
+			    //throw(new MessageException("Unknown message type: " + msg.type, msg));
+			    System.out.println("Unknown message type: " + msg.type+"\nMSG: " + msg.toString());
 			}
 		    }
 		}
