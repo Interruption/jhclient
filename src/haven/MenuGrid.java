@@ -241,7 +241,7 @@ public class MenuGrid extends Widget {
 		for (int i=0; i<ss.length; i++)
 			s = s+ss[i]+",    ";
 		ark_log.LogPrint("send act click: "+s);
-		ark_log.LogPrint("r: "+r+"    r.name"+r.layer(Resource.action).name);
+		ark_log.LogPrint("r: "+r+"    r.name: "+r.layer(Resource.action).name);
 	    wdgmsg("act", (Object[])r.layer(Resource.action).ad);
 	}
     }

@@ -35,8 +35,17 @@ import haven.hhl.Variable;
 import haven.hhl.hhl_main;
 
 import java.awt.Color;
-import java.util.*;
-import java.lang.reflect.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 public class MapView extends Widget implements DTarget, Console.Directory {
 	static Color[] olc = new Color[31];
@@ -80,6 +89,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	public String polowner = null;
 	long polchtm = 0;
 	Map<String, Integer> radiuses;
+	Gob gobplace = null;
 	
 	public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
 		public int compare(Sprite.Part a, Sprite.Part b) {
@@ -279,7 +289,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		public final Coord border = new Coord(10, 10);
 
 		public void setpos(MapView mv, Gob player, Coord sz) {
-			if (setoff) {
+			if(setoff) {
 				//            off = mv.mc.add(player.getc().inv());
 				setoff = false;
 				mv.mc = player.getc().add(off);
@@ -550,7 +560,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		setfocus(this);
 		Gob hit = gobatpos(c);
 		// arksu: если мы в режиме выбора объекта - возвращаем его и выходим
-		if (mode_select_object) {
+		if(mode_select_object) {
 			gob_at_mouse = hit;
 			mode_select_object = false;
 			return true;
@@ -568,14 +578,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			wdgmsg("place", gob.rc, button, ui.modflags());
 		} else {
 			if(hit == null) {
-				if (Config.assign_to_tile) {
+				if(Config.assign_to_tile) {
 					mc = tilify(mc);
 				}
 				LogPrint("map click: "+c.toString()+", "+mc.toString()+" btn="+button +" flags="+ ui.modflags());
 				wdgmsg("click", c, mc, button, ui.modflags());
 			}
 			else {
-				if (Config.assign_to_tile) {
+				if(Config.assign_to_tile) {
 					mc = tilify(mc);
 				}
 				LogPrint("map click: "+c.toString()+", "+mc.toString()+" btn="+button +" flags="+ ui.modflags() +
@@ -623,7 +633,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 
 	public void ResetCam() {
-		if (cam != null) {
+		if(cam != null) {
 			cam.reset();
 		}
 	}
@@ -664,15 +674,22 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		} else if(msg == "place") {
 			Collection<Gob> plob = this.plob;
 			if(plob != null) {
+				ark_log.LogPrint("Place1: "+plob.toString());
 				this.plob = null;
 				glob.oc.lrem(plob);
 			}
 			plob = new LinkedList<Gob>();
 			plontile = (Integer)args[2] != 0;
 			Gob gob = new Gob(glob, plontile?tilify(mousepos):mousepos);
+			gobplace = gob;
 			Resource res = Resource.load((String)args[0], (Integer)args[1]);
 			gob.setattr(new ResDrawable(gob, res));
 			plob.add(gob);
+			ark_log.LogPrint("Place2: "+gob.GetResName());
+			for(int i = 0; i < args.length; i++){
+				ark_log.LogPrint("Test_args["+i+"] = "+args[i].toString());
+			}
+			gobplace = gob;
 			glob.oc.ladd(plob);
 			if(args.length > 3) {
 				plrad = (Integer)args[3];
@@ -680,6 +697,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			}
 			this.plob = plob;
 		} else if(msg == "unplace") {
+			gobplace = null;
 			if(plob != null)
 			glob.oc.lrem(plob);
 			plob = null;
@@ -851,9 +869,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			for (Gob gob : glob.oc) {
 				String rname = "";
 				rname = gob.GetResName();
-				if (rname == "gfx/terobjs/bhived") rname = "gfx/terobjs/bhive";
+				if(rname == "gfx/terobjs/bhived") rname = "gfx/terobjs/bhive";
 				if(Config.showRadius == true) {
-					if ((gob.sc != null) &&
+					if((gob.sc != null) &&
 							(Config.radiusList.contains(rname)) &&
 							(radiuses.containsKey(rname)) &&
 							(radiuses.get(rname) > 0)) {
@@ -865,7 +883,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				}
 			}
 		}
-		if (!rd) drawplobeffect(g);
+		if(!rd) drawplobeffect(g);
 	}
 	
 	private void drawlinetoobject(GOut g) {
@@ -888,21 +906,21 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 					if((oid != null)&&(oid.getc() != null)) {
 						Gob pid = glob.oc.getgob(ark_bot.PlayerID);
 						Coord oc = viewoffset(sz, mc);
-						if ((pid != null)&&(oc != null)) {
+						if((pid != null)&&(oc != null)) {
 							Coord pco = m2s(pid.getc()).add(oc);
-							if ((pco.x < 0) || (pco.y < 0) || (pco.x > sz.x) || (pco.y > sz.y)) {
+							if((pco.x < 0) || (pco.y < 0) || (pco.x > sz.x) || (pco.y > sz.y)) {
 								pco.x = (int) (sz.x / 2);
 								pco.y = (int) (sz.y / 2);
 							}
 							Coord oco = m2s(oid.getc()).add(oc);
 							//Цвет линий
-							if ((oid.GetResName().contains("gfx/kritter/bear"))||
+							if((oid.GetResName().contains("gfx/kritter/bear"))||
 									(oid.GetResName().contains("gfx/kritter/boar"))||
 									(oid.GetResName().contains("gfx/borka/neg"))||
 									(oid.GetResName().contains("gfx/kritter/troll"))) {
 								g.chcolor(255,0,0,255);
 							} else {
-								if (oid.GetResName().contains("gfx/terobjs/herbs/")) {
+								if(oid.GetResName().contains("gfx/terobjs/herbs/")) {
 									g.chcolor(100,255,100,150);
 								} else {
 									g.chcolor(255,255,255,150);
@@ -910,16 +928,16 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 							}
 							//----------
 							String objname = "";
-							if (objects_name_list.containsKey(oid.GetResName())) {
+							if(objects_name_list.containsKey(oid.GetResName())) {
 								objname = objects_name_list.get(oid.GetResName());
 							} else {
-								if (oid.GetResName().contains("gfx/kritter/boat/boat-")) {
+								if(oid.GetResName().contains("gfx/kritter/boat/boat-")) {
 									objname = objects_name_list.get("gfx/kritter/boat");
 								}
-								if (oid.GetResName().contains("gfx/terobjs/ridges/cavein-")) {
+								if(oid.GetResName().contains("gfx/terobjs/ridges/cavein-")) {
 									objname = objects_name_list.get("gfx/terobjs/ridges/cavein");
 								}
-								if (oid.GetResName().contains("gfx/terobjs/ridges/caveout-")) {
+								if(oid.GetResName().contains("gfx/terobjs/ridges/caveout-")) {
 									objname = objects_name_list.get("gfx/terobjs/ridges/caveout");
 								}
 							}
@@ -928,24 +946,24 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 							int r = Config.lto_label_distance; // Расстояние вывода текста
 							int x = 0;
 							int y = 0;
-							if ((oco.x == pco.x) && (oco.y == pco.y)) notext = 1;
-							if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
-								if (((oco.x - pco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
+							if((oco.x == pco.x) && (oco.y == pco.y)) notext = 1;
+							if((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
+								if(((oco.x - pco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
 								x = (pco.x + r);
 								y = (pco.y - r);
 							} else {
-								if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
-									if (((pco.x - oco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
+								if((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+									if(((pco.x - oco.x)<r) && ((pco.y - oco.y)<r)) notext = 1;
 									x = (pco.x - r);
 									y = (pco.y - r);
 								} else {
-									if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
-										if (((pco.x - oco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+									if((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
+										if(((pco.x - oco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
 										x = (pco.x - r);
 										y = (pco.y + r);
 									} else {
-										if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
-											if (((oco.x - pco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
+										if((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+											if(((oco.x - pco.x)<r) && ((oco.y - pco.y)<r)) notext = 1;
 											x = (pco.x + r);
 											y = (pco.y + r);
 										}
@@ -954,48 +972,48 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 							}
 							int tmpy = ((oco.x-pco.x)*(-1));
 							int tmpx = ((pco.y-oco.y)*(-1));
-							if (tmpy != 0) {
+							if(tmpy != 0) {
 								tpoint.y = (int)(((pco.y-oco.y)*x+(pco.x*oco.y-oco.x*pco.y))/tmpy);
 							} else {
 								tpoint.y = y;
 							}
-							if (tmpx != 0) {
+							if(tmpx != 0) {
 								tpoint.x = (int)(((oco.x-pco.x)*y+(pco.x*oco.y-oco.x*pco.y))/tmpx);
 							} else {
 								tpoint.x = x;
 							}
-							if ((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
-								if (tpoint.y < y) {
+							if((oco.x >= pco.x) && (oco.y < pco.y)){ // если объект в 1-ой четверти
+								if(tpoint.y < y) {
 									tpoint.y = y;
 								} else {
-									if (tpoint.x > x) {
+									if(tpoint.x > x) {
 										tpoint.x = x;
 									}
 								}
 							} else {
-								if ((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
-									if (tpoint.y < y) {
+								if((oco.x < pco.x) && (oco.y <= pco.y)){ // если объект в 2-ой четверти
+									if(tpoint.y < y) {
 										tpoint.y = y;
 									} else {
-										if (tpoint.x < x) {
+										if(tpoint.x < x) {
 											tpoint.x = x;
 										}
 									}
 								} else {
-									if ((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
-										if (tpoint.y > y) {
+									if((oco.x <= pco.x) && (oco.y > pco.y)){ // если объект в 3-ой четверти
+										if(tpoint.y > y) {
 											tpoint.y = y;
 										} else {
-											if (tpoint.x < x) {
+											if(tpoint.x < x) {
 												tpoint.x = x;
 											}
 										}
 									} else {
-										if ((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
-											if (tpoint.y > y) {
+										if((oco.x > pco.x) && (oco.y >= pco.y)){ // если объект в 4-ой четверти
+											if(tpoint.y > y) {
 												tpoint.y = y;
 											} else {
-												if (tpoint.x > x) {
+												if(tpoint.x > x) {
 													tpoint.x = x;
 												}
 											}
@@ -1003,11 +1021,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 									}
 								}
 							}
-							if ((objname != "") && (notext == 0)) {
+							if((objname != "") && (notext == 0)) {
 								String [] objtext = new String[2];
 								objtext = objname.split(":");
-								if (Config.altnLTO){
-									if (objtext.length > 1) {
+								if(Config.altnLTO){
+									if(objtext.length > 1) {
 										g.text(objtext[1], tpoint);
 	//									objtext[0] = "";
 	//									objtext[1] = "";
@@ -1075,7 +1093,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		synchronized(glob.oc) {
 			gob = glob.oc.getgob(obj_id);
 		}
-		if (gob == null) return;
+		if(gob == null) return;
 		sc = new Coord(
 		(int)Math.round(Math.random() * 200 + sz.x / 2 - 100),
 		(int)Math.round(Math.random() * 200 + sz.y / 2 - 100));
@@ -1092,7 +1110,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		synchronized(glob.oc) {
 			pgob = glob.oc.getgob(playergob);
 		}
-		if (pgob == null) return;
+		if(pgob == null) return;
 		Coord mc = tilify(pgob.getc());
 		Coord offset = new Coord(x,y).mul(tilesz);
 		mc = mc.add( offset );
@@ -1101,12 +1119,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 	
 	public void map_place(int x, int y, int btn, int mod) {
-		if (plob != null) {
+		if(plob != null) {
 			Gob pgob;
 			synchronized(glob.oc) {
 				pgob = glob.oc.getgob(playergob);
 			}
-			if (pgob == null) return;
+			if(pgob == null) return;
 			Coord mc = tilify(pgob.getc());
 			Coord offset = new Coord(x,y).mul(tilesz);
 			mc = mc.add( offset );		    
@@ -1120,7 +1138,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		synchronized(glob.oc) {
 			pgob = glob.oc.getgob(playergob);
 		}
-		if (pgob == null) return;
+		if(pgob == null) return;
 		Coord mc = tilify(pgob.getc());
 		Coord offset = new Coord(x,y).mul(tilesz);
 		mc = mc.add( offset );
@@ -1139,7 +1157,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		synchronized(glob.oc) {
 			pgob = glob.oc.getgob(playergob);
 		}
-		if (pgob == null) return;
+		if(pgob == null) return;
 		Coord mc = tilify(pgob.getc());
 		Coord offset = new Coord(x,y).mul(tilesz);
 		mc = mc.add( offset );
@@ -1151,7 +1169,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		synchronized(glob.oc) {
 			pgob = glob.oc.getgob(playergob);
 		}
-		if (pgob == null) return;
+		if(pgob == null) return;
 		Coord mc = new Coord(x,y);
 		LogPrint("send map interact click: "+mc.toString()+" modflags="+mod);
 		wdgmsg("itemact",ark_bot.GetCenterScreenCoord(), mc, mod);    	
@@ -1162,7 +1180,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			pgob = glob.oc.getgob(playergob);
 			gob = glob.oc.getgob(id);
 		}
-		if (pgob == null || gob == null) return;
+		if(pgob == null || gob == null) return;
 		Coord mc = gob.getc();    	
 		LogPrint("send map interact click: "+mc.toString()+" modflags="+mod);
 		wdgmsg("itemact",ark_bot.GetCenterScreenCoord(), mc, mod, id, mc);    	
@@ -1196,7 +1214,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			}
 		}
 		Coord mp = Coord.z;
-		if (mousepos != null && (show_selected_tile || Config.assign_to_tile))
+		if(mousepos != null && (show_selected_tile || Config.assign_to_tile))
 		mp = mouse_tile.div(tilesz);
 		for(y = 0; y < (sz.y / sth) + 2; y++) {
 			for(x = 0; x < (sz.x / stw) + 3; x++) {
@@ -1204,12 +1222,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 					ctc = tc.add(new Coord(x + y, -x + y + i));
 					sc = m2s(ctc.mul(tilesz)).add(oc);
 					// arksu: тут выводим сетку на карте если надо
-					if (Config.show_map_grid)
+					if(Config.show_map_grid)
 					draw_tile_grid(g, ctc, sc);
 					drawol(g, ctc, sc);
 					// arksu : выводим тайл под мышью
-					if (mousepos != null && (show_selected_tile || Config.assign_to_tile))
-					if (mp.y == ctc.y && mp.x == ctc.x)
+					if(mousepos != null && (show_selected_tile || Config.assign_to_tile))
+					if(mp.y == ctc.y && mp.x == ctc.x)
 					draw_tile_select(g, ctc, sc);
 				}
 			}
@@ -1262,7 +1280,19 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				drawer.chcur(gob);
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
-				gob.drawsetup(drawer, dc, sz);
+				if(!Config.hideall){
+					if((Config.hidepl)&&(gobplace != null)&&(gob == gobplace)){
+						gob.drawsetup(drawer, dc, sz, false);
+					} else {
+						gob.drawsetup(drawer, dc, sz, true);
+					}
+				} else {
+					if(gob.GetResName().contains("ridges")){
+						gob.drawsetup(drawer, dc, sz, true);
+					} else {
+						gob.drawsetup(drawer, dc, sz, false);
+					}
+				}
 				Speaking s = gob.getattr(Speaking.class);
 				if(s != null)
 				speaking.add(s);
@@ -1316,20 +1346,23 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 						Drawable d = gob.getattr(Drawable.class);
 						ResDrawable dw = gob.getattr(ResDrawable.class);
 						String resourceName = (dw != null && dw.res.get() != null ? dw.res.get().name : "");
-						if (!Config.IsHideable(resourceName)) continue;
-						if ((resourceName.indexOf("gfx/tiles/wald") != -1) || (resourceName.indexOf("gfx/tiles/dwald") != -1)) continue;
+						if(!Config.hideall){
+							if(!Config.IsHideable(resourceName)) continue;
+							if((resourceName.indexOf("gfx/tiles/wald") != -1) || (resourceName.indexOf("gfx/tiles/dwald") != -1)) continue;
+						}
+						if(gob.GetResName().contains("borka")) continue;
 						Resource.Neg neg;
 						if(d instanceof ResDrawable) {
 							ResDrawable rd = (ResDrawable)d;
 							if(rd.spr == null)
-							continue;
+								continue;
 							if(rd.spr.res == null)
-							continue;
+								continue;
 							neg = rd.spr.res.layer(Resource.negc);
 						} else if(d instanceof Layered) {
 							Layered lay = (Layered)d;
 							if(lay.base.get() == null)
-							continue;
+								continue;
 							neg = lay.base.get().layer(Resource.negc);
 						} else {
 							continue;
@@ -1470,14 +1503,14 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
 	public void update(long dt) {
 		Coord new_my_coord = ark_bot.MyCoord();
-		if ((new_my_coord != null) && (last_my_coord != null))
-		if ((new_my_coord.dist(last_my_coord) > 20*11) && (cam != null)) 
+		if((new_my_coord != null) && (last_my_coord != null))
+		if((new_my_coord.dist(last_my_coord) > 20*11) && (cam != null)) 
 		cam.reset();
 		last_my_coord = new_my_coord;    	
 		time_to_start = time_to_start - dt;  
 		
-		if ((Config.auto_start_script.length() > 0) && time_to_start <= 0) {
-			if (time_to_start <= 0 && !started)
+		if((Config.auto_start_script.length() > 0) && time_to_start <= 0) {
+			if(time_to_start <= 0 && !started)
 			try {
 				started = true;
 				time_to_start = 0; 
@@ -1509,7 +1542,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		Gob oid = last_object;
 		synchronized (glob.oc) {
 			for (Gob gob : glob.oc) {
-				if (gob == last_object) {
+				if(gob == last_object) {
 					if((oid != null)&&(oid.getc() != null)) {
 						Gob pid = glob.oc.getgob(ark_bot.PlayerID);
 						Coord oc = viewoffset(sz, mc);
@@ -1523,44 +1556,72 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		}
 	}
 
-		
+	private void drawfrect(GOut g) {
+		synchronized (glob.oc) {
+				if((gobplace.GetResName() != "") && (gobplace.getneg() != null)){
+					Coord oc = viewoffset(sz, mc);
+					Resource.Neg neg = gobplace.getneg();
+					g.chcolor(255, 0, 0, 95);
+					if((neg.bs.x > 0) && (neg.bs.y > 0)) {
+						Coord c1 = gobplace.getc().add(neg.bc);
+						Coord c2 = gobplace.getc().add(neg.bc).add(neg.bs);
+						g.frect(m2s(c1).add(oc),
+						m2s(new Coord(c2.x, c1.y)).add(oc),
+						m2s(c2).add(oc),
+						m2s(new Coord(c1.x, c2.y)).add(oc));
+						}
+				}
+		}
+		g.chcolor();
+	}
+	
 	public void draw(GOut g) {
 		try {
 			if((mask.amb = glob.amblight) == null || CustomConfig.hasNightVision)
 			mask.amb = new Color(0, 0, 0, 0);
 			drawmap(g);
 			drawarrows(g);
-			if (Config.enableLTO)
+			if(Config.enableLTO)
 				drawlinetoobject(g);
 			if((ark_bot.seo != null)&&(ark_bot.seo.getc() != null)) {
 				last_object = ark_bot.seo;
 				targetarrow(g);
+			}
+			if(gobplace != null){
+				if(Config.hidepl){
+					if(Config.highlight_hided_objects){
+						if(!Config.hideall)
+							drawfrect(g);
+					} else
+						drawfrect(g);
+				}
 			}
 			g.chcolor(Color.WHITE);
 			
 			if(Config.debug_flag) {
 				int ay = 120;
 				int margin = 15;
-				if (gob_at_mouse != null) {
+				if(gob_at_mouse != null) {
 					g.atext("gob at mouse: id=" + gob_at_mouse.id+
 					" coord="+gob_at_mouse.getc()+
+					" size="+gob_at_mouse.getneg().bs.x+"x"+gob_at_mouse.getneg().bs.y+
 					" res="+gob_at_mouse.GetResName()+ 
 					" msg="+gob_at_mouse.GetBlob(0), 
 					new Coord(10, ay), 0, 1); ay=ay+margin; }
 				else
 				{ g.atext("gob at mouse: <<< NULL >>>", new Coord(10, ay), 0, 1); ay=ay+margin; }
-				if (mousepos != null) {
+				if(mousepos != null) {
 					g.atext("mouse map pos: " + mousepos.toString(), new Coord(10, ay), 0, 1); ay=ay+margin;
 					g.atext("tile coord: " + mouse_tile.toString(), new Coord(10, ay), 0, 1); ay=ay+margin;
 				}
 				g.atext("cursor name: " + ark_bot.cursor_name, new Coord(10, ay), 0, 1); ay=ay+margin;
 				g.atext("player=" + playergob, new Coord(10, ay), 0, 1); ay=ay+margin;
 				g.atext("time_to_start: " + time_to_start, new Coord(10, ay), 0, 1); ay=ay+margin;
-				if (hhl_main.symbols != null && Config.debug_flag) {
+				if(hhl_main.symbols != null && Config.debug_flag) {
 					synchronized (hhl_main.symbols.ShowNames) {
 						for (String s : hhl_main.symbols.ShowNames) {
 							Variable v = (Variable)hhl_main.symbols.globals.get(s);
-							if (v != null) {
+							if(v != null) {
 								g.atext("VARIABLE '"+s+"' = " + v.value, new Coord(10, ay), 0, 1); ay=ay+margin;
 							}
 						}

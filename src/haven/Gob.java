@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Haven & Hearth game client.
  *  Copyright (C) 2009 Fredrik Tolf <fredrik@dolda2000.com>, and
- *                     BjГ¶rn Johannessen <johannessen.bjorn@gmail.com>
+ *                     BjР“В¶rn Johannessen <johannessen.bjorn@gmail.com>
  *
  *  Redistribution and/or modification of this file is subject to the
  *  terms of the GNU Lesser General Public License, version 3, as
@@ -76,25 +76,26 @@ public class Gob implements Sprite.Owner {
 	public void ch(T n);
     }
 
-    // arksu: получить имя ресурса
+    // arksu: РїРѕР»СѓС‡РёС‚СЊ РёРјСЏ СЂРµСЃСѓСЂСЃР°
     public String GetResName() {
-        String s = "step 1";
+        //String s = "step 1";
+		String s = "";
         Drawable d = getattr(Drawable.class);
         ResDrawable dw = getattr(ResDrawable.class);
         Layered l = getattr(Layered.class);
         if (d != null)
         {
-            s = "step D";
+            //s = "step D";
             if (dw != null)
             {
-                s = "step R";
+                //s = "step R";
                 if (dw.res.get() != null) {
                     s = dw.res.get().name;
                 }
             }
             if (l != null)
             {
-                s = "step L";
+                //s = "step L";
                 if (l.base.get() != null) {
                     s = l.base.get().name;
                 }
@@ -103,7 +104,7 @@ public class Gob implements Sprite.Owner {
         return s;
     }
     
-    // получить байт из мессаги
+    // РїРѕР»СѓС‡РёС‚СЊ Р±Р°Р№С‚ РёР· РјРµСЃСЃР°РіРё
     public byte GetBlob(int index) {
         Drawable d = getattr(Drawable.class);
         ResDrawable dw = getattr(ResDrawable.class);
@@ -201,12 +202,12 @@ public class Gob implements Sprite.Owner {
 	return(ret);
     }
 	
-    public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz) {
+    public void drawsetup(Sprite.Drawer drawer, Coord dc, Coord sz, Boolean need_draw) {
         Drawable d = getattr(Drawable.class);
         ResDrawable dw = getattr(ResDrawable.class);
         String resourceName = (dw != null && dw.res.get() != null ? dw.res.get().name : "");
         Coord dro = drawoff();
-        boolean need_draw = true;
+        //boolean need_draw = true;
 
         for (Overlay ol : ols) {
             if (ol.spr != null) {
@@ -248,7 +249,6 @@ public class Gob implements Sprite.Owner {
                                            */
 
                     // use gilbertus method
-
                     if (!Config.IsHideable(resourceName) && need_draw)
                         d.setup(drawer, dc, dro);
                 }

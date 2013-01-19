@@ -103,6 +103,8 @@ public class Config {
 	public static int musicVol;
 	public static boolean isMusicOn = false;
 	public static boolean isSoundOn = false;
+	public static boolean hideall = false;
+	public static boolean hidepl = false;
 			
     static {
 	try {
@@ -250,13 +252,13 @@ public class Config {
 			fstream = new FileInputStream("onlist.conf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 			String strLine;
-			int con = 0;
+			int cnt = 0;
 			while ((strLine = br.readLine()) != null)   {
 				String [] res = strLine.split(";");
 				MapView.objects_name_list.put(res[2], res[0]+":"+res[1]);
-				con++;
+				cnt++;
 			}
-			System.out.print("\nloaded \"onlist.conf\" file ... item: "+con+"\n");
+			System.out.print("\nloaded \"onlist.conf\" file ... item: "+cnt);
 			br.close();
 			fstream.close();
 		} catch (Exception e) {}
@@ -268,12 +270,12 @@ public class Config {
 			fstream = new FileInputStream("rlist.conf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 			String strLine;
-			int con = 0;
+			int cnt = 0;
 			while ((strLine = br.readLine()) != null)   {
 				radiusList.add(strLine);
-				con++;
+				cnt++;
 			}
-			System.out.print("\nloaded \"rlist.conf\" file ... item: "+con+"\n");
+			System.out.print("\nloaded \"rlist.conf\" file ... item: "+cnt);
 			br.close();
 			fstream.close();
 		} catch (Exception e) {}
@@ -409,6 +411,8 @@ public class Config {
 		isSoundOn = getopt_bool("sound_on", true);
 		sfxVol = getopt_int("sfx_vol", 0);
 		musicVol = getopt_int("music_vol", 0);
+		hideall = getopt_bool("hide_all", false);
+		hidepl = getopt_bool("hide_placeable", false);
 		loadLTOList();
 		loadONList();
 		loadRList();
@@ -445,6 +449,8 @@ public class Config {
 		setopt_int("music_vol", musicVol);
 		setopt_bool("music_on", isMusicOn);
 		setopt_bool("sound_on", isSoundOn);
+		setopt_bool("hide_all", hideall);
+		setopt_bool("hide_placeable", hidepl);
 		writeLTOList();
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");

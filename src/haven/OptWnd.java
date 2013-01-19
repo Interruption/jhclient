@@ -27,9 +27,6 @@
 package haven;
 
 import java.awt.font.TextAttribute;
-import java.awt.Color;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -200,8 +197,8 @@ public class OptWnd extends Window {
 
 		Widget botnames = new Frame(new Coord(230, 30), new Coord(200, 90), tab);
 	    new Label(new Coord(10, 10), botnames, "Bot names:");
-		final Label bot1 = new Label(new Coord(10, 30), botnames, "Bot 1:");
-		final Label bot2 = new Label(new Coord(10, 60), botnames, "Bot 2:");
+		new Label(new Coord(10, 30), botnames, "Bot 1:");
+		new Label(new Coord(10, 60), botnames, "Bot 2:");
 		final TextEntry bot_1 = new TextEntry(new Coord(50, 30), new Coord(90, 17), botnames, Config.bot_name1);
 		final TextEntry bot_2 = new TextEntry(new Coord(50, 60), new Coord(90, 17), botnames, Config.bot_name2);
 		new Button(new Coord(155, 29), 25, botnames, "Set") {
@@ -279,6 +276,20 @@ public class OptWnd extends Window {
                 Config.saveOptions();
     		}};
         chk.a = Config.altnLTO;
+		
+		chk = new CheckBox(new Coord(255, 130), tab, "Hide all object") {
+    		public void changed(boolean val) {
+    		    Config.hideall = val;
+                Config.saveOptions();
+    		}};
+        chk.a = Config.hideall;
+		
+		chk = new CheckBox(new Coord(255, 160), tab, "Hide placeable object and highlight it") {
+    		public void changed(boolean val) {
+    		    Config.hidepl = val;
+                Config.saveOptions();
+    		}};
+        chk.a = Config.hidepl;
             
 	}
 
