@@ -85,6 +85,7 @@ public class Config {
     public static boolean xray;
     public static boolean hide;
     public static HashSet<String> hideObjectList;
+	public static HashSet<String> hideFenflavobjsList;
 	public static String currentCharName;
     public static Properties options;
     public static boolean gilbertus_map_dump = true;
@@ -133,6 +134,7 @@ public class Config {
         currentCharName = "";
         options = new Properties();
         hideObjectList = new HashSet<String>();
+		hideFenflavobjsList = new HashSet<String>();
 		ltObjectList  = new HashSet<String>();
 		radiusList  = new HashSet<String>();
         loadOptions();
@@ -388,6 +390,15 @@ public class Config {
                 }
             }
         }
+		String hideFenflavobjs = getopt_str("hideFenflavobjs", "");
+		hideFenflavobjsList.clear();
+        if (!hideFenflavobjs.isEmpty()) {
+            for (String fenflavobjsName : hideFenflavobjs.split(",")) {
+                if (!fenflavobjsName.isEmpty()) {
+                    hideFenflavobjsList.add(fenflavobjsName);
+                }
+            }
+        }
         ark_window_width = getopt_int("window_width", 800);
         ark_window_height = getopt_int("window_height", 600);
         hide = getopt_bool("hide_objects", false);
@@ -423,8 +434,12 @@ public class Config {
         for (String objectName : hideObjectList) {
             hideObjects += objectName+",";
         }
-        
-        setopt_str("hideObjects", hideObjects);
+        String hideFenflavobjs = "";
+        for (String fenflavobjsName : hideFenflavobjsList) {
+            hideFenflavobjs += fenflavobjsName+",";
+        }
+		setopt_str("hideFenflavobjs", hideFenflavobjs);
+        setopt_str("hideObjects", hideObjects);		
 //        setopt_str("auth_server", auth_server);
         setopt_int("window_width", ark_window_width);
         setopt_int("window_height", ark_window_height);

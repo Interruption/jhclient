@@ -217,39 +217,8 @@ public class Gob implements Sprite.Owner {
             if (d != null)
             {
                 // use ark method
-                if (resourceName.length() > 0)
-                {
-                    /*if (Config.ark_hide_tree)
-                        if (resourceName.indexOf("trees") >= 0)
-                            need_draw = false;
-
-                    if (Config.ark_hide_plants)
-                        if (resourceName.indexOf("gfx/terobjs/plants") >= 0)
-                            need_draw = false;
-
-                    if (Config.ark_hide_buildings)
-                        if (resourceName.indexOf("gfx/arch") >= 0)
-                            need_draw = false;
-
-                    if (Config.ark_hide_stones)
-                        if (resourceName.indexOf("gfx/terobjs/bumlings") >= 0)
-                            need_draw = false;
-
-                    if (Config.ark_hide_walls)
-                        if ((resourceName.indexOf("gfx/arch/walls") >= 0) || (resourceName.indexOf("gfx/arch/gates") >= 0) )
-                            need_draw = false;
-
-                    if (Config.ark_hide_houses)
-                        if ( (resourceName.indexOf("gfx/arch/cabin") >= 0) || (resourceName.indexOf("gfx/arch/inn") >= 0) )
-                            need_draw = false;
-
-                    if (Config.ark_hide_flavobjs)
-                        if ( (resourceName.indexOf("gfx/tiles/wald/flavobjs") >= 0) || (resourceName.indexOf("gfx/tiles/dwald") >= 0) )
-                            need_draw = false;
-                                           */
-
-                    // use gilbertus method
-                    if (!Config.IsHideable(resourceName) && need_draw)
+                if (resourceName.length() > 0) {
+					if (!Config.IsHideable(resourceName) && need_draw)
                         d.setup(drawer, dc, dro);
                 }
                 else

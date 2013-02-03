@@ -52,6 +52,19 @@ public class OptWnd extends Window {
 		{"Wood houses F8",     "gfx/arch/cabin"},
 		{"Plants F9",          "gfx/terobjs/plants"}
     };
+	static String[][] cblist_fenflavobjs = {
+		{"Flavobjs 1",			"gfx/tiles/fen/flavobjs/f1"},
+		{"Flavobjs 2",			"gfx/tiles/fen/flavobjs/f2"},
+		{"Flavobjs 3",			"gfx/tiles/fen/flavobjs/f3"},
+		{"Flavobjs 4",			"gfx/tiles/fen/flavobjs/f4"},
+		{"Flavobjs 5",			"gfx/tiles/fen/flavobjs/f5"},
+		{"Flavobjs 6",			"gfx/tiles/fen/flavobjs/f6"},
+		{"Flavobjs 7",			"gfx/tiles/fen/flavobjs/f7"},
+		{"Flavobjs 8",			"gfx/tiles/fen/flavobjs/f8"},
+		{"Flavobjs 9",			"gfx/tiles/fen/flavobjs/f9"},
+		{"Flavobjs 10",			"gfx/tiles/fen/flavobjs/f10"}
+		
+	};
 	static String[][] cblist_kritter = {
 		{"Aurochs",				"gfx/kritter/aurochs/neg"},
 		{"Bear",				"gfx/kritter/bear/neg"},
@@ -117,6 +130,7 @@ public class OptWnd extends Window {
     };
 	static String[][] cblist_other = {
 		{"Ant Hill",				"gfx/terobjs/anthill"},
+		{"Battering Ram",			"gfx/kritter/bram/neg"},
 		{"Boat",					"gfx/kritter/boat"},
 		{"Cave entrance",			"gfx/terobjs/ridges/cavein"},
 		{"GEO-Water",				"gfx/terobjs/geo-water"},
@@ -133,6 +147,7 @@ public class OptWnd extends Window {
 	private List<CheckBox> ltodk_checkboxes = new ArrayList<CheckBox>();
 	private List<CheckBox> ltoh_checkboxes = new ArrayList<CheckBox>();
 	private List<CheckBox> ltoo_checkboxes = new ArrayList<CheckBox>();
+	private List<CheckBox> lhffo_checkboxes = new ArrayList<CheckBox>();
     private Comparator<String> camcomp = new Comparator<String>() {
 
 	public int compare(String a, String b) {
@@ -168,9 +183,13 @@ public class OptWnd extends Window {
 	{ /* GENERAL TAB */
 	    tab = body.new Tab(new Coord(0, 0), 60, "General");
 
-	    new Button(new Coord(10, 40), 125, tab, "Quit") {
+	    new Button(new Coord(10, 40), 63, tab, "Quit") {
 		public void click() {
 		    HackThread.tg().interrupt();
+		}};
+		new Button(new Coord(80, 40), 63, tab, "Save") {
+		public void click() {
+		    Config.saveOptions();
 		}};
 	    new Button(new Coord(10, 70), 125, tab, "Logout") {
 		public void click() {
@@ -449,7 +468,24 @@ public class OptWnd extends Window {
             };
             hide_checkboxes.add(chkbox);
         }
-        UpdateHideCheckBoxes();
+		UpdateHideCheckBoxes();
+		y = 30;
+		new Label(new Coord(130, 27), tab, "Fen Flavobjs (less lag on fen):");
+		for (final String[] checkbox : cblist_fenflavobjs) {
+            CheckBox chkbox = new CheckBox(new Coord(130, y += 30), tab, checkbox[0]) {
+
+                public void changed(boolean val) {
+                    if (val) {
+                        Config.hideFenflavobjsList.add(checkbox[1]);
+                    } else {
+                        Config.hideFenflavobjsList.remove(checkbox[1]);
+                    }
+                    Config.saveOptions();
+                }
+            };
+            lhffo_checkboxes.add(chkbox);
+        }
+		UpdateHFFOCheckBoxes();
 	}
 	{ /* TARGET LINE TO KRITTER OBJECT TAB */
 	    tab = body.new Tab(new Coord(260, 0), 45, "LTO K");
@@ -563,6 +599,15 @@ public class OptWnd extends Window {
         for (final String[] checkbox : strlist) {
             CheckBox chkbox = cbl.get(i);
             chkbox.a = Config.ltObjectList.contains(checkbox[1]);
+            i++;
+        }
+    }
+	
+	public void UpdateHFFOCheckBoxes() {
+        int i = 0;    
+        for (final String[] checkbox : cblist_fenflavobjs) {
+            CheckBox chkbox = lhffo_checkboxes.get(i);
+            chkbox.a = Config.hideFenflavobjsList.contains(checkbox[1]);
             i++;
         }
     }

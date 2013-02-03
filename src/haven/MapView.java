@@ -1284,7 +1284,11 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 					if((Config.hidepl)&&(gobplace != null)&&(gob == gobplace)){
 						gob.drawsetup(drawer, dc, sz, false);
 					} else {
-						gob.drawsetup(drawer, dc, sz, true);
+						if(Config.hideFenflavobjsList.contains(gob.GetResName())) {
+							gob.drawsetup(drawer, dc, sz, false);
+						} else {
+							gob.drawsetup(drawer, dc, sz, true);
+						}
 					}
 				} else {
 					if(gob.GetResName().contains("ridges")){
