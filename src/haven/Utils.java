@@ -33,6 +33,7 @@ import java.util.*;
 import java.awt.Graphics;
 import java.awt.Color;
 import java.awt.image.BufferedImage;
+import java.text.SimpleDateFormat;
 
 public class Utils {
 	private static Preferences prefs = null;
@@ -40,7 +41,7 @@ public class Utils {
 			.getRGBdefault();
 	private static Background bgworker = null;
 
-	static Coord imgsz(BufferedImage img) {
+	public static Coord imgsz(BufferedImage img) {
 		return (new Coord(img.getWidth(), img.getHeight()));
 	}
 
@@ -75,6 +76,10 @@ public class Utils {
 			}
 		}
 	}
+
+	public static String sessdate(long sess) {
+		return (new SimpleDateFormat("yyyy-MM-dd HH.mm.ss")).format(new Date(sess));
+    }
 
 	public static void defer(Runnable r) {
 		synchronized (Utils.class) {

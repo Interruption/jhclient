@@ -45,6 +45,20 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	this(0, 0);
     }
 	
+    public Coord(String str) {
+	int x,y;
+	if((str == null)||(str.charAt(0)!='(')||(str.charAt(str.length()-1)!=')'))
+	    x = y = 0;
+	else {
+	    str = str.substring(1,str.length()-1);
+	    String val[] = str.split(", ");
+	    x = Integer.parseInt(val[0]);
+	    y = Integer.parseInt(val[1]);
+	}
+	this.x = x;
+	this.y = y;
+    }
+    
     public Coord(java.awt.Dimension d) {
 	this(d.width, d.height);
     }
@@ -100,6 +114,10 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	return(new Coord(x * f.x, y * f.y));
     }
 	
+    public Coord mul(int a, int b) {
+	return(new Coord(x * a, y * b));
+    }
+	
     public Coord div(Coord d) {
 	int v, w;
 		
@@ -116,6 +134,10 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	return(div(new Coord(d, d)));
     }
 	
+    public Coord div(double f) {
+	return(new Coord((int)(x / f), (int)(y / f)));
+    }
+    
     public Coord mod(Coord d) {
 	int v, w;
 		
@@ -128,6 +150,18 @@ public class Coord implements Comparable<Coord>, java.io.Serializable {
 	return(new Coord(v, w));
     }
 	
+    public Coord swap(){
+	return new Coord(y, x);
+    }
+    
+    public Coord abs(){
+	return new Coord(Math.abs(x), Math.abs(y));
+    }
+    
+    public int sum(){
+	return x+y;
+    }
+    
     public boolean isect(Coord c, Coord s) {
 	return((x >= c.x) && (y >= c.y) && (x < c.x + s.x) && (y < c.y + s.y));
     }

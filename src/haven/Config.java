@@ -26,18 +26,31 @@
 
 package haven;
 
-import java.io.*;
-import java.net.URL;
-import java.util.HashSet;
-import java.util.Properties;
-import java.util.Map;
-//import java.util.Set;
-import java.util.HashMap;
-
-import static haven.ark_bot.*;
-import static haven.Utils.getprop;
-
 import ender.CurioInfo;
+import ender.HLInfo;
+
+import static haven.Utils.getprop;
+import static haven.ark_bot.*;
+
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 
 public class Config {
     public static byte[] authck;
@@ -87,25 +100,34 @@ public class Config {
     public static HashSet<String> hideObjectList;
 	public static HashSet<String> hideFenflavobjsList;
 	public static String currentCharName;
-    public static Properties options;
+    public static Properties options, window_props;
     public static boolean gilbertus_map_dump = true;
 	
 	// interruption:
+	public static Set<String> highlightItemList;
 	public static HashSet<String> ltObjectList;
-	public static int lto_label_distance = 250;
-	public static boolean showRadius = false;
 	public static HashSet<String> radiusList;
-	public static boolean showq;
 	public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
 	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
-	public static boolean enableLTO = true;
-	public static boolean altnLTO = true;
+	public static Map<String, String> beasts = new HashMap<String, String>();
+	public static Map<String, HLInfo> hlcfg = new HashMap<String, HLInfo>();
 	public static int sfxVol;
 	public static int musicVol;
+	public static int lto_label_distance = 250;
+	public static boolean enableLTO = true;
+	public static boolean altnLTO = true;
+	public static boolean showq;
+	public static boolean showRadius = false;
 	public static boolean isMusicOn = false;
 	public static boolean isSoundOn = false;
 	public static boolean hideall = false;
 	public static boolean hidepl = false;
+	public static boolean simplemap = false;
+	public static boolean dontScaleMMIcons = true;
+    public static boolean radar;
+    public static boolean showViewDistance;
+	public static boolean showBeast = false;
+	public static boolean minimap_Ender = true;
 			
     static {
 	try {
@@ -137,9 +159,13 @@ public class Config {
 		hideFenflavobjsList = new HashSet<String>();
 		ltObjectList  = new HashSet<String>();
 		radiusList  = new HashSet<String>();
+		window_props = new Properties();
+		highlightItemList = Collections.synchronizedSet(new HashSet<String>());
         loadOptions();
 		loadFEP();
 	    loadCurios();
+		loadWindowOptions();
+		loadBeasts();
     } catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
@@ -197,6 +223,40 @@ public class Config {
                 }
             }
         }
+    }
+	
+	private static void loadBeasts() {
+		//bear
+		String pat = "kritter/bear";
+		HLInfo inf = new HLInfo(pat, "mmap/bear");
+		Color col = new Color(0xff797c);
+		inf.setColor(col);
+		beasts.put(pat, "Bear");
+		hlcfg.put(pat, inf);
+		//boar
+		pat = "kritter/boar";
+		inf = new HLInfo(pat, "mmap/boar");
+		inf.setColor(col);
+		beasts.put(pat, "Boar");
+		hlcfg.put(pat, inf);
+		//deer
+		pat = "kritter/deer";
+		inf = new HLInfo(pat, "mmap/deer");
+		inf.setColor(new Color(0x7BAF8E));
+		beasts.put(pat, "Deer");
+		hlcfg.put(pat, inf);
+		//fox
+		pat = "kritter/fox";
+		inf = new HLInfo(pat, "mmap/fox");
+		inf.setColor(new Color(0xAF8E5B));
+		beasts.put(pat, "Fox");
+		hlcfg.put(pat, inf);
+		//rabbit
+		pat = "kritter/hare";
+		inf = new HLInfo(pat, "mmap/rabbit");
+		inf.setColor(new Color(0x8E8E8E));
+		beasts.put(pat, "Rabbit");
+		hlcfg.put(pat, inf);
     }
 	
 	private static void loadCurios() {
@@ -370,6 +430,19 @@ public class Config {
     	return isMusicOn?((double)musicVol/100):0;
     }
 	
+	private static void loadWindowOptions() {
+	File inputFile = new File("windows.conf");
+        if (!inputFile.exists()) {
+            return;
+        }
+        try {
+            window_props.load(new FileInputStream(inputFile));
+        }
+        catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+	
     private static void loadOptions() {
         File inputFile = new File("haven.conf");
         if (!inputFile.exists()) {
@@ -399,6 +472,14 @@ public class Config {
                 }
             }
         }
+		String highlightObjects = options.getProperty("highlightObjects", "");
+        if (!highlightObjects.isEmpty()) {
+            for (String objectName : highlightObjects.split(",")) {
+                if (!objectName.isEmpty()) {
+                    highlightItemList.add(objectName);
+                }
+            }
+        }
         ark_window_width = getopt_int("window_width", 800);
         ark_window_height = getopt_int("window_height", 600);
         hide = getopt_bool("hide_objects", false);
@@ -424,11 +505,40 @@ public class Config {
 		musicVol = getopt_int("music_vol", 0);
 		hideall = getopt_bool("hide_all", false);
 		hidepl = getopt_bool("hide_placeable", false);
+		dontScaleMMIcons = getopt_bool("dontScaleMMIcons", false);
+		radar = getopt_bool("radar", false);
+		showViewDistance = getopt_bool("showViewDistance", false);
+		showBeast = getopt_bool("showBeast", false);
+		minimap_Ender = getopt_bool("minimap_Ender", false);
 		loadLTOList();
 		loadONList();
 		loadRList();
     }
-
+	
+	public static synchronized void setWindowOpt(String key, String value) {
+		synchronized (window_props) {
+			String prev_val =window_props.getProperty(key); 
+			if((prev_val != null)&&prev_val.equals(value))
+			return;
+			window_props.setProperty(key, value);
+		}
+		saveWindowOpt();
+    }
+    
+    public static synchronized void setWindowOpt(String key, Boolean value) {
+		setWindowOpt(key, value?"true":"false");
+    }
+    
+    public static void saveWindowOpt() {
+		synchronized (window_props) {
+			try {
+			window_props.store(new FileOutputStream("windows.conf"), "Window config options");
+			} catch (IOException e) {
+			System.out.println(e);
+			}
+		}
+    }
+	
     public static void saveOptions() {
         String hideObjects = "";
         for (String objectName : hideObjectList) {
@@ -438,9 +548,13 @@ public class Config {
         for (String fenflavobjsName : hideFenflavobjsList) {
             hideFenflavobjs += fenflavobjsName+",";
         }
+		String highlightObjects = "";
+        for (String objectName : highlightItemList) {
+            highlightObjects += objectName+",";
+        }
+		setopt_str("highlightObjects", highlightObjects);
 		setopt_str("hideFenflavobjs", hideFenflavobjs);
         setopt_str("hideObjects", hideObjects);		
-//        setopt_str("auth_server", auth_server);
         setopt_int("window_width", ark_window_width);
         setopt_int("window_height", ark_window_height);
         setopt_bool("hide_objects", hide);
@@ -466,6 +580,11 @@ public class Config {
 		setopt_bool("sound_on", isSoundOn);
 		setopt_bool("hide_all", hideall);
 		setopt_bool("hide_placeable", hidepl);
+		setopt_bool("dontScaleMMIcons", dontScaleMMIcons);
+		setopt_bool("radar", radar);
+		setopt_bool("showViewDistance", showViewDistance);
+		setopt_bool("showBeast", showBeast);
+		setopt_bool("minimap_Ender", minimap_Ender);
 		writeLTOList();
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");

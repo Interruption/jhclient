@@ -183,11 +183,11 @@ public class OptWnd extends Window {
 	{ /* GENERAL TAB */
 	    tab = body.new Tab(new Coord(0, 0), 60, "General");
 
-	    new Button(new Coord(10, 40), 63, tab, "Quit") {
+	    new Button(new Coord(10, 40), 58, tab, "Quit") {
 		public void click() {
 		    HackThread.tg().interrupt();
 		}};
-		new Button(new Coord(80, 40), 63, tab, "Save") {
+		new Button(new Coord(77, 40), 58, tab, "Save") {
 		public void click() {
 		    Config.saveOptions();
 		}};
@@ -309,6 +309,13 @@ public class OptWnd extends Window {
                 Config.saveOptions();
     		}};
         chk.a = Config.hidepl;
+		
+		chk = new CheckBox(new Coord(255, 190), tab, "Use Ender minimap (need restart)") {
+    		public void changed(boolean val) {
+    		    Config.minimap_Ender = val;
+				Config.saveOptions();
+    		}};
+        chk.a = Config.minimap_Ender;
             
 	}
 

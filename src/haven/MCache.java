@@ -26,9 +26,20 @@
 
 package haven;
 
-import java.util.*;
-import haven.Resource.Tileset;
 import haven.Resource.Tile;
+import haven.Resource.Tileset;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.TreeMap;
 import java.util.zip.Inflater;
 
 public class MCache {
@@ -42,20 +53,58 @@ public class MCache {
 	public static final Coord cmaps = new Coord(100, 100);
 	Random gen;
 	java.util.Map<Integer, Defrag> fragbufs = new TreeMap<Integer, Defrag>();
+    public static final Map<Integer, Color> colors = new TreeMap<Integer, Color>();
+
+    static {
+	colors.put(0, new Color(0x3152a2));	//deep water
+	colors.put(1, new Color(0x4480c8));	//shallow water
+	colors.put(3, new Color(0xd85151));	//brick red
+	colors.put(4, new Color(0xcba920));	//brick yellow
+	colors.put(5, new Color(0x2a2a2a));	//brick black
+	colors.put(6, new Color(0x5ab2f8));	//brick blue
+	colors.put(7, new Color(0xe0e0e0));	//brick white
+	colors.put(8, new Color(160,160,160));	//stone paving
+	colors.put(9, new Color(200,200,200));	//plowed
+	colors.put(10, new Color(0x497937));	//coniferous forest
+	colors.put(11, new Color(0x60864f));	//broadleaf forest
+	colors.put(12, new Color(220,220,200));	//thicket
+	colors.put(13, new Color(0x468d37));	//grass
+	colors.put(14, new Color(0xac7664));	//heath
+	colors.put(15, new Color(0x999927));	//moor
+	colors.put(16, new Color(0x60ad8a));	//swamp 1
+	colors.put(17, new Color(0x3d6242));	//swamp 2
+	colors.put(18, new Color(0x5e6453));	//swamp 3
+	colors.put(19, new Color(0xa67936));	//dirt
+	colors.put(20, new Color(212,164,81));	//sand
+	colors.put(21, new Color(212,212,212));	//house
+	colors.put(22, new Color(85,85,85));	//house cellar
+	colors.put(23, new Color(90,90,90));	//mine entry
+	colors.put(24, new Color(80,80,80));	//mine
+	colors.put(25, new Color(112,116,112));	//cave
+	colors.put(26, new Color(125,125,125));	//mountain
+	colors.put(255, new Color(0,0,0));	//void
+    }
 
 	public class Overlay {
+	Set<Overlay> list;
 		Coord c1, c2;
 		int mask;
 
 		public Overlay(Coord c1, Coord c2, int mask) {
+	    this(ols, c1, c2, mask);
+	}
+	
+	public Overlay(Set<Overlay> set, Coord c1, Coord c2, int mask) {
+	    this.list = set;
 			this.c1 = c1;
 			this.c2 = c2;
 			this.mask = mask;
-			ols.add(this);
+	    set.add(this);
 		}
 
 		public void destroy() {
-			ols.remove(this);
+	    list.remove(this);
+	    list = null;
 		}
 
 		public void update(Coord c1, Coord c2) {
@@ -69,6 +118,7 @@ public class MCache {
 		public Tile gcache[][];
 		public Tile tcache[][][];
 		public int ol[][];
+	Set<Overlay> ols = new HashSet<Overlay>();
 		Collection<Gob> fo = new LinkedList<Gob>();
 		boolean regged = false;
 		public long lastreq = 0;
@@ -76,6 +126,8 @@ public class MCache {
 		Coord gc;
 		OCache oc = sess.glob.oc;
 		String mnm;
+		BufferedImage img;
+		Tex tex;
 
 		public Grid(Coord gc) {
 			this.gc = gc;
@@ -99,7 +151,33 @@ public class MCache {
 				regged = false;
 			}
 		}
-
+		
+	public void render() {
+	    img = TexI.mkbuf(cmaps);
+	    Graphics2D g = img.createGraphics();
+	    Coord c = new Coord();
+	    
+	    for(c.y = 0; c.y < cmaps.x; c.y++) {
+		for(c.x = 0; c.x < cmaps.y; c.x++) {
+		    int id =tiles[c.x][c.y];
+		    Color col = colors.get(id);
+		    if(col == null){
+			col = new Color(255, 0, 255);
+			//System.out.println(id);
+		    }
+		    g.setColor(col);
+		    g.fillRect(c.x, c.y, 1, 1);
+		}
+	    }
+	}
+	
+		public Tex getTex() {
+			if((tex == null)&&(img != null)) {
+			tex = new TexI(img);
+			}
+			return tex;
+		}
+		
 		public void makeflavor() {
 			fo.clear();
 			Coord c = new Coord(0, 0);
@@ -384,6 +462,7 @@ public class MCache {
 								g.ol[x][y] |= ol;
 							}
 						}
+			new Overlay(g.ols, c1, c2, ol);
 					}
 					req.remove(c);
 					g.makeflavor();
@@ -392,6 +471,7 @@ public class MCache {
 						replace(grids.remove(c));
 					}
 					grids.put(c, g);
+		    g.render();
 				}
 			}
 		}
@@ -445,6 +525,10 @@ public class MCache {
 				req.clear();
 			}
 		}
+	synchronized (MiniMap.caveTex) {
+	    MiniMap.caveTex.clear();
+	}
+	UI.instance.mainview.resetcam();
 	}
 
 	public void trim(Coord ul, Coord lr) {

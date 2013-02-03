@@ -27,13 +27,18 @@
 package haven;
 
 import java.io.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Properties;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import static haven.Inventory.invsq;
 
 public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console.Directory {
-    public static final Tex bg = Resource.loadtex("gfx/hud/slen/low");
+    public static Tex bg = Resource.loadtex("gfx/hud/slen/low");
     public static final Tex flarps = Resource.loadtex("gfx/hud/slen/flarps");
     public static final Tex mbg = Resource.loadtex("gfx/hud/slen/mcircle");
     public static final Tex dispbg = Resource.loadtex("gfx/hud/slen/dispbg");
@@ -67,6 +72,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     OptWnd optwnd = null;
     @SuppressWarnings("unchecked")
     Indir<Resource>[][] belt = new Indir[10][10];
+//    static int dh;
 
     static {
 	Widget.addtype("slen", new WidgetFactory() {
@@ -74,10 +80,13 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    return(new SlenHud(c, parent));
 		}
 	    });
+	if(Config.minimap_Ender)
+	    bg = Resource.loadtex("gfx/hud/slen/low2");
 	int h = bg.sz().y;
 	sz = new Coord(800, h);
 	sz.y = (h - fc.y > sz.y)?(h - fc.y):sz.y;
 	sz.y = (h - mc.y > sz.y)?(h - mc.y):sz.y;
+//	dh = h - sz.y;
     }
 
     static class FoldButton extends IButton {
@@ -168,19 +177,21 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     dy = -sz.y;
 	new Img(fc, flarps, this);
 	new Img(mc, mbg, this);
-	new Img(dispc, dispbg, this);
+	if(!Config.minimap_Ender)
+	  new Img(dispc, dispbg, this);
 	hb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/hbu"), Resource.loadimg("gfx/hud/slen/hbd"));
 	invb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/invu"), Resource.loadimg("gfx/hud/slen/invd"));
 	equb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/equu"), Resource.loadimg("gfx/hud/slen/equd"));
 	chrb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/chru"), Resource.loadimg("gfx/hud/slen/chrd"));
 	budb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/budu"), Resource.loadimg("gfx/hud/slen/budd"));
 	optb = new IButton(mc, this, Resource.loadimg("gfx/hud/slen/optu"), Resource.loadimg("gfx/hud/slen/optd"));
+	if (!Config.minimap_Ender) {
 	{
 	    new IButton(dispc, this, Resource.loadimg("gfx/hud/slen/dispauth"), Resource.loadimg("gfx/hud/slen/dispauthd")) {
 		private boolean v = false;
 
 		public void click() {
-		    MapView mv = ui.root.findchild(MapView.class);
+			MapView mv = ui.mainview;
 		    if(v) {
 			mv.disol(2, 3);
 			v = false;
@@ -196,7 +207,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		private boolean v = false;
 
 		public void click() {
-		    MapView mv = ui.root.findchild(MapView.class);
+			MapView mv = ui.mainview;
 		    if(v) {
 			mv.disol(0, 1);
 			v = false;
@@ -206,6 +217,11 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    }
 		}
 	    };
+	}
+//	    new MiniMap(new Coord(5, 5), new Coord(125, 125), this, ui.mainview);
+		new MiniMap(new Coord(-95, -35), new Coord(225, 165), this, ui.mainview);
+	} else {
+	    new MinimapPanel(Coord.z, Coord.z, ui.root);
 	}
 	vc = new VC(this, fb = new FoldButton(new Coord((MainFrame.innerSize.width - 40) / 2, MainFrame.innerSize.height), parent) {
 		public void click() {
@@ -222,7 +238,6 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 		    sdn();
 		}
 	    };
-	new MiniMap(new Coord(-95, -35), new Coord(225, 165), this, ui.mainview);
 	sub.visible = sdb.visible = false;
     loadBelts();
     }
@@ -271,6 +286,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
 	if(in)
 	    return(c.add(bgc));
 	else
+//	    bgc.y += dh;
 	    return(c.add(bgc.inv()));
     }
 
@@ -314,7 +330,7 @@ public class SlenHud extends ConsoleHost implements DTarget, DropTarget, Console
     }
     
     public void draw(GOut g) {
-    // arksu: в первый запуск линкуем хотбар
+    // arksu: РІ РїРµСЂРІС‹Р№ Р·Р°РїСѓСЃРє Р»РёРЅРєСѓРµРј С…РѕС‚Р±Р°СЂ
     if (need_link && belt != null) {
         LinkCurrentHotbar();
         need_link = false;

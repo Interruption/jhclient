@@ -41,6 +41,11 @@ public class Gob implements Sprite.Owner {
     public final Glob glob;
     Map<Class<? extends GAttrib>, GAttrib> attr = new HashMap<Class<? extends GAttrib>, GAttrib>();
     public Collection<Overlay> ols = new LinkedList<Overlay>();
+	private boolean isHuman = false;
+    private boolean flagsinit = false;
+    private boolean isHighlight;
+    private boolean isBeast;
+    String beastname;
 
     public static class Overlay {
 	public Indir<Resource> res;
@@ -85,17 +90,14 @@ public class Gob implements Sprite.Owner {
         Layered l = getattr(Layered.class);
         if (d != null)
         {
-            //s = "step D";
             if (dw != null)
             {
-                //s = "step R";
                 if (dw.res.get() != null) {
                     s = dw.res.get().name;
                 }
             }
             if (l != null)
             {
-                //s = "step L";
                 if (l.base.get() != null) {
                     s = l.base.get().name;
                 }
@@ -104,6 +106,29 @@ public class Gob implements Sprite.Owner {
         return s;
     }
     
+	public String[] GetResNames(){
+	List<String> names = new ArrayList<String>();
+	ResDrawable dw = getattr(ResDrawable.class);
+	Resource res;
+	if(dw != null){
+	    res = dw.res.get();
+	    if(res != null){
+		names.add(res.name);
+	    }
+	} else {
+	    Layered ld = getattr(Layered.class);
+	    if(ld != null){
+		for (Indir<Resource> ir : ld.layers){
+		    res = ir.get();
+		    if(res != null){
+			names.add(res.name);
+		    }
+		}
+	    }
+	}
+	return names.toArray(new String[names.size()]);
+    }
+	
     // получить байт из мессаги
     public byte GetBlob(int index) {
         Drawable d = getattr(Drawable.class);
@@ -252,5 +277,62 @@ public class Gob implements Sprite.Owner {
 	    return(r.layer(Resource.negc));
 	}
 	return(null);
+    }
+	
+	private void initflags(){
+		if(flagsinit){return;}
+		String name = GetResName();
+		if(name.length() == 0){return;}
+		flagsinit = true;
+
+		isHighlight = Config.hlcfg.keySet().contains(name);
+		if(isHighlight){return;}
+
+		//checking bestiality
+		if(!name.contains("/cdv")){
+			isBeast = checkBeast();
+			if(isBeast){return;}
+		}
+
+		//checking humanity...
+		if(name.contains("/borka/")){
+			isHuman = checkHumanity();
+		}
+    }
+	
+	private boolean checkBeast() {
+		for(String name : GetResNames()){
+			for(String pat : Config.beasts.keySet()){
+			if(name.contains(pat)){
+				beastname = pat;
+				return true;
+			}
+			}
+		}
+		return false;
+    }
+    
+    private boolean checkHumanity() {
+		for(String name : GetResNames()){
+			if(name.contains("/borka/body")){
+			return true;
+			}
+		}
+		return false;
+    }
+
+    public boolean isHuman(){
+		initflags();
+		return isHuman;
+    }
+    
+    public boolean isBeast(){
+		initflags();
+		return isBeast;
+    }
+	
+	public boolean isHighlight(){
+		initflags();
+		return isHighlight;
     }
 }

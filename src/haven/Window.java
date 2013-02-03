@@ -29,20 +29,29 @@ package haven;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Window extends Widget implements DTarget {
     static Tex bg = Resource.loadtex("gfx/hud/bgtex");
     static Tex cl = Resource.loadtex("gfx/hud/cleft");
     static Tex cm = Resource.loadtex("gfx/hud/cmain");
     static Tex cr = Resource.loadtex("gfx/hud/cright");
-    static BufferedImage[] cbtni = new BufferedImage[] {
+    private final static Set<String> storePosSet = new HashSet<String>();
+    protected static BufferedImage[] cbtni = new BufferedImage[] {
 	Resource.loadimg("gfx/hud/cbtn"),
 	Resource.loadimg("gfx/hud/cbtnd"),
 	Resource.loadimg("gfx/hud/cbtnh")};
+    protected static BufferedImage[] fbtni = new BufferedImage[] {
+	Resource.loadimg("gfx/hud/fbtn"),
+	Resource.loadimg("gfx/hud/fbtnd"),
+	Resource.loadimg("gfx/hud/fbtnh")}; 
     static Color cc = Color.YELLOW;
     static Text.Foundry cf = new Text.Foundry(new Font("Serif", Font.PLAIN, 12));
     static IBox wbox;
     boolean dt = false;
+    public boolean justclose = false;
     Text cap;
     boolean dm = false;
     public Coord atl, asz, wsz;
@@ -50,6 +59,10 @@ public class Window extends Widget implements DTarget {
     public Coord mrgn = new Coord(13, 13);
     public Coord doff;
     public IButton cbtn;
+    public IButton fbtn;
+    public boolean folded;
+    ArrayList<Widget> wfolded;
+    protected Coord ssz;
 
     static {
 	Widget.addtype("wnd", new WidgetFactory() {
@@ -61,10 +74,17 @@ public class Window extends Widget implements DTarget {
 		}
 	    });
 	wbox = new IBox("gfx/hud", "tl", "tr", "bl", "br", "extvl", "extvr", "extht", "exthb");
+	storePosSet.add("Inventory");
+	storePosSet.add("Cupboard");
+	storePosSet.add("Equipment");
+	storePosSet.add("Character Sheet");
+	storePosSet.add("Kin");
+	storePosSet.add("Study");
     }
 
-    private void placecbtn() {
+    protected void placecbtn() {
 	cbtn.c = new Coord(wsz.x - 3 - Utils.imgsz(cbtni[0]).x, 3).add(mrgn.inv().add(wbox.tloff().inv()));
+	fbtn.c = new Coord(cbtn.c.x - 1 - Utils.imgsz(fbtni[0]).x, cbtn.c.y);
     }
 
     public Window(Coord c, Coord sz, Widget parent, String cap, Coord tlo, Coord rbo) {
@@ -72,8 +92,13 @@ public class Window extends Widget implements DTarget {
 	this.tlo = tlo;
 	this.rbo = rbo;
 	cbtn = new IButton(Coord.z, this, cbtni[0], cbtni[1], cbtni[2]);
+  fbtn = new IButton(Coord.z, this, fbtni[0], fbtni[1], fbtni[2]);
+	fbtn.hide();
+	folded = false;
+	wfolded = new ArrayList<Widget>();
 	if(cap != null)
 	    this.cap = cf.render(cap, cc);
+	ssz = new Coord(sz);
 	sz = sz.add(tlo).add(rbo).add(wbox.bisz()).add(mrgn.mul(2));
 	this.sz = sz;
 	atl = new Coord(wbox.bl.sz().x, wbox.bt.sz().y).add(tlo);
@@ -82,6 +107,7 @@ public class Window extends Widget implements DTarget {
 	placecbtn();
 	setfocustab(true);
 	parent.setfocus(this);
+	loadpos();
     }
 
     public Window(Coord c, Coord sz, Widget parent, String cap) {
@@ -103,18 +129,51 @@ public class Window extends Widget implements DTarget {
 	if(cap != null) {
 	    GOut cg = og.reclip(new Coord(0, -7), sz.add(0, 7));
 	    int w = cap.tex().sz().x;
-	    cg.image(cl, new Coord((sz.x / 2) - (w / 2) - cl.sz().x, 0));
-	    cg.image(cm, new Coord((sz.x / 2) - (w / 2), 0), new Coord(w, cm.sz().y));
-	    cg.image(cr, new Coord((sz.x / 2) + (w / 2), 0));
-	    cg.image(cap.tex(), new Coord((sz.x / 2) - (w / 2), 0));
+		int x0 = (folded)?(mrgn.x + (w / 2)):(sz.x / 2) - (w / 2);
+	    cg.image(cl, new Coord(x0 - cl.sz().x, 0));
+	    cg.image(cm, new Coord(x0, 0), new Coord(w, cm.sz().y));
+	    cg.image(cr, new Coord(x0 + w, 0));
+	    cg.image(cap.tex(), new Coord(x0, 0));
 	}
 	super.draw(og);
     }
 
+    public void checkfold() {
+	for(Widget wdg = child; wdg != null; wdg = wdg.next) {
+	    if((wdg == cbtn)||(wdg == fbtn))
+		continue;
+		if(folded) {
+		    if(wdg.visible) {
+			wdg.hide();
+			wfolded.add(wdg);
+		    }
+		} else if (wfolded.contains(wdg)){
+		    wdg.show();
+		}
+	}
+	Coord max = new Coord(ssz);
+	if(folded) {
+	    max.y = 0;
+	} else {
+	    wfolded.clear();
+	}
+	
+	recalcsz(max);
+    }
+    
+    protected void recalcsz(Coord max)
+    {
+	sz = max.add(wbox.bsz().add(mrgn.mul(2)).add(tlo).add(rbo)).add(-1, -1);
+	wsz = sz.sub(tlo).sub(rbo);
+	if(folded)
+	    wsz.y = wsz.y/2;
+	asz = wsz.sub(wbox.bl.sz()).sub(wbox.br.sz()).sub(mrgn.mul(2));
+    }
+    
     public void pack() {
 	Coord max = new Coord(0, 0);
 	for(Widget wdg = child; wdg != null; wdg = wdg.next) {
-	    if(wdg == cbtn)
+	    if((wdg == cbtn)||(wdg == fbtn))
 		continue;
 	    Coord br = wdg.c.add(wdg.sz);
 	    if(br.x > max.x)
@@ -122,9 +181,8 @@ public class Window extends Widget implements DTarget {
 	    if(br.y > max.y)
 		max.y = br.y;
 	}
-	sz = max.add(wbox.bsz().add(mrgn.mul(2)).add(tlo).add(rbo)).add(-1, -1);
-	wsz = sz.add(tlo.inv()).add(rbo.inv());
-	asz = new Coord(wsz.x - wbox.bl.sz().x - wbox.br.sz().x, wsz.y - wbox.bt.sz().y - wbox.bb.sz().y).add(mrgn.mul(2).inv());
+	ssz = max;
+	checkfold();
 	placecbtn();
     }
 
@@ -165,6 +223,7 @@ public class Window extends Widget implements DTarget {
 	if(dm) {
 	    ui.grabmouse(null);
 	    dm = false;
+	    storepos();
 	} else {
 	    super.mouseup(c, button);
 	}
@@ -172,16 +231,40 @@ public class Window extends Widget implements DTarget {
     }
 
     public void mousemove(Coord c) {
-	if(dm) {
-	    this.c = this.c.add(c.add(doff.inv()));
-	} else {
-	    super.mousemove(c);
-	}
+		if(dm) {
+			this.c = this.c.add(c.add(doff.inv()));
+		} else {
+			super.mousemove(c);
+		}
     }
 
+    private void storepos(){
+		if(cap == null){return;}
+		String name = cap.text;
+		if(storePosSet.contains(name)){
+			Config.setWindowOpt(name+"_pos", c.toString());
+			return;
+		}
+    }
+    
+    private void loadpos(){
+		if(cap == null){return;}
+		String name = cap.text;
+		if(storePosSet.contains(name)){
+			c = new Coord(Config.window_props.getProperty(name+"_pos", c.toString()));
+			return;
+		}
+    }
+    
     public void wdgmsg(Widget sender, String msg, Object... args) {
 	if(sender == cbtn) {
+	    if(justclose)
+		ui.destroy(this);
+	    else
 	    wdgmsg("close");
+	} else if(sender == fbtn){
+		folded = !folded;
+		checkfold();
 	} else {
 	    super.wdgmsg(sender, msg, args);
 	}
@@ -189,6 +272,9 @@ public class Window extends Widget implements DTarget {
 
     public boolean type(char key, java.awt.event.KeyEvent ev) {
 	if(key == 27) {
+	    if(justclose)
+		ui.destroy(this);
+	    else
 	    wdgmsg("close");
 	    return(true);
 	}

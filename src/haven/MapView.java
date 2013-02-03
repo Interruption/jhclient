@@ -516,6 +516,12 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		last_tick = System.currentTimeMillis();
 		radiuses = new HashMap<String, Integer>();
 	}
+	
+	public void resetcam(){
+	if(cam != null){
+	    cam.reset();
+	}
+    }
 
 	public static Coord m2s(Coord c) {
 		return(new Coord((c.x * 2) - (c.y * 2), c.x + c.y));

@@ -32,6 +32,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.InputEvent;
 
 public class UI {
+    static public UI instance;
     public RootWidget root;
     private Widget keygrab, mousegrab;
     public Map<Integer, Widget> widgets = new TreeMap<Integer, Widget>();
@@ -121,6 +122,7 @@ public class UI {
     }
 
     public UI(Coord sz, Session sess) {
+	instance = this;
 	root = new RootWidget(this, sz);
 	widgets.put(0, root);
 	rwidgets.put(root, 0);
