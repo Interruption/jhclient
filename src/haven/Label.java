@@ -71,6 +71,14 @@ public class Label extends Widget {
 	this(c, parent, text, Text.std);
     }
 	
+	public Label(Coord c, Widget parent, String text, int size_x, int size_y) { 
+		this(c, parent, text, Text.std);
+		if(size_x != -1)
+			sz.x = size_x;
+		if(size_y != -1)
+			sz.y = size_y;
+    }
+	
     public void settext(String text) {
 	this.text = f.render(texts = text, col);
 	sz = this.text.sz();

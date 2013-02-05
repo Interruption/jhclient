@@ -31,8 +31,8 @@ import java.awt.Color;
 public class CheckBox extends Widget {
     static Tex box, mark;
     public boolean a = false;
-	public static final Color cunchk = new Color(0,255,50);
-	public static final Color cchk = new Color(20,20,20);
+//	public static final Color cunchk = new Color(0,255,50);
+//	public static final Color cchk = new Color(20,20,20);
     Text lbl;
 	
     static {
@@ -41,16 +41,26 @@ public class CheckBox extends Widget {
 		    return(new CheckBox(c, parent, (String)args[0]));
 		}
 	    });
-	box = Resource.loadtex("gfx/hud/calendar/sun");
-	box.sz().x = 21;
-	mark = Resource.loadtex("gfx/hud/calendar/sun");
-	mark.sz().x = 21;
+	box = Resource.loadtex("gfx/hud/chkboxi");
+	box.sz().x = 19;
+	mark = Resource.loadtex("gfx/hud/chkmarki");
+	mark.sz().x = 19;
     }
 	
     public CheckBox(Coord c, Widget parent, String lbl) {
 	super(c, box.sz(), parent);
 	this.lbl = Text.std.render(lbl, java.awt.Color.WHITE);
 	sz = box.sz().add(this.lbl.sz());
+    }
+	
+	public CheckBox(Coord c, Widget parent, String lbl, int size_x, int size_y) {
+	super(c, box.sz(), parent);
+	this.lbl = Text.std.render(lbl, java.awt.Color.WHITE);
+	sz = box.sz().add(this.lbl.sz());
+	if(size_x != -1)
+			sz.x = size_x;
+	if(size_y != -1)
+			sz.y = size_y;
     }
 	
     public boolean mousedown(Coord c, int button) {
@@ -63,10 +73,10 @@ public class CheckBox extends Widget {
 
     public void draw(GOut g) {
 	g.image(lbl.tex(), new Coord(box.sz().x, box.sz().y - lbl.sz().y));
-	g.chcolor(cchk);
+//	g.chcolor(cchk);
 	g.image(box, Coord.z);
 	if(a) {
-		g.chcolor(cunchk);
+//		g.chcolor(cunchk);
 	    g.image(mark, Coord.z);
 	}
 	super.draw(g);

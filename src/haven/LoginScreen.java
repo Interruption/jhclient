@@ -86,7 +86,7 @@ public class LoginScreen extends Widget {
 			new Label(new Coord(0, 60), this, "Password", textf);
 			pass = new TextEntry(new Coord(0, 80), new Coord(150, 20), this, "");
 			pass.pw = true;
-			savepass = new CheckBox(new Coord(0, 110), this, "Remember me");
+			savepass = new CheckBox(new Coord(0, 110), this, "Remember me", -1, 16);
 			savepass.a = save;
 			if (user.text.equals(""))
 				setfocus(user);

@@ -62,13 +62,27 @@ public class RadioGroup {
     }
 
     public RadioButton add(String lbl, Coord c) {
-	RadioButton rb = new RadioButton(c, parent, lbl);
-	btns.add(rb);
-	map.put(lbl, rb);
-	rmap.put(rb, lbl);
-	if(checked == null)
-	    checked = rb;
-	return(rb);
+		RadioButton rb = new RadioButton(c, parent, lbl);
+		btns.add(rb);
+		map.put(lbl, rb);
+		rmap.put(rb, lbl);
+		if(checked == null)
+			checked = rb;
+		return(rb);
+    }
+	
+	public RadioButton add(String lbl, Coord c, int size_x, int size_y) {
+		RadioButton rb = new RadioButton(c, parent, lbl);
+		btns.add(rb);
+		map.put(lbl, rb);
+		rmap.put(rb, lbl);
+		if(size_x != -1)
+			rb.sz.x = size_x;
+		if(size_y != -1)
+			rb.sz.y = size_y;
+		if(checked == null)
+			checked = rb;
+		return(rb);
     }
 
     public void check(int index) {

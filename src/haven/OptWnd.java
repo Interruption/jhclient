@@ -209,8 +209,8 @@ public class OptWnd extends Window {
 		    public void changed(int btn, String lbl) {
 			Utils.setpref("editmode", lbl.toLowerCase());
 		    }};
-	    editmode.add("Emacs", new Coord(10, 30));
-	    editmode.add("PC",    new Coord(10, 60));
+	    editmode.add("Emacs", new Coord(10, 30), -1, 16);
+	    editmode.add("PC",    new Coord(10, 60), -1, 16);
 	    if(Utils.getpref("editmode", "pc").equals("emacs")) editmode.check("Emacs");
 	    else                                                editmode.check("PC");
 
@@ -233,84 +233,84 @@ public class OptWnd extends Window {
 			}
 		};
 		
-        CheckBox chk = new CheckBox(new Coord(10, 130), tab, "Toggle tracking ON when login") {
+        CheckBox chk = new CheckBox(new Coord(10, 130), tab, "Toggle tracking ON when login", -1, 16) {
 		public void changed(boolean val) {
 		    Config.tracking = val;
             Config.saveOptions();
 		}};
         chk.a = Config.tracking;
 
-        chk = new CheckBox(new Coord(10, 160), tab, "Always show player nicks") {
+        chk = new CheckBox(new Coord(10, 160), tab, "Always show player nicks", -1, 16) {
 		public void changed(boolean val) {
 		    Config.always_show_nicks = val;
             Config.saveOptions();
 		}};
         chk.a = Config.always_show_nicks;
 
-        chk = new CheckBox(new Coord(10, 190), tab, "Show map grid") {
+        chk = new CheckBox(new Coord(10, 190), tab, "Show map grid", -1, 16) {
 		public void changed(boolean val) {
 		    Config.show_map_grid = val;
             Config.saveOptions();
 		}};
         chk.a = Config.show_map_grid;
 
-        chk = new CheckBox(new Coord(10, 220), tab, "Highlight objects by mouse") {
+        chk = new CheckBox(new Coord(10, 220), tab, "Highlight objects by mouse", -1, 16) {
 		public void changed(boolean val) {
 		    Config.highlight_object_by_mouse = val;
             Config.saveOptions();
 		}};
         chk.a = Config.highlight_object_by_mouse;
 
-        chk = new CheckBox(new Coord(10, 250), tab, "Highlight hided objects") {
+        chk = new CheckBox(new Coord(10, 250), tab, "Highlight hided objects", -1, 16) {
 		public void changed(boolean val) {
 		    Config.highlight_hided_objects = val;
             Config.saveOptions();
 		}};	
         chk.a = Config.highlight_hided_objects;
         
-        chk = new CheckBox(new Coord(10, 280), tab, "Gilbertus map dumper (need restart)") {
+        chk = new CheckBox(new Coord(10, 280), tab, "Gilbertus map dumper (need restart)", -1, 16) {
     		public void changed(boolean val) {
     		    Config.gilbertus_map_dump = val;
                 Config.saveOptions();
     		}};
         chk.a = Config.gilbertus_map_dump;
 		
-		chk = new CheckBox(new Coord(10, 310), tab, "Show radius (don't work correct)") {
+		chk = new CheckBox(new Coord(10, 310), tab, "Show radius (don't work correct)", -1, 16) {
     		public void changed(boolean val) {
     		    Config.showRadius = val;
                 Config.saveOptions();
     		}};
         chk.a = Config.showRadius;
 		
-		chk = new CheckBox(new Coord(10, 340), tab, "Enable LTO") {
+		chk = new CheckBox(new Coord(10, 340), tab, "Enable LTO", -1, 16) {
     		public void changed(boolean val) {
     		    Config.enableLTO = val;
                 Config.saveOptions();
     		}};
         chk.a = Config.enableLTO;
 		
-		chk = new CheckBox(new Coord(10, 370), tab, "Alternative name LTO") {
+		chk = new CheckBox(new Coord(10, 370), tab, "Alternative name LTO", -1, 16) {
     		public void changed(boolean val) {
     		    Config.altnLTO = val;
                 Config.saveOptions();
     		}};
         chk.a = Config.altnLTO;
 		
-		chk = new CheckBox(new Coord(255, 130), tab, "Hide all object") {
+		chk = new CheckBox(new Coord(255, 130), tab, "Hide all object", -1, 16) {
     		public void changed(boolean val) {
     		    Config.hideall = val;
                 Config.saveOptions();
     		}};
         chk.a = Config.hideall;
 		
-		chk = new CheckBox(new Coord(255, 160), tab, "Hide placeable object and highlight it") {
+		chk = new CheckBox(new Coord(255, 160), tab, "Hide placeable object and highlight it", -1, 16) {
     		public void changed(boolean val) {
     		    Config.hidepl = val;
                 Config.saveOptions();
     		}};
         chk.a = Config.hidepl;
 		
-		chk = new CheckBox(new Coord(255, 190), tab, "Use Ender minimap (need restart)") {
+		chk = new CheckBox(new Coord(255, 190), tab, "Use Ender minimap (need restart)", -1, 16) {
     		public void changed(boolean val) {
     		    Config.minimap_Ender = val;
 				Config.saveOptions();
@@ -406,7 +406,7 @@ public class OptWnd extends Window {
 	    Collections.sort(clist, camcomp);
 	    int y = 35;
 	    for(String camname : clist)
-		cameras.add(camname, new Coord(10, y += 25));
+		cameras.add(camname, new Coord(10, y += 25), -1, 16);
 	    cameras.check(caminfomap.containsKey(curcam) ? caminfomap.get(curcam).name : curcam);
 	}
 
@@ -446,12 +446,12 @@ public class OptWnd extends Window {
 				return(true);
 			}
 	    }).changed();
-	    (new CheckBox(new Coord(10, 280), tab, "Sound enabled") {
+	    (new CheckBox(new Coord(10, 280), tab, "Sound enabled", -1, 16) {
 		public void changed(boolean val) {
 		    Config.isSoundOn = val;
 		}}).a = Config.isSoundOn;
 		
-	    (new CheckBox(new Coord(210, 280), tab, "Music enabled") {
+	    (new CheckBox(new Coord(210, 280), tab, "Music enabled", -1, 16) {
 		public void changed(boolean val) {
 		    Config.isMusicOn = val;
 		    Music.setVolume(Config.getMusicVolume());
@@ -462,7 +462,7 @@ public class OptWnd extends Window {
 
         int y = 0;
         for (final String[] checkbox : checkboxesList) {
-            CheckBox chkbox = new CheckBox(new Coord(10, y += 30), tab, checkbox[0]) {
+            CheckBox chkbox = new CheckBox(new Coord(10, y += 30), tab, checkbox[0], -1, 16) {
 
                 public void changed(boolean val) {
                     if (val) {
@@ -479,7 +479,7 @@ public class OptWnd extends Window {
 		y = 30;
 		new Label(new Coord(130, 27), tab, "Fen Flavobjs (less lag on fen):");
 		for (final String[] checkbox : cblist_fenflavobjs) {
-            CheckBox chkbox = new CheckBox(new Coord(130, y += 30), tab, checkbox[0]) {
+            CheckBox chkbox = new CheckBox(new Coord(130, y += 30), tab, checkbox[0], -1, 16) {
 
                 public void changed(boolean val) {
                     if (val) {
@@ -505,7 +505,7 @@ public class OptWnd extends Window {
 				x = 130;
 				y = 25;
 			}
-			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0], -1, 16) {
 				public void changed(boolean val) {
 					if (val) {
 						Config.ltObjectList.add(checkbox[1]);
@@ -526,7 +526,7 @@ public class OptWnd extends Window {
 				x = 380;
 				y = 25;
 			}
-			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0], -1, 16) {
 				public void changed(boolean val) {
 					if (val) {
 						Config.ltObjectList.add(checkbox[1]);
@@ -551,7 +551,7 @@ public class OptWnd extends Window {
 				if (x == 10) {x = 130;} else {x += 125;}
 				y = 25;
 			}
-			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0], -1, 16) {
 				public void changed(boolean val) {
 					if (val) {
 						Config.ltObjectList.add(checkbox[1]);
@@ -576,7 +576,7 @@ public class OptWnd extends Window {
 				if (x == 10) {x = 130;} else {x += 125;}
 				y = 25;
 			}
-			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0]) {
+			chkbox = new CheckBox(new Coord(x, y += 25), tab, checkbox[0], -1, 16) {
 				public void changed(boolean val) {
 					if (val) {
 						Config.ltObjectList.add(checkbox[1]);
