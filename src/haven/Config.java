@@ -107,6 +107,7 @@ public class Config {
 	public static Set<String> highlightItemList;
 	public static HashSet<String> ltObjectList;
 	public static HashSet<String> radiusList;
+	public static HashSet<String> neverhide;
 	public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
 	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
 	public static Map<String, String> beasts = new HashMap<String, String>();
@@ -114,6 +115,8 @@ public class Config {
 	public static int sfxVol;
 	public static int musicVol;
 	public static int lto_label_distance = 250;
+	public static int clientId;
+	public static String clientStrId;
 	public static boolean enableLTO = true;
 	public static boolean altnLTO = true;
 	public static boolean showq;
@@ -128,7 +131,7 @@ public class Config {
     public static boolean showViewDistance;
 	public static boolean showBeast = false;
 	public static boolean minimap_Ender = true;
-			
+	
     static {
 	try {
 	    String p;
@@ -159,6 +162,7 @@ public class Config {
 		hideFenflavobjsList = new HashSet<String>();
 		ltObjectList  = new HashSet<String>();
 		radiusList  = new HashSet<String>();
+		neverhide = new HashSet<String>();
 		window_props = new Properties();
 		highlightItemList = Collections.synchronizedSet(new HashSet<String>());
         loadOptions();
@@ -166,11 +170,33 @@ public class Config {
 	    loadCurios();
 		loadWindowOptions();
 		loadBeasts();
+		loadNeverhide();
+
     } catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
     }
-
+	
+	private static void loadNeverhide() {
+		neverhide.add("gfx/arch/stairs-cellar");
+		neverhide.add("gfx/arch/door-cellar");
+		neverhide.add("gfx/arch/cabin-door2m");
+		neverhide.add("gfx/arch/door-inn");
+		neverhide.add("gfx/arch/cabin-door2");
+		neverhide.add("gfx/arch/gates/palisade-ns");
+		neverhide.add("gfx/arch/gates/palisade-we");
+		neverhide.add("gfx/arch/gates/brick-ns");
+		neverhide.add("gfx/arch/gates/brick-we");
+		neverhide.add("gfx/arch/gates/fence-ns");
+		neverhide.add("gfx/arch/gates/fence-we");
+		neverhide.add("gfx/terobjs/ridges/cavein-n");
+		neverhide.add("gfx/terobjs/ridges/cavein-w");
+		neverhide.add("gfx/terobjs/ridges/caveout-n");
+		neverhide.add("gfx/terobjs/ridges/caveout-w");
+		neverhide.add("gfx/terobjs/mining/minehole");
+		neverhide.add("gfx/terobjs/mining/ladder");
+	}
+	
     private static boolean getopt_bool(String key, boolean def_val) {
         String str_def_val = "false";
         if (def_val) str_def_val = "true";
@@ -480,6 +506,11 @@ public class Config {
                 }
             }
         }
+		clientId = getopt_int("client_id", 0);
+		if (clientId > 0)  {
+            clientStrId = "_" + Integer.toString(clientId);
+        } else 
+			clientStrId = "";
         ark_window_width = getopt_int("window_width", 800);
         ark_window_height = getopt_int("window_height", 600);
         hide = getopt_bool("hide_objects", false);
@@ -552,6 +583,8 @@ public class Config {
         for (String objectName : highlightItemList) {
             highlightObjects += objectName+",";
         }
+		
+		setopt_int("client_id", clientId);
 		setopt_str("highlightObjects", highlightObjects);
 		setopt_str("hideFenflavobjs", hideFenflavobjs);
         setopt_str("hideObjects", hideObjects);		
@@ -584,7 +617,7 @@ public class Config {
 		setopt_bool("radar", radar);
 		setopt_bool("showViewDistance", showViewDistance);
 		setopt_bool("showBeast", showBeast);
-		setopt_bool("minimap_Ender", minimap_Ender);
+		setopt_bool("minimap_Ender", minimap_Ender);		
 		writeLTOList();
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");

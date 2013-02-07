@@ -36,6 +36,9 @@ public class Bootstrap implements UI.Receiver {
     Queue<Message> msgs = new LinkedList<Message>();
     String inituser = null;
     byte[] initcookie = null;
+	static String idpassword = "password"+Config.clientStrId;
+	static String idsavedtoken = "savedtoken"+Config.clientStrId;
+	static String idusername = "username"+Config.clientStrId;
 	
     public static class Message {
 	int id;
@@ -68,11 +71,11 @@ public class Bootstrap implements UI.Receiver {
 	ui.bind(new LoginScreen(ui.root), 1);
 	String username;
 	boolean savepw = false;
-	Utils.setpref("password", "");
+	Utils.setpref(idpassword, "");
 	byte[] token = null;
-	if(Utils.getpref("savedtoken", "").length() == 64)
-	    token = Utils.hex2byte(Utils.getpref("savedtoken", null));
-	username = Utils.getpref("username", "");
+	if(Utils.getpref(idsavedtoken, "").length() == 64)
+	    token = Utils.hex2byte(Utils.getpref(idsavedtoken, null));
+	username = Utils.getpref(idusername, "");
 	String authserver = (Config.authserv == null)?address:Config.authserv;
 	retry: do {
 	    byte[] cookie;
@@ -94,7 +97,7 @@ public class Bootstrap implements UI.Receiver {
 			    break;
 			} else if(msg.name == "forget") {
 			    token = null;
-			    Utils.setpref("savedtoken", "");
+			    Utils.setpref(idsavedtoken, "");
 			    continue retry;
 			}
 		    }
@@ -106,7 +109,7 @@ public class Bootstrap implements UI.Receiver {
 		    if(!auth.trytoken(token)) {
 			auth.close();
 			token = null;
-			Utils.setpref("savedtoken", "");
+			Utils.setpref(idsavedtoken, "");
 			ui.uimsg(1, "error", "Invalid save");
 			continue retry;
 		    }
@@ -156,7 +159,7 @@ public class Bootstrap implements UI.Receiver {
 		    cookie = auth.cookie;
 		    if(savepw) {
 			if(auth.gettoken())
-			    Utils.setpref("savedtoken", Utils.byte2hex(auth.token));
+			    Utils.setpref(idsavedtoken, Utils.byte2hex(auth.token));
 		    }
 		} catch(java.io.IOException e) {
 		    ui.uimsg(1, "error", e.getMessage());
@@ -178,7 +181,7 @@ public class Bootstrap implements UI.Receiver {
 	    Thread.sleep(100);
 	    while(true) {
 		if(sess.state == "") {
-		    Utils.setpref("username", username);
+		    Utils.setpref(idusername, username);
 		    ui.destroy(1);
 		    break retry;
 		} else if(sess.connfailed != 0) {

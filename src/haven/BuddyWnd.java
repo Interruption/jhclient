@@ -52,18 +52,23 @@ public class BuddyWnd extends Window {
 	new Color(255, 0, 128),
     };
     private Comparator<Buddy> bcmp;
+	static String idbuddysort = "buddysort"+Config.clientStrId;
+	
     private Comparator<Buddy> alphacmp = new Comparator<Buddy>() {
 	private Collator c = Collator.getInstance();
+	
 	public int compare(Buddy a, Buddy b) {
 	    return(c.compare(a.name.text, b.name.text));
 	}
     };
+	
     private Comparator<Buddy> groupcmp = new Comparator<Buddy>() {
 	public int compare(Buddy a, Buddy b) {
 	    if(a.group == b.group) return(alphacmp.compare(a, b));
 	    else                   return(a.group - b.group);
 	}
     };
+	
     private Comparator<Buddy> statuscmp = new Comparator<Buddy>() {
 	public int compare(Buddy a, Buddy b) {
 	    if(a.online == b.online) return(alphacmp.compare(a, b));
@@ -364,7 +369,7 @@ public class BuddyWnd extends Window {
 	sbstatus = new Button(new Coord(5,   290), 120, this, "Sort by status")      { public void click() { setcmp(statuscmp); } };
 	sbgroup  = new Button(new Coord(140, 290), 120, this, "Sort by group")       { public void click() { setcmp(groupcmp); } };
 	sbalpha  = new Button(new Coord(275, 290), 120, this, "Sort alphabetically") { public void click() { setcmp(alphacmp); } };
-	String sort = Utils.getpref("buddysort", "");
+	String sort = Utils.getpref(idbuddysort, "");
 	if(sort.equals("")) {
 	    bcmp = statuscmp;
 	} else {
@@ -416,7 +421,7 @@ public class BuddyWnd extends Window {
 	if(cmp == alphacmp)  val = "alpha";
 	if(cmp == groupcmp)  val = "group";
 	if(cmp == statuscmp) val = "status";
-	Utils.setpref("buddysort", val);
+	Utils.setpref(idbuddysort, val);
 	synchronized(buddies) {
 	    Collections.sort(buddies, bcmp);
 	}

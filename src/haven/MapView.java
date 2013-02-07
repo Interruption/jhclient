@@ -90,6 +90,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	long polchtm = 0;
 	Map<String, Integer> radiuses;
 	Gob gobplace = null;
+	static String iddefcam = "defcam"+Config.clientStrId;
+	static String idcamargs2 = "camargs2"+Config.clientStrId;
 	
 	public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
 		public int compare(Sprite.Part a, Sprite.Part b) {
@@ -491,10 +493,10 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	}
 
 	private static Camera restorecam() {
-		Class<? extends Camera> ct = camtypes.get(Utils.getpref("defcam", "border"));
+		Class<? extends Camera> ct = camtypes.get(Utils.getpref(iddefcam, "border"));
 		if(ct == null)
 		return(new FixedCam());
-		String[] args = (String [])Utils.deserialize(Utils.getprefb("camargs2", null));
+		String[] args = (String [])Utils.deserialize(Utils.getprefb(idcamargs2, null));
 		if(args == null) args = new String[0];
 		try {
 			return(makecam(ct, args));
@@ -1286,6 +1288,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				drawer.chcur(gob);
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
+//				Boolean gdraw = false;
 				if(!Config.hideall){
 					if((Config.hidepl)&&(gobplace != null)&&(gob == gobplace)){
 						gob.drawsetup(drawer, dc, sz, false);
@@ -1303,6 +1306,9 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 						gob.drawsetup(drawer, dc, sz, false);
 					}
 				}
+//				if(Config.neverhide.contains(gob.GetResName()))
+//					gdraw = true;
+				
 				Speaking s = gob.getattr(Speaking.class);
 				if(s != null)
 				speaking.add(s);
@@ -1691,8 +1697,8 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 					if(ct != null) {
 						try {
 							MapView.this.cam = makecam(ct, cargs);
-							Utils.setpref("defcam", args[1]);
-							Utils.setprefb("camargs2", Utils.serialize(cargs));
+							Utils.setpref(iddefcam, args[1]);
+							Utils.setprefb(idcamargs2, Utils.serialize(cargs));
 						} catch(ClassNotFoundException e) {
 							throw(new RuntimeException("no such camera: " + args[1]));
 						}

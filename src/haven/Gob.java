@@ -83,7 +83,6 @@ public class Gob implements Sprite.Owner {
 
     // arksu: получить имя ресурса
     public String GetResName() {
-        //String s = "step 1";
 		String s = "";
         Drawable d = getattr(Drawable.class);
         ResDrawable dw = getattr(ResDrawable.class);

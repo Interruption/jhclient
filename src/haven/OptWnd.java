@@ -1,7 +1,7 @@
 /*
  *  This file is part of the Haven & Hearth game client.
  *  Copyright (C) 2009 Fredrik Tolf <fredrik@dolda2000.com>, and
- *                     BjГ¶rn Johannessen <johannessen.bjorn@gmail.com>
+ *                     Bjorn Johannessen <johannessen.bjorn@gmail.com>
  *
  *  Redistribution and/or modification of this file is subject to the
  *  terms of the GNU Lesser General Public License, version 3, as
@@ -38,6 +38,13 @@ public class OptWnd extends Window {
     public static final RichText.Foundry foundry = new RichText.Foundry(TextAttribute.FAMILY, "SansSerif", TextAttribute.SIZE, 10);
     private Tabs body;
     private String curcam;
+	static String ideditmode = "editmode"+Config.clientStrId;
+	static String idoptwndtab = "optwndtab"+Config.clientStrId;
+	static String iddefcam = "defcam"+Config.clientStrId;
+	static String idcamargs2 = "camargs2"+Config.clientStrId;
+	static String idclicktgtarg1 = "clicktgtarg1"+Config.clientStrId;
+	static String idfixedcakearg1 = "fixedcakearg1"+Config.clientStrId;
+	
     private Map<String, CamInfo> caminfomap = new HashMap<String, CamInfo>();
     private Map<String, String> camname2type = new HashMap<String, String>();
     private Map<String, String[]> camargs = new HashMap<String, String[]>();
@@ -173,7 +180,7 @@ public class OptWnd extends Window {
 
 	body = new Tabs(Coord.z, new Coord(520, 420), this) {
 		public void changed(Tab from, Tab to) {
-		    Utils.setpref("optwndtab", to.btn.text.text);
+		    Utils.setpref(idoptwndtab, to.btn.text.text);
 		    from.btn.c.y = 0;
 		    to.btn.c.y = -2;
 		}};
@@ -207,11 +214,11 @@ public class OptWnd extends Window {
 	    new Label(new Coord(20, 10), editbox, "Edit mode:");
 	    RadioGroup editmode = new RadioGroup(editbox) {
 		    public void changed(int btn, String lbl) {
-			Utils.setpref("editmode", lbl.toLowerCase());
+			Utils.setpref(ideditmode, lbl.toLowerCase());
 		    }};
 	    editmode.add("Emacs", new Coord(10, 30), -1, 16);
 	    editmode.add("PC",    new Coord(10, 60), -1, 16);
-	    if(Utils.getpref("editmode", "pc").equals("emacs")) editmode.check("Emacs");
+	    if(Utils.getpref(ideditmode, "pc").equals("emacs")) editmode.check("Emacs");
 	    else                                                editmode.check("PC");
 
 		Widget botnames = new Frame(new Coord(230, 30), new Coord(200, 90), tab);
@@ -316,11 +323,18 @@ public class OptWnd extends Window {
 				Config.saveOptions();
     		}};
         chk.a = Config.minimap_Ender;
+		
+		chk = new CheckBox(new Coord(255, 220), tab, "Use \"neverhide\" list", -1, 16) {
+    		public void changed(boolean val) {
+    		    Config.minimap_Ender = val;
+				Config.saveOptions();
+    		}};
+        chk.a = Config.minimap_Ender;
             
 	}
 
 	{ /* CAMERA TAB */
-	    curcam = Utils.getpref("defcam", "border");
+	    curcam = Utils.getpref(iddefcam, "border");
 	    tab = body.new Tab(new Coord(60, 0), 60, "Camera");
 
 	    new Label(new Coord(10, 40), tab, "Camera type:");
@@ -343,14 +357,14 @@ public class OptWnd extends Window {
 	    new Label(new Coord(45, 180), ctab, "Slow");
 	    new Scrollbar(new Coord(60, 20), 160, ctab, 0, 20) {
 		    {
-			val = Integer.parseInt(Utils.getpref("clicktgtarg1", "10"));
+			val = Integer.parseInt(Utils.getpref(idclicktgtarg1, "10"));
 			setcamargs("clicktgt", calcarg());
 		    }
 		public boolean mouseup(Coord c, int button) {
 		    if(super.mouseup(c, button)) {
 			setcamargs(curcam, calcarg());
 			setcamera(curcam);
-			Utils.setpref("clicktgtarg1", String.valueOf(val));
+			Utils.setpref(idclicktgtarg1, String.valueOf(val));
 			return(true);
 		    }
 		    return(false);
@@ -365,14 +379,14 @@ public class OptWnd extends Window {
 	    new Label(new Coord(45, 180), ctab, "Slow");
 	    new Scrollbar(new Coord(60, 20), 160, ctab, 0, 20) {
 		    {
-			val = Integer.parseInt(Utils.getpref("fixedcakearg1", "10"));
+			val = Integer.parseInt(Utils.getpref(idfixedcakearg1, "10"));
 			setcamargs("fixedcake", calcarg());
 		    }
 		public boolean mouseup(Coord c, int button) {
 		    if(super.mouseup(c, button)) {
 			setcamargs(curcam, calcarg());
 			setcamera(curcam);
-			Utils.setpref("fixedcakearg1", String.valueOf(val));
+			Utils.setpref(idfixedcakearg1, String.valueOf(val));
 			return(true);
 		    }
 		    return(false);
@@ -593,7 +607,7 @@ public class OptWnd extends Window {
     //------------------------------------------------------------------------------------------------------------------
 
     new Frame(new Coord(-10, 20), new Coord(560, 410), this);
-	String last = Utils.getpref("optwndtab", "");
+	String last = Utils.getpref(idoptwndtab, "");
 	for(Tabs.Tab t : body.tabs) {
 	    if(t.btn.text.text.equals(last))
 		body.showtab(t);
@@ -652,7 +666,7 @@ public class OptWnd extends Window {
 
     private void setcamera(String camtype) {
 	curcam = camtype;
-	Utils.setpref("defcam", curcam);
+	Utils.setpref(iddefcam, curcam);
 	String[] args = camargs.get(curcam);
 	if(args == null) args = new String[0];
 
@@ -672,7 +686,7 @@ public class OptWnd extends Window {
     private void setcamargs(String camtype, String... args) {
 	camargs.put(camtype, args);
 	if(args.length > 0 && curcam.equals(camtype))
-	    Utils.setprefb("camargs2", Utils.serialize(args));
+	    Utils.setprefb(idcamargs2, Utils.serialize(args));
     }
 
     private int getsfxvol() {

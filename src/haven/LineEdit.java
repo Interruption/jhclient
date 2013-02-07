@@ -36,6 +36,7 @@ public class LineEdit {
 	private static final int C = 1;
 	private static final int M = 2;
 	public KeyHandler mode;
+	static String ideditmode = "editmode"+Config.clientStrId;
 
 	public abstract class KeyHandler {
 		public abstract boolean key(char c, int code, int mod);
@@ -256,7 +257,7 @@ public class LineEdit {
 	}
 
 	public LineEdit() {
-		String mode = Utils.getpref("editmode", "pc");
+		String mode = Utils.getpref(ideditmode, "pc");
 		if (mode.equals("emacs")) {
 			this.mode = new EmacsMode();
 		} else {
@@ -351,7 +352,7 @@ public class LineEdit {
 	static {
 		Console.setscmd("editmode", new Console.Command() {
 			public void run(Console cons, String[] args) {
-				Utils.setpref("editmode", args[1]);
+				Utils.setpref(ideditmode, args[1]);
 			}
 		});
 	}
