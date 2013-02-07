@@ -1288,27 +1288,25 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 				drawer.chcur(gob);
 				Coord dc = m2s(gob.getc()).add(oc);
 				gob.sc = dc;
-//				Boolean gdraw = false;
+				Boolean gdraw = false;
 				if(!Config.hideall){
 					if((Config.hidepl)&&(gobplace != null)&&(gob == gobplace)){
-						gob.drawsetup(drawer, dc, sz, false);
+						gdraw = false;
 					} else {
 						if(Config.hideFenflavobjsList.contains(gob.GetResName())) {
-							gob.drawsetup(drawer, dc, sz, false);
+							gdraw = false;
 						} else {
-							gob.drawsetup(drawer, dc, sz, true);
+							gdraw = true;
 						}
 					}
 				} else {
-					if(gob.GetResName().contains("ridges")){
-						gob.drawsetup(drawer, dc, sz, true);
-					} else {
-						gob.drawsetup(drawer, dc, sz, false);
-					}
+					gdraw = false;
 				}
-//				if(Config.neverhide.contains(gob.GetResName()))
-//					gdraw = true;
-				
+				if(gob.GetResName().contains("ridges"))
+					gdraw = true;
+				if((Config.useneverhide)&&(Config.neverhideList.contains(gob.GetResName())))
+					gdraw = true;
+				gob.drawsetup(drawer, dc, sz, gdraw);
 				Speaking s = gob.getattr(Speaking.class);
 				if(s != null)
 				speaking.add(s);

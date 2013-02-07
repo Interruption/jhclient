@@ -107,7 +107,7 @@ public class Config {
 	public static Set<String> highlightItemList;
 	public static HashSet<String> ltObjectList;
 	public static HashSet<String> radiusList;
-	public static HashSet<String> neverhide;
+	public static HashSet<String> neverhideList;
 	public static Map<String, Map<String, Float>> FEPMap = new HashMap<String, Map<String, Float>>();
 	public static Map<String, CurioInfo> curios = new HashMap<String, CurioInfo>();
 	public static Map<String, String> beasts = new HashMap<String, String>();
@@ -131,6 +131,7 @@ public class Config {
     public static boolean showViewDistance;
 	public static boolean showBeast = false;
 	public static boolean minimap_Ender = true;
+	public static boolean useneverhide = false;
 	
     static {
 	try {
@@ -147,8 +148,6 @@ public class Config {
 	    fullscreen = getprop("haven.fullscreen", "off").equals("on");
 	    loadwaited = getprop("haven.loadwaited", null);
 	    allused = getprop("haven.allused", null);
-//	    debug_flag = getprop("haven.debug_flag", "off").equals("on");
-	    // bounddb = getprop("haven.bounddb", "off").equals("on");
 	    profile = getprop("haven.profile", "on").equals("on");
 	    nolocalres = getprop("haven.nolocalres", "").equals("yesimsure");
 	    resdir = getprop("haven.resdir", "./res");
@@ -162,7 +161,7 @@ public class Config {
 		hideFenflavobjsList = new HashSet<String>();
 		ltObjectList  = new HashSet<String>();
 		radiusList  = new HashSet<String>();
-		neverhide = new HashSet<String>();
+		neverhideList = new HashSet<String>();
 		window_props = new Properties();
 		highlightItemList = Collections.synchronizedSet(new HashSet<String>());
         loadOptions();
@@ -170,31 +169,32 @@ public class Config {
 	    loadCurios();
 		loadWindowOptions();
 		loadBeasts();
-		loadNeverhide();
 
     } catch(java.net.MalformedURLException e) {
 	    throw(new RuntimeException(e));
 	}
     }
 	
-	private static void loadNeverhide() {
-		neverhide.add("gfx/arch/stairs-cellar");
-		neverhide.add("gfx/arch/door-cellar");
-		neverhide.add("gfx/arch/cabin-door2m");
-		neverhide.add("gfx/arch/door-inn");
-		neverhide.add("gfx/arch/cabin-door2");
-		neverhide.add("gfx/arch/gates/palisade-ns");
-		neverhide.add("gfx/arch/gates/palisade-we");
-		neverhide.add("gfx/arch/gates/brick-ns");
-		neverhide.add("gfx/arch/gates/brick-we");
-		neverhide.add("gfx/arch/gates/fence-ns");
-		neverhide.add("gfx/arch/gates/fence-we");
-		neverhide.add("gfx/terobjs/ridges/cavein-n");
-		neverhide.add("gfx/terobjs/ridges/cavein-w");
-		neverhide.add("gfx/terobjs/ridges/caveout-n");
-		neverhide.add("gfx/terobjs/ridges/caveout-w");
-		neverhide.add("gfx/terobjs/mining/minehole");
-		neverhide.add("gfx/terobjs/mining/ladder");
+	public static void loadNeverhide() {
+		neverhideList.add("gfx/arch/stairs-cellar");
+		neverhideList.add("gfx/arch/door-cellar");
+		neverhideList.add("gfx/arch/door-inn");
+		neverhideList.add("gfx/arch/stairs-inn");
+		neverhideList.add("gfx/arch/stairs-inn-d");
+		neverhideList.add("gfx/arch/cabin-door2");
+		neverhideList.add("gfx/arch/cabin-door2m");
+		neverhideList.add("gfx/arch/gates/palisade-ns");
+		neverhideList.add("gfx/arch/gates/palisade-we");
+		neverhideList.add("gfx/arch/gates/brick-ns");
+		neverhideList.add("gfx/arch/gates/brick-we");
+		neverhideList.add("gfx/arch/gates/fence-ns");
+		neverhideList.add("gfx/arch/gates/fence-we");
+		neverhideList.add("gfx/terobjs/ridges/cavein-n");
+		neverhideList.add("gfx/terobjs/ridges/cavein-w");
+		neverhideList.add("gfx/terobjs/ridges/caveout-n");
+		neverhideList.add("gfx/terobjs/ridges/caveout-w");
+		neverhideList.add("gfx/terobjs/mining/minehole");
+		neverhideList.add("gfx/terobjs/mining/ladder");
 	}
 	
     private static boolean getopt_bool(String key, boolean def_val) {
@@ -340,13 +340,10 @@ public class Config {
 			fstream = new FileInputStream("onlist.conf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 			String strLine;
-			int cnt = 0;
 			while ((strLine = br.readLine()) != null)   {
 				String [] res = strLine.split(";");
 				MapView.objects_name_list.put(res[2], res[0]+":"+res[1]);
-				cnt++;
 			}
-			System.out.print("\nloaded \"onlist.conf\" file ... item: "+cnt);
 			br.close();
 			fstream.close();
 		} catch (Exception e) {}
@@ -358,12 +355,9 @@ public class Config {
 			fstream = new FileInputStream("rlist.conf");
 			BufferedReader br = new BufferedReader(new InputStreamReader(fstream, "UTF-8"));
 			String strLine;
-			int cnt = 0;
 			while ((strLine = br.readLine()) != null)   {
 				radiusList.add(strLine);
-				cnt++;
 			}
-			System.out.print("\nloaded \"rlist.conf\" file ... item: "+cnt);
 			br.close();
 			fstream.close();
 		} catch (Exception e) {}
@@ -382,6 +376,7 @@ public class Config {
 		try {
 			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("ltolist.conf"));
 			oos.writeObject(ltObjectList);
+			oos.flush();
 			oos.close();
 		} catch (Exception e) {}
     }
@@ -483,7 +478,7 @@ public class Config {
         String hideObjects = getopt_str("hideObjects", "");
         hideObjectList.clear();
         if (!hideObjects.isEmpty()) {
-            for (String objectName : hideObjects.split(",")) {
+            for (String objectName : hideObjects.split(";")) {
                 if (!objectName.isEmpty()) {
                     hideObjectList.add(objectName);
                 }
@@ -492,7 +487,7 @@ public class Config {
 		String hideFenflavobjs = getopt_str("hideFenflavobjs", "");
 		hideFenflavobjsList.clear();
         if (!hideFenflavobjs.isEmpty()) {
-            for (String fenflavobjsName : hideFenflavobjs.split(",")) {
+            for (String fenflavobjsName : hideFenflavobjs.split(";")) {
                 if (!fenflavobjsName.isEmpty()) {
                     hideFenflavobjsList.add(fenflavobjsName);
                 }
@@ -500,9 +495,17 @@ public class Config {
         }
 		String highlightObjects = options.getProperty("highlightObjects", "");
         if (!highlightObjects.isEmpty()) {
-            for (String objectName : highlightObjects.split(",")) {
+            for (String objectName : highlightObjects.split(";")) {
                 if (!objectName.isEmpty()) {
                     highlightItemList.add(objectName);
+                }
+            }
+        }
+		String neverhideObjects = options.getProperty("neverhideList", "");
+        if (!neverhideObjects.isEmpty()) {
+            for (String objectName : neverhideObjects.split(";")) {
+                if (!objectName.isEmpty()) {
+                    neverhideList.add(objectName);
                 }
             }
         }
@@ -541,6 +544,7 @@ public class Config {
 		showViewDistance = getopt_bool("showViewDistance", false);
 		showBeast = getopt_bool("showBeast", false);
 		minimap_Ender = getopt_bool("minimap_Ender", false);
+		useneverhide = getopt_bool("use_neverhideList", false);
 		loadLTOList();
 		loadONList();
 		loadRList();
@@ -573,17 +577,22 @@ public class Config {
     public static void saveOptions() {
         String hideObjects = "";
         for (String objectName : hideObjectList) {
-            hideObjects += objectName+",";
+            hideObjects += objectName+";";
         }
         String hideFenflavobjs = "";
         for (String fenflavobjsName : hideFenflavobjsList) {
-            hideFenflavobjs += fenflavobjsName+",";
+            hideFenflavobjs += fenflavobjsName+";";
         }
 		String highlightObjects = "";
-        for (String objectName : highlightItemList) {
-            highlightObjects += objectName+",";
+        for (String highlightName : highlightItemList) {
+            highlightObjects += highlightName+";";
         }
-		
+		String neverhideObjects = "";
+        for (String neverhideName : neverhideList) {
+            neverhideObjects += neverhideName+";";
+        }
+		setopt_str("neverhideList", neverhideObjects);
+		setopt_bool("use_neverhideList", useneverhide);
 		setopt_int("client_id", clientId);
 		setopt_str("highlightObjects", highlightObjects);
 		setopt_str("hideFenflavobjs", hideFenflavobjs);

@@ -192,6 +192,7 @@ public class OptWnd extends Window {
 
 	    new Button(new Coord(10, 40), 58, tab, "Quit") {
 		public void click() {
+			Config.saveOptions();
 		    HackThread.tg().interrupt();
 		}};
 		new Button(new Coord(77, 40), 58, tab, "Save") {
@@ -200,6 +201,7 @@ public class OptWnd extends Window {
 		}};
 	    new Button(new Coord(10, 70), 125, tab, "Logout") {
 		public void click() {
+			Config.saveOptions();
 		    ui.sess.close();
 		}};
 	    new Button(new Coord(10, 100), 125, tab, "Toggle fullscreen") {
@@ -326,10 +328,17 @@ public class OptWnd extends Window {
 		
 		chk = new CheckBox(new Coord(255, 220), tab, "Use \"neverhide\" list", -1, 16) {
     		public void changed(boolean val) {
-    		    Config.minimap_Ender = val;
+    		    Config.useneverhide = val;
 				Config.saveOptions();
     		}};
-        chk.a = Config.minimap_Ender;
+        chk.a = Config.useneverhide;
+		
+		new Button(new Coord(380, 219), 63, tab, "Reset list") {
+			public void click() {
+				Config.loadNeverhide();
+				Config.saveOptions();
+			}
+		};
             
 	}
 
@@ -463,12 +472,14 @@ public class OptWnd extends Window {
 	    (new CheckBox(new Coord(10, 280), tab, "Sound enabled", -1, 16) {
 		public void changed(boolean val) {
 		    Config.isSoundOn = val;
+			Config.saveOptions();
 		}}).a = Config.isSoundOn;
 		
 	    (new CheckBox(new Coord(210, 280), tab, "Music enabled", -1, 16) {
 		public void changed(boolean val) {
 		    Config.isMusicOn = val;
 		    Music.setVolume(Config.getMusicVolume());
+			Config.saveOptions();
 		}}).a = Config.isMusicOn;
     }
 	{ /* HIDE OBJECTS TAB */
