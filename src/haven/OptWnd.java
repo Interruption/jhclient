@@ -243,102 +243,139 @@ public class OptWnd extends Window {
 		};
 		
         CheckBox chk = new CheckBox(new Coord(10, 130), tab, "Toggle tracking ON when login", -1, 16) {
-		public void changed(boolean val) {
-		    Config.tracking = val;
-            Config.saveOptions();
-		}};
+			public void changed(boolean val) {
+				Config.tracking = val;
+				Config.saveOptions();
+			}
+		};
         chk.a = Config.tracking;
 
-        chk = new CheckBox(new Coord(10, 160), tab, "Always show player nicks", -1, 16) {
-		public void changed(boolean val) {
-		    Config.always_show_nicks = val;
-            Config.saveOptions();
-		}};
+        chk = new CheckBox(new Coord(10, 155), tab, "Always show player nicks", -1, 16) {
+			public void changed(boolean val) {
+				Config.always_show_nicks = val;
+				Config.saveOptions();
+			}
+		};
         chk.a = Config.always_show_nicks;
 
-        chk = new CheckBox(new Coord(10, 190), tab, "Show map grid", -1, 16) {
-		public void changed(boolean val) {
-		    Config.show_map_grid = val;
-            Config.saveOptions();
-		}};
+        chk = new CheckBox(new Coord(10, 180), tab, "Show map grid", -1, 16) {
+			public void changed(boolean val) {
+				Config.show_map_grid = val;
+				Config.saveOptions();
+			}
+		};
         chk.a = Config.show_map_grid;
 
-        chk = new CheckBox(new Coord(10, 220), tab, "Highlight objects by mouse", -1, 16) {
-		public void changed(boolean val) {
-		    Config.highlight_object_by_mouse = val;
-            Config.saveOptions();
-		}};
+        chk = new CheckBox(new Coord(10, 205), tab, "Highlight objects by mouse", -1, 16) {
+			public void changed(boolean val) {
+				Config.highlight_object_by_mouse = val;
+				Config.saveOptions();
+			}
+		};
         chk.a = Config.highlight_object_by_mouse;
 
-        chk = new CheckBox(new Coord(10, 250), tab, "Highlight hided objects", -1, 16) {
-		public void changed(boolean val) {
-		    Config.highlight_hided_objects = val;
-            Config.saveOptions();
-		}};	
+        chk = new CheckBox(new Coord(10, 230), tab, "Highlight hided objects", -1, 16) {
+			public void changed(boolean val) {
+				Config.highlight_hided_objects = val;
+				Config.saveOptions();
+			}
+		};	
         chk.a = Config.highlight_hided_objects;
         
-        chk = new CheckBox(new Coord(10, 280), tab, "Gilbertus map dumper (need restart)", -1, 16) {
+        chk = new CheckBox(new Coord(10, 255), tab, "Gilbertus map dumper (need restart)", -1, 16) {
     		public void changed(boolean val) {
     		    Config.gilbertus_map_dump = val;
                 Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.gilbertus_map_dump;
 		
-		chk = new CheckBox(new Coord(10, 310), tab, "Show radius (don't work correct)", -1, 16) {
+		chk = new CheckBox(new Coord(10, 280), tab, "Show radius (don't work correct)", -1, 16) {
     		public void changed(boolean val) {
     		    Config.showRadius = val;
                 Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.showRadius;
 		
-		chk = new CheckBox(new Coord(10, 340), tab, "Enable LTO", -1, 16) {
+		chk = new CheckBox(new Coord(10, 305), tab, "Enable LTO", -1, 16) {
     		public void changed(boolean val) {
     		    Config.enableLTO = val;
                 Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.enableLTO;
 		
-		chk = new CheckBox(new Coord(10, 370), tab, "Alternative name LTO", -1, 16) {
+		chk = new CheckBox(new Coord(10, 330), tab, "Alternative name LTO", -1, 16) {
     		public void changed(boolean val) {
     		    Config.altnLTO = val;
                 Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.altnLTO;
 		
-		chk = new CheckBox(new Coord(255, 130), tab, "Hide all object", -1, 16) {
+		chk = new CheckBox(new Coord(10, 355), tab, "Hide all object", -1, 16) {
     		public void changed(boolean val) {
     		    Config.hideall = val;
                 Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.hideall;
 		
-		chk = new CheckBox(new Coord(255, 160), tab, "Hide placeable object and highlight it", -1, 16) {
+		chk = new CheckBox(new Coord(10, 380), tab, "Hide placeable object and highlight it", -1, 16) {
     		public void changed(boolean val) {
     		    Config.hidepl = val;
                 Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.hidepl;
 		
-		chk = new CheckBox(new Coord(255, 190), tab, "Use Ender minimap (need restart)", -1, 16) {
+		chk = new CheckBox(new Coord(255, 130), tab, "Use Ender minimap (need restart)", -1, 16) {
     		public void changed(boolean val) {
     		    Config.minimap_Ender = val;
 				Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.minimap_Ender;
 		
-		chk = new CheckBox(new Coord(255, 220), tab, "Use \"neverhide\" list", -1, 16) {
+		chk = new CheckBox(new Coord(255, 155), tab, "Use \"neverhide\" list", -1, 16) {
     		public void changed(boolean val) {
     		    Config.useneverhide = val;
 				Config.saveOptions();
-    		}};
+    		}
+		};
         chk.a = Config.useneverhide;
 		
-		new Button(new Coord(380, 219), 63, tab, "Reset list") {
+		new Button(new Coord(380, 154), 63, tab, "Reset list") {
 			public void click() {
 				Config.loadNeverhide();
 				Config.saveOptions();
 			}
 		};
+		
+		chk = new CheckBox(new Coord(255, 180), tab, "Show player path", -1, 16) {
+			public void changed(boolean val) {
+				Config.showpath = val;
+				Config.saveOptions();
+			}
+	    };
+		chk.a = Config.showpath;
+		
+		chk = new CheckBox(new Coord(255, 205), tab, "Show human gob path", -1, 16) {
+			public void changed(boolean val) {
+				Config.showgobpath = val;
+				Config.saveOptions();
+			}
+	    };
+		chk.a = Config.showgobpath;
+		
+		chk = new CheckBox(new Coord(255, 230), tab, "Show other gob path", -1, 16) {
+			public void changed(boolean val) {
+				Config.showothergobpath = val;
+				Config.saveOptions();
+			}
+	    };
+		chk.a = Config.showothergobpath;
             
 	}
 

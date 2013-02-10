@@ -132,6 +132,9 @@ public class Config {
 	public static boolean showBeast = false;
 	public static boolean minimap_Ender = true;
 	public static boolean useneverhide = false;
+	public static boolean showpath = false;
+	public static boolean showgobpath = false;
+	public static boolean showothergobpath = false;
 	
     static {
 	try {
@@ -545,6 +548,9 @@ public class Config {
 		showBeast = getopt_bool("showBeast", false);
 		minimap_Ender = getopt_bool("minimap_Ender", false);
 		useneverhide = getopt_bool("use_neverhideList", false);
+		showpath = getopt_bool("showpath", false);
+		showgobpath = getopt_bool("showgobpath", false);
+		showothergobpath = getopt_bool("showothergobpath", false);
 		loadLTOList();
 		loadONList();
 		loadRList();
@@ -626,7 +632,10 @@ public class Config {
 		setopt_bool("radar", radar);
 		setopt_bool("showViewDistance", showViewDistance);
 		setopt_bool("showBeast", showBeast);
-		setopt_bool("minimap_Ender", minimap_Ender);		
+		setopt_bool("minimap_Ender", minimap_Ender);	
+		setopt_bool("showpath", showpath);
+		setopt_bool("showgobpath", showgobpath);
+		setopt_bool("showothergobpath", showothergobpath);
 		writeLTOList();
         try {
             options.store(new FileOutputStream("haven.conf"), "Custom config options");

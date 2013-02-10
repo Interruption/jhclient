@@ -92,6 +92,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	Gob gobplace = null;
 	static String iddefcam = "defcam"+Config.clientStrId;
 	static String idcamargs2 = "camargs2"+Config.clientStrId;
+	public Coord moveto = null;
 	
 	public static final Comparator<Sprite.Part> clickcmp = new Comparator<Sprite.Part>() {
 		public int compare(Sprite.Part a, Sprite.Part b) {
@@ -566,6 +567,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 
 	public boolean mousedown(Coord c, int button) {
 		setfocus(this);
+		Coord c0 = c;
 		Gob hit = gobatpos(c);
 		// arksu: если мы в режиме выбора объекта - возвращаем его и выходим
 		if(mode_select_object) {
@@ -588,17 +590,23 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			if(hit == null) {
 				if(Config.assign_to_tile) {
 					mc = tilify(mc);
+					if(ui.modshift && (button == 1)){
+						glob.oc.enqueue(mc);
+						glob.oc.checkqueue();
+					} else {
+						glob.oc.clearqueue();
+						wdgmsg("click", c0, mc, button, ui.modflags());
+					}
 				}
 				LogPrint("map click: "+c.toString()+", "+mc.toString()+" btn="+button +" flags="+ ui.modflags());
-				wdgmsg("click", c, mc, button, ui.modflags());
-			}
-			else {
+//				wdgmsg("click", c, mc, button, ui.modflags());
+			} else {
 				if(Config.assign_to_tile) {
 					mc = tilify(mc);
 				}
 				LogPrint("map click: "+c.toString()+", "+mc.toString()+" btn="+button +" flags="+ ui.modflags() +
 				" hit_id="+hit.id +" hit_res=" +hit.GetResName() + " hit_coord="+hit.getc().toString());
-				wdgmsg("click", c, mc, button, ui.modflags(), hit.id, hit.getc());
+				wdgmsg("click", c0, mc, button, ui.modflags(), hit.id, hit.getc());
 			}
 		}
 		return(true);
@@ -738,28 +746,28 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		visol[ol]--;
 	}
 
-	private int gettilen(Coord tc) {
+    private int gettilen(Coord tc) throws Loading {
 		int r = map.gettilen(tc);
 		if(r == -1)
 		throw(new Loading());
 		return(r);
 	}
 
-	private Tile getground(Coord tc) {
+    private Tile getground(Coord tc) throws Loading {
 		Tile r = map.getground(tc);
 		if(r == null)
 		throw(new Loading());
 		return(r);
 	}
 
-	private Tile[] gettrans(Coord tc) {
+    private Tile[] gettrans(Coord tc) throws Loading {
 		Tile[] r = map.gettrans(tc);
 		if(r == null)
 		throw(new Loading());
 		return(r);
 	}
 
-	private int getol(Coord tc) {
+    private int getol(Coord tc)  throws Loading {
 		int ol = map.getol(tc);
 		if(ol == -1)
 		throw(new Loading());
@@ -769,6 +777,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 	private void drawtile(GOut g, Coord tc, Coord sc) {
 		Tile t;
 
+	try {
 		t = getground(tc);
 		//t = gettile(tc).ground.pick(0);
 		g.image(t.tex(), sc);
@@ -778,6 +787,7 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		for(Tile tt : gettrans(tc)) {
 			g.image(tt.tex(), sc);
 		}
+    } catch (Loading e) {}
 	}
 
 	private void draw_tile_select(GOut g, Coord tc, Coord sc) {
@@ -1589,11 +1599,67 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 		g.chcolor();
 	}
 	
+	private void drawPlayerPath(GOut g) {
+		Coord oc = viewoffset(sz, mc);
+		Coord pc, cc;
+		Moving m;
+		LinMove lm;
+		Gob player = glob.oc.getgob(playergob);
+		if(player != null){
+			m = player.getattr(Moving.class);
+			g.chcolor(Color.GREEN);
+			if((m != null) && (m instanceof LinMove)){
+			lm = (LinMove)m;
+			pc = m2s(lm.t).add(oc);
+			g.line(player.sc, pc, 2);
+			for(Coord c:glob.oc.movequeue){
+				cc = m2s(c).add(oc);
+				g.line(pc, cc, 2);
+				pc = cc;
+			}
+			}
+			g.chcolor();
+		}
+    }
+
+    private void drawGobPath(GOut g) {
+		Moving m;
+		LinMove lm;
+		Coord oc = viewoffset(sz, mc);
+		g.chcolor(Color.ORANGE);
+		synchronized (glob.oc) {
+			for (Gob gob : glob.oc){
+			if ((Config.showgobpath && gob.isHuman()) || (Config.showothergobpath && !gob.isHuman())) {
+				if(gob.sc == null){continue;}
+				m = gob.getattr(Moving.class);
+				if((m!=null)&&(m instanceof LinMove)){
+					lm = (LinMove) m;
+					g.line(gob.sc, m2s(lm.t).add(oc), 2);
+				}
+			}
+			}
+		}
+		g.chcolor();
+    }
+	
 	public void draw(GOut g) {
-		try {
+		if(moveto != null){
+			wdgmsg("click", moveto, moveto, 1, 0);
+			moveto = null;
+		}
+//		try {
 			if((mask.amb = glob.amblight) == null || CustomConfig.hasNightVision)
 			mask.amb = new Color(0, 0, 0, 0);
 			drawmap(g);
+			
+			//movement highlight
+			if(Config.showgobpath||Config.showothergobpath){
+				drawGobPath(g);
+			}
+			if(Config.showpath){
+				drawPlayerPath(g);
+			}
+			
 			drawarrows(g);
 			if(Config.enableLTO)
 				drawlinetoobject(g);
@@ -1645,13 +1711,13 @@ public class MapView extends Widget implements DTarget, Console.Directory {
 			}
 			// arksu: тут надо вызвать отрисовку лога
 			ark_log.Draw(g);
-		} catch(Loading l) {
-			String text = "Loading...";
-			g.chcolor(Color.BLACK);
-			g.frect(Coord.z, sz);
-			g.chcolor(Color.WHITE);
-			g.atext(text, sz.div(2), 0.5, 0.5);
-		}
+//		} catch(Loading l) {
+//			String text = "Loading...";
+//			g.chcolor(Color.BLACK);
+//			g.frect(Coord.z, sz);
+//			g.chcolor(Color.WHITE);
+//			g.atext(text, sz.div(2), 0.5, 0.5);
+//		}
 		long now = System.currentTimeMillis();
 		long poldt = now - polchtm;
 		if((polownert != null) && (poldt < 6000)) {
